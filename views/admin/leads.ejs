@@ -1,0 +1,578 @@
+<%- include('../partials/header') %>
+<%- include('../partials/admin-navbar') %>
+
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar -->
+    <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse">
+      <div class="position-sticky pt-3">
+        <div class="list-group mb-3">
+          <div class="list-group-item active bg-primary">Navigation</div>
+          <a href="/admin/dashboard" class="list-group-item list-group-item-action"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a>
+          <a href="/admin/users" class="list-group-item list-group-item-action"><i class="fas fa-users me-2"></i> Users</a>
+          <a href="/admin/gallery" class="list-group-item list-group-item-action"><i class="fas fa-images me-2"></i> Gallery</a>
+          <a href="/admin/requests" class="list-group-item list-group-item-action"><i class="fas fa-paint-brush me-2"></i> Painting Requests</a>
+          <a href="/admin/products" class="list-group-item list-group-item-action"><i class="fas fa-shopping-cart me-2"></i> Products</a>
+          <a href="/admin/orders" class="list-group-item list-group-item-action"><i class="fas fa-shopping-bag me-2"></i> Orders</a>
+          <a href="/admin/psychometric-tests" class="list-group-item list-group-item-action"><i class="fas fa-brain me-2"></i> Psychometric Tests</a>
+          <a href="/admin/leads" class="list-group-item list-group-item-action active"><i class="fas fa-funnel-dollar me-2"></i> AI Lead Management</a>
+          <a href="/admin/seller-performance" class="list-group-item list-group-item-action"><i class="fas fa-chart-line me-2"></i> Seller Performance</a>
+          <a href="/admin/sellers" class="list-group-item list-group-item-action"><i class="fas fa-store me-2"></i> Sellers</a>
+        </div>
+      </div>
+    </nav>
+    
+    <!-- Main content -->
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">AI Lead Management Dashboard</h1>
+        <div class="btn-toolbar mb-2 mb-md-0">
+          <div class="btn-group me-2">
+            <a href="/admin/leads/all" class="btn btn-sm btn-outline-secondary">View All Leads</a>
+          </div>
+        </div>
+      </div>
+
+      <% if (locals.success_msg && success_msg !== '') { %>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+          <%= success_msg %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      <% } %>
+
+      <% if (locals.error_msg && error_msg !== '') { %>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          <%= error_msg %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      <% } %>
+
+      <!-- Metrics Overview -->
+      <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+              <div class="row no-gutters align-items-center">
+                <div class="col mr-2">
+                  <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Leads</div>
+                  <div class="h5 mb-0 font-weight-bold text-gray-800"><%= metrics.totalLeads %></div>
+                </div>
+                <div class="col-auto">
+                  <i class="fas fa-users fa-2x text-gray-300"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+              <div class="row no-gutters align-items-center">
+                <div class="col mr-2">
+                  <div class="text-xs font-weight-bold text-success text-uppercase mb-1">High Potential</div>
+                  <div class="h5 mb-0 font-weight-bold text-gray-800"><%= metrics.highPotentialLeads %></div>
+                </div>
+                <div class="col-auto">
+                  <i class="fas fa-star fa-2x text-gray-300"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+              <div class="row no-gutters align-items-center">
+                <div class="col mr-2">
+                  <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Assigned</div>
+                  <div class="h5 mb-0 font-weight-bold text-gray-800"><%= metrics.assignedLeads %></div>
+                </div>
+                <div class="col-auto">
+                  <i class="fas fa-user-tag fa-2x text-gray-300"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+              <div class="row no-gutters align-items-center">
+                <div class="col mr-2">
+                  <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Converted</div>
+                  <div class="h5 mb-0 font-weight-bold text-gray-800"><%= metrics.convertedLeads %></div>
+                </div>
+                <div class="col-auto">
+                  <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <!-- High Priority Leads -->
+        <div class="col-lg-6">
+          <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+              <h6 class="m-0 font-weight-bold text-primary">High Priority Leads</h6>
+            </div>
+            <div class="card-body">
+              <% if (highPriorityLeads && highPriorityLeads.length > 0) { %>
+                <div class="table-responsive">
+                  <table class="table table-striped">
+                    <thead>
+                      <tr>
+                        <th>User</th>
+                        <th>Score</th>
+                        <th>Level</th>
+                        <th>Source</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% highPriorityLeads.forEach(lead => { %>
+                        <tr>
+                          <td><%= lead.user ? lead.user.name : 'Unknown' %></td>
+                          <td>
+                            <div class="progress" style="height: 20px;">
+                              <div class="progress-bar bg-<%= lead.aiScore >= 80 ? 'success' : lead.aiScore >= 60 ? 'info' : 'warning' %>" 
+                                  role="progressbar" style="width: <%= lead.aiScore %>%;" 
+                                  aria-valuenow="<%= lead.aiScore %>" aria-valuemin="0" aria-valuemax="100">
+                                <%= lead.aiScore %>
+                              </div>
+                            </div>
+                          </td>
+                          <td>
+                            <span class="badge bg-<%= 
+                              lead.interestLevel === 'very_high' ? 'success' : 
+                              lead.interestLevel === 'high' ? 'primary' : 
+                              lead.interestLevel === 'medium' ? 'info' : 'secondary' 
+                            %>">
+                              <%= lead.interestLevel.replace('_', ' ').toUpperCase() %>
+                            </span>
+                          </td>
+                          <td><%= lead.source.replace('_', ' ') %></td>
+                          <td>
+                            <a href="/admin/leads/<%= lead._id %>" class="btn btn-sm btn-primary">View</a>
+                          </td>
+                        </tr>
+                      <% }); %>
+                    </tbody>
+                  </table>
+                </div>
+              <% } else { %>
+                <div class="alert alert-info">No high priority leads found.</div>
+              <% } %>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lead Sources -->
+        <div class="col-lg-6">
+          <div class="card shadow mb-4">
+            <div class="card-header py-3">
+              <h6 class="m-0 font-weight-bold text-primary">Lead Sources Analytics</h6>
+            </div>
+            <div class="card-body">
+              <% if (metrics.leadsBySource && metrics.leadsBySource.length > 0) { %>
+                <div class="table-responsive">
+                  <table class="table table-bordered">
+                    <thead>
+                      <tr>
+                        <th>Source</th>
+                        <th>Count</th>
+                        <th>Avg. Score</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% metrics.leadsBySource.forEach(source => { %>
+                        <tr>
+                          <td><%= source._id.replace('_', ' ') %></td>
+                          <td><%= source.count %></td>
+                          <td>
+                            <div class="progress" style="height: 20px;">
+                              <div class="progress-bar bg-<%= source.avgScore >= 80 ? 'success' : source.avgScore >= 60 ? 'info' : 'warning' %>" 
+                                  role="progressbar" style="width: <%= source.avgScore %>%;" 
+                                  aria-valuenow="<%= source.avgScore %>" aria-valuemin="0" aria-valuemax="100">
+                                <%= source.avgScore.toFixed(1) %>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      <% }); %>
+                    </tbody>
+                  </table>
+                </div>
+              <% } else { %>
+                <div class="alert alert-info">No lead source data available.</div>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Leads -->
+      <div class="col-lg-12">
+      <div class="card shadow mb-4">
+        <div class="card-header py-3">
+          <h6 class="m-0 font-weight-bold text-primary">Recent Leads</h6>
+        </div>
+        <div class="card-body">
+          <% if (recentLeads && recentLeads.length > 0) { %>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                <thead>
+                  <tr>
+                      <th>Date</th>
+                      <th>Name</th>
+                    <th>Source</th>
+                    <th>Score</th>
+                    <th>Status</th>
+                    <th>Assigned To</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% recentLeads.forEach(lead => { %>
+                    <tr>
+                        <td><%= new Date(lead.createdAt).toLocaleDateString() %></td>
+                      <td><%= lead.user ? lead.user.name : 'Unknown' %></td>
+                      <td><%= lead.source.replace('_', ' ') %></td>
+                        <td><%= lead.aiScore %></td>
+                      <td>
+                        <span class="badge bg-<%= 
+                          lead.status === 'converted' ? 'success' : 
+                          lead.status === 'contacted' ? 'primary' : 
+                          lead.status === 'qualified' ? 'info' : 
+                          lead.status === 'proposal' ? 'warning' :
+                          lead.status === 'lost' ? 'danger' : 'secondary' 
+                        %>">
+                          <%= lead.status.toUpperCase() %>
+                        </span>
+                      </td>
+                        <td><%= lead.assignedSeller ? lead.assignedSeller.name : 'Unassigned' %></td>
+                      <td>
+                        <a href="/admin/leads/<%= lead._id %>" class="btn btn-sm btn-primary">View</a>
+                      </td>
+                    </tr>
+                  <% }); %>
+                </tbody>
+              </table>
+            </div>
+          <% } else { %>
+            <div class="alert alert-info">No recent leads found.</div>
+          <% } %>
+        </div>
+      </div>
+      </div>
+      
+      <!-- Follow-up Reminders -->
+      <div class="col-xl-6">
+        <div class="card shadow mb-4">
+          <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Follow-up Reminders</h6>
+            <div class="dropdown no-arrow">
+              <button class="btn btn-link btn-sm dropdown-toggle" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-ellipsis-v"></i>
+              </button>
+              <div class="dropdown-menu dropdown-menu-end shadow animated--fade-in" aria-labelledby="dropdownMenuButton2">
+                <a class="dropdown-item" href="#" id="markAllComplete">Mark All Complete</a>
+                <a class="dropdown-item" href="#" id="reassignAllButton">Reassign All</a>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <% if (!followUpLeads || followUpLeads.length === 0) { %>
+              <div class="text-center p-4">
+                <i class="fas fa-calendar-check text-success fa-3x mb-3"></i>
+                <p class="mb-0">No follow-ups scheduled for today.</p>
+              </div>
+            <% } else { %>
+              <div class="table-responsive">
+                <table class="table table-sm">
+                  <thead>
+                    <tr>
+                      <th>Lead</th>
+                      <th>Assigned To</th>
+                      <th>Follow-up</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% followUpLeads.forEach(lead => { %>
+                      <tr>
+                        <td>
+                          <a href="/admin/leads/<%= lead._id %>">
+                            <%= lead.user ? lead.user.name : 'Unknown' %>
+                          </a>
+                        </td>
+                        <td>
+                          <%= lead.assignedSeller ? lead.assignedSeller.name : 'Unassigned' %>
+                        </td>
+                        <td>
+                          <span class="badge bg-primary">
+                            <%= new Date(lead.nextFollowUp).toLocaleString() %>
+                          </span>
+                        </td>
+                        <td>
+                          <div class="btn-group btn-group-sm">
+                            <a href="/admin/leads/<%= lead._id %>" class="btn btn-outline-primary">
+                              <i class="fas fa-eye"></i>
+                            </a>
+                            <button type="button" class="btn btn-outline-success complete-followup" data-lead-id="<%= lead._id %>">
+                              <i class="fas fa-check"></i>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    <% }); %>
+                  </tbody>
+                </table>
+              </div>
+            <% } %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stale Leads Alert -->
+      <div class="col-xl-6">
+        <div class="card shadow mb-4">
+          <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-danger">Stale Leads (14+ days)</h6>
+            <a href="/admin/leads/stale/14" class="btn btn-sm btn-outline-danger">View All</a>
+          </div>
+          <div class="card-body">
+            <% if (!staleLeads || staleLeads.length === 0) { %>
+              <div class="text-center p-4">
+                <i class="fas fa-check-circle text-success fa-3x mb-3"></i>
+                <p class="mb-0">No stale leads detected.</p>
+              </div>
+            <% } else { %>
+              <div class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle"></i> 
+                Found <%= staleLeads.length %> leads that haven't been contacted in over 14 days.
+              </div>
+              <div class="table-responsive">
+                <table class="table table-sm">
+                  <thead>
+                    <tr>
+                      <th>Lead</th>
+                      <th>Last Contact</th>
+                      <th>Priority</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% staleLeads.slice(0, 5).forEach(lead => { %>
+                      <tr>
+                        <td>
+                          <a href="/admin/leads/<%= lead._id %>">
+                            <%= lead.user ? lead.user.name : 'Unknown' %>
+                          </a>
+                        </td>
+                        <td>
+                          <%= lead.lastContact ? new Date(lead.lastContact).toLocaleDateString() : 'Never' %>
+                        </td>
+                        <td>
+                          <div class="progress" style="height: 10px;">
+                            <div class="progress-bar bg-<%= 
+                              lead.priorityScore >= 80 ? 'success' : 
+                              lead.priorityScore >= 60 ? 'info' : 
+                              lead.priorityScore >= 40 ? 'warning' : 'danger' 
+                            %>" 
+                                role="progressbar" style="width: <%= lead.priorityScore %>%;" 
+                                aria-valuenow="<%= lead.priorityScore %>" aria-valuemin="0" aria-valuemax="100">
+                            </div>
+                          </div>
+                        </td>
+                        <td>
+                          <div class="btn-group btn-group-sm">
+                            <button type="button" class="btn btn-outline-primary mark-contacted" data-lead-id="<%= lead._id %>">
+                              <i class="fas fa-check"></i>
+                            </button>
+                            <button type="button" class="btn btn-outline-warning schedule-followup" data-lead-id="<%= lead._id %>">
+                              <i class="fas fa-calendar-alt"></i>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    <% }); %>
+                  </tbody>
+                </table>
+                <% if (staleLeads.length > 5) { %>
+                  <div class="text-center mt-3">
+                    <a href="/admin/leads/stale/14" class="btn btn-sm btn-outline-danger">
+                      View all <%= staleLeads.length %> stale leads
+                    </a>
+                  </div>
+                <% } %>
+              </div>
+            <% } %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lead Recalculation Controls -->
+      <div class="col-xl-12 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+          <div class="card-body">
+            <div class="row no-gutters align-items-center">
+              <div class="col mr-2">
+                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Lead Management Tools</div>
+                <div class="row mt-3">
+                  <div class="col-md-4">
+                    <form action="/admin/leads/recalculate-priorities" method="POST">
+                      <button type="submit" class="btn btn-sm btn-primary">
+                        <i class="fas fa-sync-alt me-2"></i> Recalculate Lead Priorities
+                      </button>
+                    </form>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="dropdown">
+                      <button class="btn btn-sm btn-info dropdown-toggle" type="button" id="checkStaleLeadsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-search me-2"></i> Check Stale Leads
+                      </button>
+                      <ul class="dropdown-menu" aria-labelledby="checkStaleLeadsDropdown">
+                        <li><a class="dropdown-item" href="/admin/leads/stale/7">7+ Days</a></li>
+                        <li><a class="dropdown-item" href="/admin/leads/stale/14">14+ Days</a></li>
+                        <li><a class="dropdown-item" href="/admin/leads/stale/30">30+ Days</a></li>
+                        <li><a class="dropdown-item" href="/admin/leads/stale/60">60+ Days</a></li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-auto">
+                <i class="fas fa-tools fa-2x text-gray-300"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Follow-up Modal -->
+    <div class="modal fade" id="followUpModal" tabindex="-1" aria-labelledby="followUpModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="followUpModalLabel">Schedule Follow-up</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="followUpForm" method="POST">
+              <div class="mb-3">
+                <label for="followUpDate" class="form-label">Follow-up Date</label>
+                <input type="datetime-local" class="form-control" id="followUpDate" name="followUpDate" required>
+              </div>
+              <div class="mb-3">
+                <label for="reminderType" class="form-label">Reminder Type</label>
+                <select class="form-select" id="reminderType" name="reminderType">
+                  <option value="notification">In-App Notification</option>
+                  <option value="email">Email</option>
+                  <option value="sms">SMS</option>
+                  <option value="all">All Methods</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="followUpNote" class="form-label">Note (Optional)</label>
+                <textarea class="form-control" id="followUpNote" name="note" rows="3"></textarea>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary" id="saveFollowUp">Schedule</button>
+          </div>
+        </div>
+  </div>
+</div>
+
+  </main>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Follow-up Modal
+    const followUpButtons = document.querySelectorAll('.schedule-followup');
+    followUpButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        const leadId = this.getAttribute('data-lead-id');
+        document.getElementById('followUpForm').action = `/admin/leads/${leadId}/follow-up`;
+        
+        // Set default date to tomorrow at 10 AM
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        tomorrow.setHours(10, 0, 0, 0);
+        
+        const dateInput = document.getElementById('followUpDate');
+        dateInput.value = tomorrow.toISOString().substring(0, 16);
+        
+        const modal = new bootstrap.Modal(document.getElementById('followUpModal'));
+        modal.show();
+      });
+    });
+    
+    // Save follow-up
+    document.getElementById('saveFollowUp').addEventListener('click', function() {
+      document.getElementById('followUpForm').submit();
+    });
+    
+    // Mark as contacted
+    const markContactedButtons = document.querySelectorAll('.mark-contacted');
+    markContactedButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        const leadId = this.getAttribute('data-lead-id');
+        if (confirm('Mark this lead as contacted today?')) {
+          const form = document.createElement('form');
+          form.method = 'POST';
+          form.action = `/admin/leads/${leadId}/mark-contacted`;
+          document.body.appendChild(form);
+          form.submit();
+        }
+      });
+    });
+    
+    // Complete follow-up
+    const completeFollowupButtons = document.querySelectorAll('.complete-followup');
+    completeFollowupButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        const leadId = this.getAttribute('data-lead-id');
+        if (confirm('Mark this follow-up as completed?')) {
+          const form = document.createElement('form');
+          form.method = 'POST';
+          form.action = `/admin/leads/${leadId}/follow-up-complete`;
+          
+          // Add hidden field for next follow-up
+          const scheduleNextInput = document.createElement('input');
+          scheduleNextInput.type = 'hidden';
+          scheduleNextInput.name = 'scheduleNext';
+          scheduleNextInput.value = 'yes';
+          form.appendChild(scheduleNextInput);
+          
+          document.body.appendChild(form);
+          form.submit();
+        }
+      });
+    });
+    
+    // Mark all follow-ups complete
+    document.getElementById('markAllComplete').addEventListener('click', function(e) {
+      e.preventDefault();
+      if (confirm('Mark all follow-ups as completed and schedule next ones?')) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/admin/leads/complete-all-followups';
+        document.body.appendChild(form);
+        form.submit();
+      }
+    });
+  });
+</script>
+
+<%- include('../partials/footer') %> 

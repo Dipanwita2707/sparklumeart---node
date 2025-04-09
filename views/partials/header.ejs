@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= typeof title !== 'undefined' ? title : 'Sparklume Art' %></title>
+    
+    <!-- Additional styles (if any) -->
+    <%- typeof styles !== 'undefined' ? styles : '' %>
+</head>
+<body>
+    <!-- Flash Messages -->
+    <div class="container mt-3">
+        <% if (typeof success_msg !== 'undefined' && success_msg.length > 0) { %>
+            <div class="alert alert-success alert-dismissible fade show">
+                <%= success_msg %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <% } %>
+        
+        <% if (typeof error_msg !== 'undefined' && error_msg.length > 0) { %>
+            <div class="alert alert-danger alert-dismissible fade show">
+                <%= error_msg %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <% } %>
+        
+        <% if (typeof error !== 'undefined' && error.length > 0) { %>
+            <div class="alert alert-danger alert-dismissible fade show">
+                <%= error %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <% } %>
+    </div>
+</body>
+</html> 

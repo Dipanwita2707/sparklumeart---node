@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sparklume Art - Where Culture Meets Innovation</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- AOS Animation Library -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <span class="brand-text">Sparklume Art</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/gallery">Gallery</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/home-decor-gallery">Home Decor</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/shop">Shop</a>
+                    </li>
+                    <% if (typeof user !== 'undefined' && user) { %>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/dashboard">Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/auth/logout">Logout</a>
+                        </li>
+                    <% } else { %>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/auth/login">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link signup-link" href="/auth/register">Register</a>
+                        </li>
+                    <% } %>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    <% if(typeof success_msg !== 'undefined' && success_msg.length > 0) { %>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <%= success_msg %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <% } %>
+    <% if(typeof error_msg !== 'undefined' && error_msg.length > 0) { %>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <%= error_msg %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <% } %>
+
+    <!-- Main Content -->
+    <main>
+        <%- body %>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer mt-auto py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <h5 class="text-white">Sparklume Art</h5>
+                    <p class="text-light">Where Indian Culture Meets Modern Innovation</p>
+                </div>
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <h5 class="text-white">Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/gallery" class="text-light">Gallery</a></li>
+                        <li><a href="/shop" class="text-light">Shop</a></li>
+                        <li><a href="/home-decor-gallery" class="text-light">Home Decor</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5 class="text-white">Connect With Us</h5>
+                    <div class="social-icons">
+                        <a href="#" class="text-light me-3"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-light me-3"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-light me-3"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-light me-3"><i class="fab fa-pinterest"></i></a>
+                    </div>
+                </div>
+            </div>
+            <hr class="border-light mt-4">
+            <div class="text-center text-light">
+                <span>© 2024 Sparklume Art. All rights reserved.</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- AOS Animation Library -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <!-- Custom JS -->
+    <script src="/js/main.js"></script>
+    <script>
+        // Initialize AOS animations
+        AOS.init();
+    </script>
+</body>
+</html> 

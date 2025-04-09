@@ -1,0 +1,274 @@
+<%- include('../partials/header') %>
+
+<div class="container-fluid">
+    <div class="row g-0">
+        <!-- Sidebar -->
+        <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse">
+            <div class="position-sticky pt-4">
+                <div class="d-flex align-items-center justify-content-center mb-4">
+                    <i class="fas fa-user-shield fa-2x text-light me-2"></i>
+                    <h5 class="text-light mb-0">Admin Portal</h5>
+                </div>
+                
+                <div class="nav flex-column px-2">
+                    <a href="/admin/dashboard" class="nav-link text-white py-2 my-1">
+                        <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                    </a>
+                    <a href="/admin/users" class="nav-link text-white py-2 my-1">
+                        <i class="fas fa-users me-2"></i> Users
+                    </a>
+                    <a href="/admin/gallery" class="nav-link text-white py-2 my-1">
+                        <i class="fas fa-images me-2"></i> Gallery
+                    </a>
+                    <a href="/admin/requests" class="nav-link active py-2 my-1">
+                        <i class="fas fa-paint-brush me-2"></i> Painting Requests
+                    </a>
+                    <a href="/admin/products" class="nav-link text-white py-2 my-1">
+                        <i class="fas fa-shopping-cart me-2"></i> Products
+                    </a>
+                    <a href="/admin/orders" class="nav-link text-white py-2 my-1">
+                        <i class="fas fa-shopping-bag me-2"></i> Orders
+                    </a>
+                    <a href="/admin/leads" class="nav-link text-white py-2 my-1">
+                        <i class="fas fa-funnel-dollar me-2"></i> Lead Management
+                    </a>
+                    <a href="/admin/seller-performance" class="nav-link text-white py-2 my-1">
+                        <i class="fas fa-chart-line me-2"></i> Seller Performance
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-0">
+            <div class="content-wrapper p-4">
+                <!-- Indian Culture Banner -->
+                <div class="card mb-4 border-0 shadow-sm overflow-hidden">
+                    <div class="card-body p-0">
+                        <div class="bg-gradient-culture py-3 px-4">
+                            <div class="d-flex align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <div class="indian-icon-bg me-3">
+                                        <i class="fas fa-om text-white" style="font-size: 22px;"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-white mb-0">Sparklume Art</h4>
+                                        <p class="text-white-50 mb-0">Where Indian Culture Meets Modern Innovation</p>
+                                    </div>
+                                </div>
+                                <div class="ms-auto d-none d-md-block">
+                                    <div class="d-flex align-items-center">
+                                        <div class="indian-pattern me-2"></div>
+                                        <div class="indian-pattern me-2"></div>
+                                        <div class="indian-pattern"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-3 mb-4 border-bottom">
+                    <div>
+                        <h1 class="h2 mb-0">Painting Requests</h1>
+                        <p class="text-muted mb-0">Review and manage artist painting requests</p>
+                    </div>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-filter me-1"></i> Filter
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="/admin/requests?status=all">All Requests</a></li>
+                            <li><a class="dropdown-item" href="/admin/requests?status=pending">Pending Only</a></li>
+                            <li><a class="dropdown-item" href="/admin/requests?status=approved">Approved Only</a></li>
+                            <li><a class="dropdown-item" href="/admin/requests?status=rejected">Rejected Only</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <% if(messages && messages.success){ %>
+                    <div class="alert alert-success alert-dismissible fade show mb-4">
+                        <%= messages.success %>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                <% } %>
+
+                <% if(messages && messages.error){ %>
+                    <div class="alert alert-danger alert-dismissible fade show mb-4">
+                        <%= messages.error %>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                <% } %>
+
+                <% if (requests.length === 0) { %>
+                    <div class="card border-0 shadow-sm py-5">
+                        <div class="card-body text-center">
+                            <i class="fas fa-paint-brush fa-4x text-muted mb-3"></i>
+                            <h4>No painting requests pending</h4>
+                            <p class="text-muted">There are currently no painting requests to review.</p>
+                        </div>
+                    </div>
+                <% } else { %>
+                    <div class="row g-4">
+                        <% requests.forEach(request => { %>
+                            <div class="col-md-6 col-lg-4 mb-4">
+                                <div class="card h-100 border-0 shadow-sm hover-elevation">
+                                    <div class="position-relative">
+                                        <img src="<%= request.imageUrl %>" class="card-img-top" alt="<%= request.title %>" style="height: 220px; object-fit: cover;">
+                                        <div class="position-absolute top-0 end-0 m-2">
+                                            <span class="badge <%= request.status === 'pending' ? 'bg-warning' : 
+                                                                request.status === 'approved' ? 'bg-success' : 
+                                                                'bg-danger' %> text-white px-3 py-2">
+                                                <%= request.status.charAt(0).toUpperCase() + request.status.slice(1) %>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="card-body p-4">
+                                        <h5 class="card-title mb-1"><%= request.title %></h5>
+                                        <div class="d-flex align-items-center mb-3">
+                                            <div class="bg-light rounded-circle p-1 me-2">
+                                                <i class="fas fa-user text-primary"></i>
+                                            </div>
+                                            <small class="text-muted"><%= request.seller.name %></small>
+                                        </div>
+                                        
+                                        <p class="card-text text-truncate mb-3"><%= request.description %></p>
+                                        
+                                        <div class="d-flex justify-content-between align-items-center mb-3">
+                                            <span class="fw-bold text-success">$<%= request.price %></span>
+                                            <small class="text-muted">
+                                                <i class="fas fa-calendar me-1"></i> <%= new Date(request.createdAt).toLocaleDateString() %>
+                                            </small>
+                                        </div>
+                                        
+                                        <a href="/admin/requests/<%= request._id %>" class="btn btn-primary w-100">
+                                            <i class="fas fa-eye me-1"></i> View Details
+                                        </a>
+                                        
+                                        <% if (request.status === 'pending') { %>
+                                            <div class="mt-3">
+                                                <form action="/admin/painting-requests/<%= request._id %>/handle" method="POST">
+                                                    <div class="d-grid gap-2 d-md-flex justify-content-between">
+                                                        <button type="submit" name="status" value="approved" class="btn btn-success flex-grow-1">
+                                                            <i class="fas fa-check me-1"></i> Approve
+                                                        </button>
+                                                        <button type="button" class="btn btn-danger flex-grow-1" data-bs-toggle="collapse" data-bs-target="#rejectForm<%= request._id %>" aria-expanded="false">
+                                                            <i class="fas fa-times me-1"></i> Reject
+                                                        </button>
+                                                    </div>
+                                                    
+                                                    <div class="collapse mt-3" id="rejectForm<%= request._id %>">
+                                                        <div class="card card-body border-danger border-start border-4 bg-light">
+                                                            <label for="adminComment<%= request._id %>" class="form-label fw-bold text-danger mb-1">Rejection Reason</label>
+                                                            <textarea class="form-control form-control-sm" id="adminComment<%= request._id %>" name="adminComment" rows="3" required placeholder="Provide feedback to the artist..."></textarea>
+                                                            <button type="submit" name="status" value="rejected" class="btn btn-sm btn-danger mt-2">
+                                                                Submit Rejection
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        <% } else if (request.adminComment) { %>
+                                            <div class="mt-3">
+                                                <div class="alert alert-secondary mb-0">
+                                                    <strong>Admin Comment:</strong> <%= request.adminComment %>
+                                                </div>
+                                            </div>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }); %>
+                    </div>
+                <% } %>
+                
+                <!-- Footer -->
+                <footer class="mt-5 pb-3 text-center">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <div class="indian-pattern-sm me-3"></div>
+                        <p class="text-muted mb-0">© 2023 Sparklume Art | Where Indian Culture Meets Modern Innovation</p>
+                        <div class="indian-pattern-sm ms-3"></div>
+                    </div>
+                </footer>
+            </div>
+        </main>
+    </div>
+</div>
+
+<style>
+.content-wrapper {
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+.bg-gradient-culture {
+    background: linear-gradient(90deg, #FF9933 0%, #138808 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.indian-icon-bg {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.indian-pattern {
+    width: 40px;
+    height: 40px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cpath fill='%23ffffff' fill-opacity='0.2' d='M20 0c11.046 0 20 8.954 20 20s-8.954 20-20 20S0 31.046 0 20 8.954 0 20 0zm0 5c-8.284 0-15 6.716-15 15 0 8.284 6.716 15 15 15 8.284 0 15-6.716 15-15 0-8.284-6.716-15-15-15zm0 5c5.523 0 10 4.477 10 10s-4.477 10-10 10-10-4.477-10-10 4.477-10 10-10zm0 5a5 5 0 100 10 5 5 0 000-10z'/%3E%3C/svg%3E");
+}
+
+.indian-pattern-sm {
+    width: 24px;
+    height: 24px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 40 40'%3E%3Cpath fill='%23cccccc' fill-opacity='0.5' d='M20 0c11.046 0 20 8.954 20 20s-8.954 20-20 20S0 31.046 0 20 8.954 0 20 0zm0 5c-8.284 0-15 6.716-15 15 0 8.284 6.716 15 15 15 8.284 0 15-6.716 15-15 0-8.284-6.716-15-15-15zm0 5c5.523 0 10 4.477 10 10s-4.477 10-10 10-10-4.477-10-10 4.477-10 10-10zm0 5a5 5 0 100 10 5 5 0 000-10z'/%3E%3C/svg%3E");
+}
+
+.sidebar {
+    height: 100vh;
+    position: sticky;
+    top: 0;
+}
+
+.sidebar .nav-link {
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.75);
+    border-left: 3px solid transparent;
+    border-radius: 0;
+    transition: all 0.2s ease;
+}
+
+.sidebar .nav-link:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar .nav-link.active {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.1);
+    border-left-color: #FF9933;
+}
+
+.hover-elevation {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-elevation:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+}
+
+@media (max-width: 767.98px) {
+    .sidebar {
+        height: auto;
+        position: relative;
+    }
+}
+</style>
+
+<%- include('../partials/footer') %> 

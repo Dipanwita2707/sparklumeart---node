@@ -1,0 +1,121 @@
+<%- include('../partials/header') %>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse">
+            <div class="position-sticky pt-3">
+                <div class="list-group mb-3">
+                    <div class="list-group-item active bg-primary">Navigation</div>
+                    <a href="/admin/dashboard" class="list-group-item list-group-item-action"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a>
+                    <a href="/admin/users" class="list-group-item list-group-item-action"><i class="fas fa-users me-2"></i> Users</a>
+                    <a href="/admin/gallery" class="list-group-item list-group-item-action"><i class="fas fa-images me-2"></i> Gallery</a>
+                    <a href="/admin/requests" class="list-group-item list-group-item-action"><i class="fas fa-paint-brush me-2"></i> Painting Requests</a>
+                    <a href="/admin/products" class="list-group-item list-group-item-action active"><i class="fas fa-shopping-cart me-2"></i> Products</a>
+                    <a href="/admin/orders" class="list-group-item list-group-item-action"><i class="fas fa-shopping-bag me-2"></i> Orders</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Edit Product</h1>
+                <a href="/admin/products" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-1"></i> Back to Products
+                </a>
+            </div>
+
+            <% if(messages.success){ %>
+                <div class="alert alert-success alert-dismissible fade show">
+                    <%= messages.success %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <% } %>
+
+            <% if(messages.error){ %>
+                <div class="alert alert-danger alert-dismissible fade show">
+                    <%= messages.error %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <% } %>
+
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">Edit Product Details</h5>
+                        </div>
+                        <div class="card-body">
+                            <form action="/admin/products/<%= product._id %>/update" method="POST" enctype="multipart/form-data">
+                                <div class="mb-3">
+                                    <label for="title" class="form-label">Product Title</label>
+                                    <input type="text" class="form-control" id="title" name="title" value="<%= product.title %>" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="artistName" class="form-label">Artist Name</label>
+                                    <input type="text" class="form-control" id="artistName" name="artistName" value="<%= product.artistName %>" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">Description</label>
+                                    <textarea class="form-control" id="description" name="description" rows="4" required><%= product.description %></textarea>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="price" class="form-label">Price ($)</label>
+                                        <input type="number" class="form-control" id="price" name="price" min="0.01" step="0.01" value="<%= product.price %>" required>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="stock" class="form-label">Available Stock</label>
+                                        <input type="number" class="form-control" id="stock" name="stock" min="1" value="<%= product.stock %>" required>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="status" class="form-label">Status</label>
+                                    <select class="form-select" id="status" name="status">
+                                        <option value="pending" <%= product.status === 'pending' ? 'selected' : '' %>>Pending</option>
+                                        <option value="approved" <%= product.status === 'approved' ? 'selected' : '' %>>Approved</option>
+                                        <option value="rejected" <%= product.status === 'rejected' ? 'selected' : '' %>>Rejected</option>
+                                    </select>
+                                </div>
+                                <div class="mb-4">
+                                    <label for="image" class="form-label">Product Image</label>
+                                    <input type="file" class="form-control" id="image" name="image" accept="image/*">
+                                    <div class="form-text">Leave empty to keep the current image. Recommended size: 800x600 pixels.</div>
+                                </div>
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                    <button type="submit" class="btn btn-primary">Update Product</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header bg-dark text-white">
+                            <h5 class="mb-0">Current Image</h5>
+                        </div>
+                        <div class="card-body text-center">
+                            <img src="<%= product.image %>" alt="<%= product.title %>" class="img-fluid rounded mb-3">
+                            <div class="alert alert-info">
+                                <strong>Status:</strong> 
+                                <span class="badge <%= product.status === 'approved' ? 'bg-success' : (product.status === 'rejected' ? 'bg-danger' : 'bg-warning') %>">
+                                    <%= product.status.charAt(0).toUpperCase() + product.status.slice(1) %>
+                                </span>
+                            </div>
+                            <% if (product.adminComment) { %>
+                                <div class="alert alert-warning">
+                                    <strong>Admin Comment:</strong>
+                                    <p class="mb-0"><%= product.adminComment %></p>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<%- include('../partials/footer') %> 

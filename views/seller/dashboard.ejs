@@ -1,0 +1,340 @@
+<!-- Seller Dashboard -->
+<div class="container-fluid seller-dashboard p-0">
+    <div class="row g-0">
+        <!-- Include the shared sidebar partial with the current page parameter -->
+        <% const currentPage = 'dashboard'; %>
+        <%- include('../partials/seller-sidebar', { currentPage }) %>
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+            <!-- Topbar -->
+            <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow-sm rounded">
+                <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle me-3">
+                    <i class="fa fa-bars"></i>
+                </button>
+                <h1 class="h3 mb-0 text-gray-800 d-none d-sm-inline-block">Seller Dashboard</h1>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item dropdown no-arrow">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="me-2 d-none d-lg-inline text-gray-600 small"><%= user.name %></span>
+                            <i class="fas fa-user-circle fa-lg"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Dashboard Stats -->
+            <div class="row g-3 mb-4">
+                <% const stats = [
+                    { title: 'Total Paintings', icon: 'palette', value: requests ? requests.length : 0, cardClass: 'primary-card' },
+                    { title: 'Approved Paintings', icon: 'check-circle', value: requests ? requests.filter(r => r.status === 'approved').length : 0, cardClass: 'success-card' },
+                    { title: 'Pending Requests', icon: 'hourglass-half', value: requests ? requests.filter(r => r.status === 'pending').length : 0, cardClass: 'accent-card' },
+                    { title: 'Total Products', icon: 'shopping-bag', value: typeof products !== 'undefined' && products ? products.length : 0, cardClass: 'secondary-card' }
+                ] %>
+                <% stats.forEach(stat => { %>
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card text-white h-100">
+                            <div class="card-body dashboard-card <%= stat.cardClass %>">
+                                <div class="card-icon"><i class="fas fa-<%= stat.icon %>"></i></div>
+                                <div>
+                                    <h5 class="card-title mb-0"><%= stat.title %></h5>
+                                    <p class="card-text display-6 mb-0 fw-bold"><%= stat.value %></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+
+            <div class="row">
+                <!-- Left Column -->
+                <div class="col-lg-8">
+                    <!-- Recent Painting Requests -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header d-flex justify-content-between align-items-center py-3">
+                            <h5 class="card-title fw-bold mb-0 text-primary">
+                                <i class="fas fa-paint-brush me-2"></i>Recent Painting Requests
+                            </h5>
+                            <a href="/seller/paintings/requests" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-arrow-right me-1"></i>View All
+                            </a>
+                        </div>
+                        <div class="card-body p-0">
+                            <% if (!requests || requests.length === 0) { %>
+                                <div class="alert alert-info m-3">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    You haven't submitted any painting requests yet.
+                                    <a href="/seller/paintings/add" class="alert-link">Submit your first painting</a>
+                                </div>
+                            <% } else { %>
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle mb-0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Title</th>
+                                                <th>Price</th>
+                                                <th>Status</th>
+                                                <th>Submitted</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% requests.slice(0, 5).forEach(request => { %>
+                                                <tr>
+                                                    <td class="fw-medium"><%= request.title %></td>
+                                                    <td>₹<%= request.price %></td>
+                                                    <td>
+                                                        <span class="badge <%= request.status === 'pending' ? 'bg-warning' : 
+                                                                         request.status === 'approved' ? 'bg-success' : 
+                                                                         'bg-danger' %>">
+                                                            <%= request.status.charAt(0).toUpperCase() + request.status.slice(1) %>
+                                                        </span>
+                                                    </td>
+                                                    <td><%= new Date(request.createdAt).toLocaleDateString() %></td>
+                                                    <td>
+                                                        <a href="/seller/paintings/requests" class="btn btn-sm btn-outline-primary">
+                                                            <i class="fas fa-eye me-1"></i>View
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            <% }); %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+
+                    <!-- Active Bids Section -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header d-flex justify-content-between align-items-center py-3">
+                            <h5 class="card-title fw-bold mb-0 text-primary">
+                                <i class="fas fa-gavel me-2"></i>Your Active Bids
+                            </h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <% if (!activeBidsList || activeBidsList.length === 0) { %>
+                                <div class="alert alert-info m-3">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    You haven't placed any bids yet.
+                                    <a href="/seller/custom-requests" class="alert-link">Browse custom requests</a> to start bidding.
+                                </div>
+                            <% } else { %>
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle mb-0">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Request</th>
+                                                <th>Your Bid</th>
+                                                <th>Delivery</th>
+                                                <th>Status</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% activeBidsList.forEach(bid => { %>
+                                                <tr>
+                                                    <td class="fw-medium"><%= bid.customRequest.title %></td>
+                                                    <td>₹<%= bid.amount %></td>
+                                                    <td><%= bid.deliveryTime %> days</td>
+                                                    <td>
+                                                        <span class="badge bg-<%= bid.status === 'pending' ? 'warning' : 'success' %>">
+                                                            <%= bid.status.charAt(0).toUpperCase() + bid.status.slice(1) %>
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <a href="/seller/custom-requests/<%= bid.customRequest._id %>" class="btn btn-sm btn-outline-primary">
+                                                            <i class="fas fa-eye me-1"></i>View
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            <% }); %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column -->
+                <div class="col-lg-4">
+                    <!-- Custom Requests Section -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header d-flex justify-content-between align-items-center py-3">
+                            <h5 class="card-title fw-bold mb-0 text-primary">
+                                <i class="fas fa-clipboard-list me-2"></i>Custom Artwork Requests
+                            </h5>
+                            <a href="/seller/custom-requests" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-arrow-right me-1"></i>View All
+                            </a>
+                        </div>
+                        <div class="card-body">
+                            <% if (!openRequests || openRequests.length === 0) { %>
+                                <div class="alert alert-info m-1 py-2">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    No open custom requests available.
+                                    <a href="/seller/custom-requests" class="alert-link">Check back later</a>
+                                </div>
+                            <% } else { %>
+                                <div class="custom-requests-wrapper">
+                                    <% openRequests.slice(0, 3).forEach(request => { %>
+                                        <div class="custom-request-card mb-3 d-flex">
+                                            <% if (request.imageUrl) { %>
+                                                <div class="request-image" style="background-image: url('<%= request.imageUrl %>')"></div>
+                                            <% } else { %>
+                                                <div class="request-image" style="background-image: url('/img/placeholder.png')"></div>
+                                            <% } %>
+                                            <div class="request-content p-3 flex-grow-1">
+                                                <h6 class="mb-2 fw-bold text-truncate"><%= request.title %></h6>
+                                                <p class="small text-muted mb-2 text-truncate"><%= request.description.substring(0, 60) %>...</p>
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <span class="badge bg-primary">₹<%= request.budget %></span>
+                                                    <a href="/seller/custom-requests/<%= request._id %>" class="btn btn-sm btn-outline-primary">
+                                                        <i class="fas fa-gavel me-1"></i>Bid
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <% }); %>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+
+                    <!-- Recent Orders Section -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header py-3">
+                            <h5 class="card-title fw-bold mb-0 text-primary">
+                                <i class="fas fa-shopping-cart me-2"></i>Recent Orders
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <% if (typeof orders === 'undefined' || !orders || orders.length === 0) { %>
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    No orders yet. Orders will appear here once customers purchase your products.
+                                </div>
+                            <% } else { %>
+                                <% orders.slice(0, 3).forEach(order => { %>
+                                    <div class="d-flex align-items-center mb-3 pb-3 border-bottom">
+                                        <div class="me-3">
+                                            <div class="bg-light rounded-circle p-2">
+                                                <i class="fas fa-box fa-lg text-primary"></i>
+                                            </div>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-1 fw-bold">Order #<%= order._id.toString().slice(-6) %></h6>
+                                            <p class="small text-muted mb-0">
+                                                <%= new Date(order.createdAt).toLocaleDateString() %> 
+                                                · ₹<%= order.totalAmount %>
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <span class="badge bg-<%= order.status === 'pending' ? 'warning' : 
+                                                                    order.status === 'processing' ? 'info' : 
+                                                                    order.status === 'completed' ? 'success' : 'secondary' %>">
+                                                <%= order.status.charAt(0).toUpperCase() + order.status.slice(1) %>
+                                            </span>
+                                        </div>
+                                    </div>
+                                <% }); %>
+                                <div class="text-center">
+                                    <a href="/seller/orders" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-list-alt me-1"></i>View All Orders
+                                    </a>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script>
+    // Toggle sidebar on small screens
+    document.addEventListener('DOMContentLoaded', function() {
+        const sidebarToggleTop = document.getElementById('sidebarToggleTop');
+        const sidebar = document.getElementById('sidebar');
+        
+        if (sidebarToggleTop) {
+            sidebarToggleTop.addEventListener('click', function() {
+                sidebar.classList.toggle('show');
+            });
+        }
+    });
+</script>
+
+<!-- Link to custom CSS -->
+<link rel="stylesheet" href="/css/seller-dashboard.css">
+
+<style>
+    /* Fixed footer positioning */
+    html, body {
+        height: 100%;
+        margin: 0;
+    }
+    
+    body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+    
+    .container-fluid.seller-dashboard {
+        flex: 1 0 auto;
+        padding-bottom: 2rem !important;
+        margin-bottom: 2rem !important;
+    }
+    
+    main {
+        padding-bottom: 3rem !important;
+    }
+    
+    footer.site-footer {
+        flex-shrink: 0;
+        margin-top: 3rem !important;
+        position: relative;
+        width: 100%;
+        z-index: 1000;
+        clear: both;
+    }
+    
+    .card.shadow-sm.mb-4 {
+        margin-bottom: 1.5rem !important;
+    }
+</style>
+
+<!-- Custom footer for dashboard -->
+<footer class="site-footer bg-dark text-white py-4">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <h5>Sparklume Art</h5>
+                <p>A platform for artists to showcase their work and for art lovers to discover beautiful pieces.</p>
+            </div>
+            <div class="col-md-3">
+                <h5>Quick Links</h5>
+                <ul class="list-unstyled">
+                    <li><a href="/" class="text-white">Home</a></li>
+                    <li><a href="/gallery" class="text-white">Gallery</a></li>
+                    <li><a href="/shop" class="text-white">Shop</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h5>Contact Us</h5>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-envelope me-2"></i> info@sparklumearts.com</li>
+                    <li><i class="fas fa-phone me-2"></i> +1 (123) 456-7890</li>
+                </ul>
+            </div>
+        </div>
+        <hr>
+        <div class="text-center">
+            <p>&copy; <%= new Date().getFullYear() %> Sparklume Art. All rights reserved.</p>
+        </div>
+    </div>
+</footer> 

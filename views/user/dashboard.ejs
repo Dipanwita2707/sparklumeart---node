@@ -1,0 +1,261 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12 mb-4">
+            <div class="jumbotron p-4 bg-light rounded-3 border">
+                <h1 class="display-5">Welcome, <%= user.name %></h1>
+                <p class="lead">Manage your account, view your orders, and more from your personal dashboard.</p>
+                <hr class="my-4">
+                <div class="d-flex flex-wrap">
+                    <a href="/paintings" class="btn btn-primary me-2 mb-2">Browse Paintings</a>
+                    <a href="/user/psychometric-test" class="btn btn-success me-2 mb-2">Take Home Decor Personality Test</a>
+                    <a href="../customRequests/create" class="btn btn-info me-2 mb-2">Request Custom Painting</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Psychometric Tests Section -->
+    <div class="row">
+        <div class="col-md-12 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Your Psychometric Tests</h5>
+                    <a href="/user/psychometric-test" class="btn btn-light btn-sm">Take New Test</a>
+                </div>
+                <div class="card-body">
+                    <% if (locals.tests && tests.length > 0) { %>
+                        <div class="table-responsive">
+                            <table class="table table-striped align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                        <th>Results</th>
+                                        <th>Quote</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% tests.forEach(test => { %>
+                                        <tr>
+                                            <td><%= new Date(test.createdAt).toLocaleDateString() %></td>
+                                            <td>
+                                                <% if (test.status === 'taken') { %>
+                                                    <span class="badge bg-secondary">Test Taken</span>
+                                                <% } else if (test.status === 'awaiting_payment') { %>
+                                                    <span class="badge bg-warning text-dark">Awaiting Payment</span>
+                                                <% } else if (test.status === 'paid') { %>
+                                                    <span class="badge bg-info">Test Paid</span>
+                                                <% } else if (test.status === 'under_review') { %>
+                                                    <span class="badge bg-primary">Under Review</span>
+                                                <% } else if (test.status === 'reviewed') { %>
+                                                    <span class="badge bg-success">Reviewed</span>
+                                                <% } %>
+                                            </td>
+                                            <td>
+                                                <% if (test.colorPreference) { %>
+                                                    Color: <span class="badge bg-primary"><%= test.colorPreference %></span><br>
+                                                    Style: <span class="badge bg-success"><%= test.stylePreference %></span>
+                                                <% } else { %>
+                                                    Not available
+                                                <% } %>
+                                            </td>
+                                            <td>
+                                                <% if (test.adminQuote && test.adminQuote.budget) { %>
+                                                    ₹<%= test.adminQuote.budget.toLocaleString('en-IN') %>
+                                                    <% if (!test.order || !test.order.approved) { %>
+                                                        <span class="badge bg-warning text-dark">Pending Approval</span>
+                                                    <% } %>
+                                                <% } else if (test.status === 'reviewed') { %>
+                                                    <span class="badge bg-info">Quote Pending</span>
+                                                <% } else { %>
+                                                    -
+                                                <% } %>
+                                            </td>
+                                            <td>
+                                                <a href="/user/psychometric-test/<%= test._id %>" class="btn btn-sm btn-primary">View Details</a>
+                                                <% if (test.status === 'awaiting_payment') { %>
+                                                    <a href="/user/psychometric-test/<%= test._id %>/payment" class="btn btn-sm btn-success">Pay Now</a>
+                                                <% } %>
+                                            </td>
+                                        </tr>
+                                    <% }) %>
+                                </tbody>
+                            </table>
+                        </div>
+                    <% } else { %>
+                        <div class="alert alert-info">
+                            <p class="mb-0">You haven't taken any psychometric tests yet. Take a test to get personalized home decor recommendations!</p>
+                        </div>
+                        <a href="/user/psychometric-test" class="btn btn-primary">Take Home Decor Psychometric Test</a>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Profile Card -->
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Profile</h4>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Welcome, <%= user.name %></h5>
+                    <p class="card-text">Email: <%= user.email %></p>
+                    <a href="/user/profile" class="btn btn-primary">Edit Profile</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="col-md-8 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Quick Actions</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <a href="/customRequests/create" class="btn btn-success btn-lg btn-block w-100">
+                                <i class="fas fa-plus"></i> Create Custom Request
+                            </a>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <a href="/customRequests/my-requests" class="btn btn-info btn-lg btn-block w-100">
+                                <i class="fas fa-list"></i> My Custom Requests
+                            </a>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <a href="/shop/cart" class="btn btn-warning btn-lg btn-block w-100">
+                                <i class="fas fa-shopping-cart"></i> View Cart
+                            </a>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <a href="/user/orders" class="btn btn-primary btn-lg btn-block w-100">
+                                <i class="fas fa-box"></i> My Orders
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Requests Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4>My Recent Custom Requests</h4>
+                    <a href="/customRequests/my-requests" class="btn btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body">
+                    <% if (typeof customRequests !== 'undefined' && customRequests.length > 0) { %>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Type</th>
+                                        <th>Status</th>
+                                        <th>Budget</th>
+                                        <th>Created</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% customRequests.forEach(request => { %>
+                                        <tr>
+                                            <td><%= request.title %></td>
+                                            <td><%= request.type.replace('_', ' ').toUpperCase() %></td>
+                                            <td>
+                                                <span class="badge bg-<%= request.status === 'open' ? 'primary' : 
+                                                                        request.status === 'assigned' ? 'info' :
+                                                                        request.status === 'in_progress' ? 'warning' :
+                                                                        request.status === 'completed' ? 'success' : 'danger' %>">
+                                                    <%= request.status.replace('_', ' ').toUpperCase() %>
+                                                </span>
+                                            </td>
+                                            <td>₹<%= request.budget %></td>
+                                            <td><%= new Date(request.createdAt).toLocaleDateString() %></td>
+                                            <td>
+                                                <a href="/customRequests/<%= request._id %>" class="btn btn-sm btn-info">View</a>
+                                            </td>
+                                        </tr>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
+                    <% } else { %>
+                        <div class="text-center py-4">
+                            <p>No custom requests yet.</p>
+                            <a href="/customRequests/create" class="btn btn-primary">Create Your First Request</a>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Orders Section -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4>Recent Orders</h4>
+                    <a href="/user/orders" class="btn btn-outline-primary">View All Orders</a>
+                </div>
+                <div class="card-body">
+                    <% if (typeof orders !== 'undefined' && orders.length > 0) { %>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Items</th>
+                                        <th>Total</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% orders.forEach(order => { %>
+                                        <tr>
+                                            <td><%= order._id %></td>
+                                            <td><%= order.items.length %> items</td>
+                                            <td>₹<%= order.totalAmount %></td>
+                                            <td>
+                                                <span class="badge bg-<%= order.orderStatus === 'processing' ? 'warning' :
+                                                                        order.orderStatus === 'shipped' ? 'info' :
+                                                                        order.orderStatus === 'delivered' ? 'success' : 'secondary' %>">
+                                                    <%= order.orderStatus.toUpperCase() %>
+                                                </span>
+                                            </td>
+                                            <td><%= new Date(order.createdAt).toLocaleDateString() %></td>
+                                            <td>
+                                                <a href="/user/orders/<%= order._id %>" class="btn btn-sm btn-info">View</a>
+                                            </td>
+                                        </tr>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
+                    <% } else { %>
+                        <div class="text-center py-4">
+                            <p>No orders yet.</p>
+                            <a href="/shop" class="btn btn-primary">Start Shopping</a>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %> 

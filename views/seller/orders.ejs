@@ -1,0 +1,363 @@
+<%- include('../partials/header') %>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse">
+            <div class="position-sticky pt-3">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="/seller/dashboard">
+                            <i class="fas fa-tachometer-alt me-2"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="/seller/paintings/add">
+                            <i class="fas fa-plus-circle me-2"></i>
+                            Submit New Painting
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="/seller/paintings/requests">
+                            <i class="fas fa-paint-brush me-2"></i>
+                            My Painting Requests
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active text-white" href="/seller/orders">
+                            <i class="fas fa-shopping-cart me-2"></i>
+                            Orders
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="/seller/profile">
+                            <i class="fas fa-user me-2"></i>
+                            Profile
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="/seller/products">
+                            <i class="fas fa-shopping-bag me-2"></i>
+                            My Products
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="/seller/products/add">
+                            <i class="fas fa-plus-circle me-2"></i>
+                            Add New Product
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Manage Orders</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <a href="/seller/dashboard" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
+                    </a>
+                </div>
+            </div>
+
+            <!-- Flash Messages -->
+            <% if (messages.success) { %>
+                <div class="alert alert-success alert-dismissible fade show">
+                    <%= messages.success %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <% } %>
+
+            <% if (messages.error) { %>
+                <div class="alert alert-danger alert-dismissible fade show">
+                    <%= messages.error %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <% } %>
+
+            <!-- Orders List -->
+            <div class="card">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs" id="orderTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="all-tab" data-bs-toggle="tab" data-bs-target="#all-orders" type="button" role="tab" aria-controls="all-orders" aria-selected="true">All Orders</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="pending-tab" data-bs-toggle="tab" data-bs-target="#pending-orders" type="button" role="tab" aria-controls="pending-orders" aria-selected="false">Processing</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="approved-tab" data-bs-toggle="tab" data-bs-target="#approved-orders" type="button" role="tab" aria-controls="approved-orders" aria-selected="false">Approved</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="shipped-tab" data-bs-toggle="tab" data-bs-target="#shipped-orders" type="button" role="tab" aria-controls="shipped-orders" aria-selected="false">In Transit</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="delivered-tab" data-bs-toggle="tab" data-bs-target="#delivered-orders" type="button" role="tab" aria-controls="delivered-orders" aria-selected="false">Delivered</button>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content" id="orderTabsContent">
+                        <!-- All Orders Tab -->
+                        <div class="tab-pane fade show active" id="all-orders" role="tabpanel" aria-labelledby="all-tab">
+                            <% if (orders && orders.length > 0) { %>
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Order ID</th>
+                                                <th>Date</th>
+                                                <th>Customer</th>
+                                                <th>Total</th>
+                                                <th>Status</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% orders.forEach(order => { %>
+                                                <tr>
+                                                    <td><%= order._id.toString().substring(0, 8) %>...</td>
+                                                    <td><%= new Date(order.createdAt).toLocaleDateString() %></td>
+                                                    <td><%= order.user ? order.user.name : 'Unknown User' %></td>
+                                                    <td>$<%= order.totalAmount.toFixed(2) %></td>
+                                                    <td>
+                                                        <span class="badge 
+                                                            <%= order.orderStatus === 'processing' ? 'bg-warning' : 
+                                                               order.orderStatus === 'approved' ? 'bg-info' : 
+                                                               order.orderStatus === 'in_transit' ? 'bg-primary' : 
+                                                               order.orderStatus === 'delivered' ? 'bg-success' : 
+                                                               order.orderStatus === 'cancelled' ? 'bg-danger' : 'bg-secondary' %>">
+                                                            <%= order.orderStatus === 'in_transit' ? 'In Transit' : 
+                                                               (order.orderStatus.charAt(0).toUpperCase() + order.orderStatus.slice(1)) %>
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <a href="/seller/orders/<%= order._id %>" class="btn btn-sm btn-primary">View Details</a>
+                                                    </td>
+                                                </tr>
+                                            <% }); %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            <% } else { %>
+                                <div class="text-center py-5">
+                                    <i class="fas fa-box-open fa-4x mb-3 text-muted"></i>
+                                    <h4>No Orders Found</h4>
+                                    <p class="text-muted">You don't have any orders yet.</p>
+                                </div>
+                            <% } %>
+                        </div>
+
+                        <!-- Processing Orders Tab -->
+                        <div class="tab-pane fade" id="pending-orders" role="tabpanel" aria-labelledby="pending-tab">
+                            <% 
+                                const processingOrders = orders ? orders.filter(order => order.orderStatus === 'processing') : [];
+                                if (processingOrders.length > 0) { 
+                            %>
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Order ID</th>
+                                                <th>Date</th>
+                                                <th>Customer</th>
+                                                <th>Total</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% processingOrders.forEach(order => { %>
+                                                <tr>
+                                                    <td><%= order._id.toString().substring(0, 8) %>...</td>
+                                                    <td><%= new Date(order.createdAt).toLocaleDateString() %></td>
+                                                    <td><%= order.user ? order.user.name : 'Unknown User' %></td>
+                                                    <td>$<%= order.totalAmount.toFixed(2) %></td>
+                                                    <td>
+                                                        <a href="/seller/orders/<%= order._id %>" class="btn btn-sm btn-primary">View Details</a>
+                                                    </td>
+                                                </tr>
+                                            <% }); %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            <% } else { %>
+                                <div class="text-center py-5">
+                                    <i class="fas fa-clipboard-check fa-4x mb-3 text-muted"></i>
+                                    <h4>No Processing Orders</h4>
+                                    <p class="text-muted">You don't have any processing orders at the moment.</p>
+                                </div>
+                            <% } %>
+                        </div>
+
+                        <!-- Approved Orders Tab -->
+                        <div class="tab-pane fade" id="approved-orders" role="tabpanel" aria-labelledby="approved-tab">
+                            <% 
+                                const approvedOrders = orders ? orders.filter(order => order.orderStatus === 'approved') : [];
+                                if (approvedOrders.length > 0) { 
+                            %>
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Order ID</th>
+                                                <th>Date</th>
+                                                <th>Customer</th>
+                                                <th>Total</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% approvedOrders.forEach(order => { %>
+                                                <tr>
+                                                    <td><%= order._id.toString().substring(0, 8) %>...</td>
+                                                    <td><%= new Date(order.createdAt).toLocaleDateString() %></td>
+                                                    <td><%= order.user ? order.user.name : 'Unknown User' %></td>
+                                                    <td>$<%= order.totalAmount.toFixed(2) %></td>
+                                                    <td>
+                                                        <a href="/seller/orders/<%= order._id %>" class="btn btn-sm btn-primary">View Details</a>
+                                                    </td>
+                                                </tr>
+                                            <% }); %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            <% } else { %>
+                                <div class="text-center py-5">
+                                    <i class="fas fa-clipboard-check fa-4x mb-3 text-muted"></i>
+                                    <h4>No Approved Orders</h4>
+                                    <p class="text-muted">You don't have any approved orders that need to be shipped.</p>
+                                </div>
+                            <% } %>
+                        </div>
+
+                        <!-- In Transit Orders Tab -->
+                        <div class="tab-pane fade" id="shipped-orders" role="tabpanel" aria-labelledby="shipped-tab">
+                            <% 
+                                const shippedOrders = orders ? orders.filter(order => order.orderStatus === 'in_transit') : [];
+                                if (shippedOrders.length > 0) { 
+                            %>
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Order ID</th>
+                                                <th>Date</th>
+                                                <th>Customer</th>
+                                                <th>Tracking #</th>
+                                                <th>Est. Delivery</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% shippedOrders.forEach(order => { %>
+                                                <tr>
+                                                    <td><%= order._id.toString().substring(0, 8) %>...</td>
+                                                    <td><%= new Date(order.createdAt).toLocaleDateString() %></td>
+                                                    <td><%= order.user ? order.user.name : 'Unknown User' %></td>
+                                                    <td><%= order.trackingNumber || 'N/A' %></td>
+                                                    <td><%= order.estimatedDeliveryDate ? new Date(order.estimatedDeliveryDate).toLocaleDateString() : 'N/A' %></td>
+                                                    <td>
+                                                        <a href="/seller/orders/<%= order._id %>" class="btn btn-sm btn-primary">View Details</a>
+                                                    </td>
+                                                </tr>
+                                            <% }); %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            <% } else { %>
+                                <div class="text-center py-5">
+                                    <i class="fas fa-shipping-fast fa-4x mb-3 text-muted"></i>
+                                    <h4>No Orders In Transit</h4>
+                                    <p class="text-muted">You don't have any orders that are currently in transit.</p>
+                                </div>
+                            <% } %>
+                        </div>
+
+                        <!-- Delivered Orders Tab -->
+                        <div class="tab-pane fade" id="delivered-orders" role="tabpanel" aria-labelledby="delivered-tab">
+                            <% 
+                                const deliveredOrders = orders ? orders.filter(order => order.orderStatus === 'delivered') : [];
+                                if (deliveredOrders.length > 0) { 
+                            %>
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Order ID</th>
+                                                <th>Date</th>
+                                                <th>Customer</th>
+                                                <th>Total</th>
+                                                <th>Delivered Date</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% deliveredOrders.forEach(order => { %>
+                                                <tr>
+                                                    <td><%= order._id.toString().substring(0, 8) %>...</td>
+                                                    <td><%= new Date(order.createdAt).toLocaleDateString() %></td>
+                                                    <td><%= order.user ? order.user.name : 'Unknown User' %></td>
+                                                    <td>$<%= order.totalAmount.toFixed(2) %></td>
+                                                    <td><%= new Date(order.updatedAt).toLocaleDateString() %></td>
+                                                    <td>
+                                                        <a href="/seller/orders/<%= order._id %>" class="btn btn-sm btn-primary">View Details</a>
+                                                    </td>
+                                                </tr>
+                                            <% }); %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            <% } else { %>
+                                <div class="text-center py-5">
+                                    <i class="fas fa-check-circle fa-4x mb-3 text-muted"></i>
+                                    <h4>No Delivered Orders</h4>
+                                    <p class="text-muted">You don't have any completed deliveries yet.</p>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<style>
+    .sidebar {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 100;
+        padding: 48px 0 0;
+        box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+    }
+
+    .sidebar .nav-link {
+        font-weight: 500;
+        color: #333;
+    }
+
+    .sidebar .nav-link.active {
+        color: #2470dc;
+    }
+
+    main {
+        padding-top: 48px;
+    }
+
+    @media (max-width: 767.98px) {
+        .sidebar {
+            position: static;
+            padding-top: 0;
+        }
+        main {
+            padding-top: 0;
+        }
+    }
+</style>
+
+<%- include('../partials/footer') %> 

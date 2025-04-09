@@ -1,0 +1,90 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Create Custom Request</h2>
+                </div>
+                <div class="card-body">
+                    <form action="/customRequests/create" method="POST" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="type" class="form-label">Request Type</label>
+                            <select class="form-select" id="type" name="type" required>
+                                <option value="">Select Type</option>
+                                <option value="portrait">Portrait Painting</option>
+                                <option value="landscape">Landscape Painting</option>
+                                <option value="room_decor">Room Decor</option>
+                                <option value="custom_gift">Custom Gift</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Title</label>
+                            <input type="text" class="form-control" id="title" name="title" required
+                                placeholder="Enter a title for your request">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="4" required
+                                placeholder="Describe what you want in detail"></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="budget" class="form-label">Budget (INR)</label>
+                            <input type="number" class="form-control" id="budget" name="budget" required
+                                placeholder="Enter your budget">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="phoneNumber" class="form-label">Phone Number</label>
+                            <input type="tel" class="form-control" id="phoneNumber" name="phoneNumber" required
+                                pattern="[0-9]{10}" title="Please enter a valid 10-digit phone number"
+                                placeholder="Enter your phone number">
+                            <div class="form-text">Enter a 10-digit phone number without spaces or special characters</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="street" class="form-label">Street Address</label>
+                            <textarea class="form-control" id="street" name="address[street]" required
+                                placeholder="Enter your street address"></textarea>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="city" class="form-label">City</label>
+                                <input type="text" class="form-control" id="city" name="address[city]" required
+                                    placeholder="Enter city">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="state" class="form-label">State</label>
+                                <input type="text" class="form-control" id="state" name="address[state]" required
+                                    placeholder="Enter state">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="pincode" class="form-label">Pincode</label>
+                                <input type="text" class="form-control" id="pincode" name="address[pincode]" required
+                                    pattern="[0-9]{6}" title="Please enter a valid 6-digit pincode"
+                                    placeholder="Enter pincode">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="image" class="form-label">Reference Image</label>
+                            <input type="file" class="form-control" id="image" name="image" required
+                                accept="image/*">
+                            <div class="form-text">Upload a reference image for your request</div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Submit Request</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %> 

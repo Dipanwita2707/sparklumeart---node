@@ -1,0 +1,555 @@
+<%- include('../partials/header') %>
+<%- include('../partials/admin-navbar') %>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse">
+            <div class="position-sticky pt-3">
+                <div class="list-group mb-3">
+                    <div class="list-group-item active bg-primary">Navigation</div>
+                    <a href="/admin/dashboard" class="list-group-item list-group-item-action"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a>
+                    <a href="/admin/users" class="list-group-item list-group-item-action"><i class="fas fa-users me-2"></i> Users</a>
+                    <a href="/admin/gallery" class="list-group-item list-group-item-action"><i class="fas fa-images me-2"></i> Gallery</a>
+                    <a href="/admin/requests" class="list-group-item list-group-item-action"><i class="fas fa-paint-brush me-2"></i> Painting Requests</a>
+                    <a href="/admin/products" class="list-group-item list-group-item-action"><i class="fas fa-shopping-cart me-2"></i> Products</a>
+                    <a href="/admin/orders" class="list-group-item list-group-item-action"><i class="fas fa-shopping-bag me-2"></i> Orders</a>
+                    <a href="/admin/psychometric-tests" class="list-group-item list-group-item-action"><i class="fas fa-brain me-2"></i> Psychometric Tests</a>
+                    <a href="/admin/leads" class="list-group-item list-group-item-action"><i class="fas fa-funnel-dollar me-2"></i> AI Lead Management</a>
+                    <a href="/admin/lead-summary" class="list-group-item list-group-item-action active"><i class="fas fa-chart-pie me-2"></i> Lead Summary</a>
+                    <a href="/admin/seller-performance" class="list-group-item list-group-item-action"><i class="fas fa-chart-line me-2"></i> Seller Performance</a>
+                    <a href="/admin/user-activity" class="list-group-item list-group-item-action"><i class="fas fa-user-clock me-2"></i> User Activity</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Lead Performance Summary</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <div class="btn-group me-2">
+                        <a href="/admin/leads" class="btn btn-sm btn-outline-secondary">View All Leads</a>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#emailCampaignModal">
+                            <i class="fas fa-envelope me-1"></i> New Email Campaign
+                        </button>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="timeframeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            Last <%= timeframe %> Days
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="timeframeDropdown">
+                            <li><a class="dropdown-item" href="/admin/lead-summary?timeframe=7">Last 7 Days</a></li>
+                            <li><a class="dropdown-item" href="/admin/lead-summary?timeframe=30">Last 30 Days</a></li>
+                            <li><a class="dropdown-item" href="/admin/lead-summary?timeframe=90">Last 90 Days</a></li>
+                            <li><a class="dropdown-item" href="/admin/lead-summary?timeframe=180">Last 180 Days</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <% if (locals.success_msg && success_msg !== '') { %>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <%= success_msg %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <% } %>
+
+            <% if (locals.error_msg && error_msg !== '') { %>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <%= error_msg %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <% } %>
+
+            <!-- Summary Cards -->
+            <div class="row mb-4">
+                <div class="col-md-3 mb-4">
+                    <div class="card border-left-primary shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Leads</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800"><%= summary.totalLeads %></div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-users fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3 mb-4">
+                    <div class="card border-left-success shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">High Potential</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800"><%= summary.highPotentialLeads %></div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-star fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3 mb-4">
+                    <div class="card border-left-info shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Conversion Rate</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800"><%= summary.conversionRate %>%</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-percentage fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3 mb-4">
+                    <div class="card border-left-warning shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Avg. Score</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800"><%= summary.averageScore %></div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-chart-line fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Email Campaign Metrics -->
+            <div class="row mb-4">
+                <div class="col-lg-12">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                            <h6 class="m-0 font-weight-bold text-primary">Email Campaign Performance</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3 text-center">
+                                    <div class="mb-1">
+                                        <i class="fas fa-envelope fa-3x text-primary mb-3"></i>
+                                    </div>
+                                    <h4 class="h5 font-weight-bold"><%= emailMetrics.totalEmails %></h4>
+                                    <p class="text-muted">Emails Sent</p>
+                                </div>
+                                <div class="col-md-3 text-center">
+                                    <div class="mb-1">
+                                        <i class="fas fa-envelope-open fa-3x text-success mb-3"></i>
+                                    </div>
+                                    <h4 class="h5 font-weight-bold"><%= emailMetrics.totalOpens %></h4>
+                                    <p class="text-muted">Opens (Rate: <%= emailMetrics.openRate %>%)</p>
+                                </div>
+                                <div class="col-md-3 text-center">
+                                    <div class="mb-1">
+                                        <i class="fas fa-mouse-pointer fa-3x text-info mb-3"></i>
+                                    </div>
+                                    <h4 class="h5 font-weight-bold"><%= emailMetrics.totalClicks %></h4>
+                                    <p class="text-muted">Clicks (CTR: <%= emailMetrics.clickRate %>%)</p>
+                                </div>
+                                <div class="col-md-3 text-center">
+                                    <div class="mb-1">
+                                        <i class="fas fa-exchange-alt fa-3x text-warning mb-3"></i>
+                                    </div>
+                                    <h4 class="h5 font-weight-bold"><%= emailMetrics.conversionCount %></h4>
+                                    <p class="text-muted">Conversions (<%= emailMetrics.conversionRate %>%)</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lead Distribution Charts -->
+            <div class="row mb-4">
+                <div class="col-lg-6">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Leads by Score</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-pie pt-4 pb-2">
+                                <canvas id="leadsByScoreChart"></canvas>
+                            </div>
+                            <div class="mt-4 text-center small">
+                                <span class="mr-2">
+                                    <i class="fas fa-circle text-danger"></i> Low (0-30)
+                                </span>
+                                <span class="mr-2">
+                                    <i class="fas fa-circle text-warning"></i> Medium (31-60)
+                                </span>
+                                <span class="mr-2">
+                                    <i class="fas fa-circle text-info"></i> High (61-80)
+                                </span>
+                                <span class="mr-2">
+                                    <i class="fas fa-circle text-success"></i> Very High (81-100)
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Leads by Status</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-pie pt-4 pb-2">
+                                <canvas id="leadsByStatusChart"></canvas>
+                            </div>
+                            <div class="mt-4 text-center small">
+                                <span class="mr-2">
+                                    <i class="fas fa-circle text-primary"></i> New
+                                </span>
+                                <span class="mr-2">
+                                    <i class="fas fa-circle text-info"></i> Contacted
+                                </span>
+                                <span class="mr-2">
+                                    <i class="fas fa-circle text-warning"></i> Qualified
+                                </span>
+                                <span class="mr-2">
+                                    <i class="fas fa-circle text-success"></i> Converted
+                                </span>
+                                <span class="mr-2">
+                                    <i class="fas fa-circle text-danger"></i> Lost
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Behavior Analysis Summary -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Lead Behavior Analysis Summary</h6>
+                    <div class="dropdown no-arrow">
+                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+                            <div class="dropdown-header">Export Options:</div>
+                            <a class="dropdown-item" href="/admin/lead-summary/export?format=csv">Export as CSV</a>
+                            <a class="dropdown-item" href="/admin/lead-summary/export?format=pdf">Export as PDF</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Interest Level</th>
+                                    <th>Lead Count</th>
+                                    <th>Avg. Score</th>
+                                    <th>Key Behavior Patterns</th>
+                                    <th>Recommended Actions</th>
+                                    <th>Email Open Rate</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% behaviorSummary.forEach(category => { %>
+                                    <tr>
+                                        <td>
+                                            <span class="badge bg-<%= 
+                                                category.interestLevel === 'very_high' ? 'success' : 
+                                                category.interestLevel === 'high' ? 'primary' : 
+                                                category.interestLevel === 'medium' ? 'info' : 
+                                                category.interestLevel === 'low' ? 'warning' : 'danger' 
+                                            %> p-2">
+                                                <%= category.interestLevel.replace('_', ' ').toUpperCase() %>
+                                            </span>
+                                        </td>
+                                        <td><%= category.count %></td>
+                                        <td><%= category.averageScore %></td>
+                                        <td>
+                                            <ul class="mb-0 list-unstyled">
+                                                <% category.commonPatterns.forEach(pattern => { %>
+                                                    <li><i class="fas fa-check-circle text-info me-1"></i> <%= pattern %></li>
+                                                <% }); %>
+                                            </ul>
+                                        </td>
+                                        <td>
+                                            <ul class="mb-0 list-unstyled">
+                                                <% category.recommendedActions.forEach(action => { %>
+                                                    <li><i class="fas fa-lightbulb text-warning me-1"></i> <%= action %></li>
+                                                <% }); %>
+                                            </ul>
+                                        </td>
+                                        <td>
+                                            <div class="progress" style="height: 20px;">
+                                                <div class="progress-bar bg-success" role="progressbar" 
+                                                    style="width: <%= category.emailOpenRate %>%" 
+                                                    aria-valuenow="<%= category.emailOpenRate %>" aria-valuemin="0" aria-valuemax="100">
+                                                    <%= category.emailOpenRate %>%
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Lead Activity -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Recent Email Interactions</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>User</th>
+                                    <th>Email Sent</th>
+                                    <th>Opened</th>
+                                    <th>Open Count</th>
+                                    <th>Clicks</th>
+                                    <th>Lead Score</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% recentEmails.forEach(email => { %>
+                                    <tr>
+                                        <td><%= email.userName %></td>
+                                        <td><%= new Date(email.sentDate).toLocaleString() %></td>
+                                        <td>
+                                            <% if (email.opened) { %>
+                                                <span class="text-success"><i class="fas fa-check-circle"></i> Yes</span>
+                                                <small class="d-block text-muted">First: <%= new Date(email.firstOpenDate).toLocaleString() %></small>
+                                            <% } else { %>
+                                                <span class="text-danger"><i class="fas fa-times-circle"></i> No</span>
+                                            <% } %>
+                                        </td>
+                                        <td><%= email.openCount %></td>
+                                        <td><%= email.clickCount %></td>
+                                        <td>
+                                            <div class="progress" style="height: 20px;">
+                                                <div class="progress-bar <%= 
+                                                    email.leadScore >= 80 ? 'bg-success' : 
+                                                    email.leadScore >= 60 ? 'bg-info' : 
+                                                    email.leadScore >= 40 ? 'bg-primary' : 
+                                                    email.leadScore >= 20 ? 'bg-warning' : 'bg-danger' 
+                                                %>" role="progressbar" 
+                                                    style="width: <%= email.leadScore %>%" 
+                                                    aria-valuenow="<%= email.leadScore %>" aria-valuemin="0" aria-valuemax="100">
+                                                    <%= email.leadScore %>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <a href="/admin/user-activity/<%= email.userId %>" class="btn btn-sm btn-info">
+                                                <i class="fas fa-user me-1"></i> View User
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Email Campaign Modal -->
+<div class="modal fade" id="emailCampaignModal" tabindex="-1" aria-labelledby="emailCampaignModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="emailCampaignModalLabel">Create Email Campaign</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="/admin/email-campaigns" method="POST">
+                    <div class="mb-3">
+                        <label for="campaignName" class="form-label">Campaign Name</label>
+                        <input type="text" class="form-control" id="campaignName" name="campaignName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="targetLeads" class="form-label">Target Leads</label>
+                        <select class="form-select" id="targetLeads" name="targetLeads" required>
+                            <option value="all">All Leads</option>
+                            <option value="high">High Potential (Score >= 70)</option>
+                            <option value="medium">Medium Potential (Score 40-69)</option>
+                            <option value="low">Low Potential (Score < 40)</option>
+                            <option value="custom">Custom Filter</option>
+                        </select>
+                    </div>
+                    <div class="mb-3 d-none" id="customFilterOptions">
+                        <label class="form-label">Custom Filters</label>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="minScore" class="form-label">Min Score</label>
+                                <input type="number" class="form-control" id="minScore" name="minScore" min="0" max="100">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="maxScore" class="form-label">Max Score</label>
+                                <input type="number" class="form-control" id="maxScore" name="maxScore" min="0" max="100">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="leadStatus" class="form-label">Lead Status</label>
+                                <select class="form-select" id="leadStatus" name="leadStatus">
+                                    <option value="">Any</option>
+                                    <option value="new">New</option>
+                                    <option value="contacted">Contacted</option>
+                                    <option value="qualified">Qualified</option>
+                                    <option value="proposal">Proposal</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="interestLevel" class="form-label">Interest Level</label>
+                                <select class="form-select" id="interestLevel" name="interestLevel">
+                                    <option value="">Any</option>
+                                    <option value="very_low">Very Low</option>
+                                    <option value="low">Low</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="high">High</option>
+                                    <option value="very_high">Very High</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="emailSubject" class="form-label">Email Subject</label>
+                        <input type="text" class="form-control" id="emailSubject" name="emailSubject" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="emailContent" class="form-label">Email Content</label>
+                        <textarea class="form-control" id="emailContent" name="emailContent" rows="10" required></textarea>
+                        <small class="text-muted">Use {{name}} to personalize with the recipient's name.</small>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="includeTracking" name="includeTracking" checked>
+                        <label class="form-check-label" for="includeTracking">
+                            Include email tracking
+                        </label>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="scheduleEmail" name="scheduleEmail">
+                        <label class="form-check-label" for="scheduleEmail">
+                            Schedule for later
+                        </label>
+                    </div>
+                    <div class="mb-3 d-none" id="scheduleOptions">
+                        <label for="scheduledDate" class="form-label">Schedule Date & Time</label>
+                        <input type="datetime-local" class="form-control" id="scheduledDate" name="scheduledDate">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Send Campaign</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize charts
+        const leadsByScoreData = {
+            labels: ['Low (0-30)', 'Medium (31-60)', 'High (61-80)', 'Very High (81-100)'],
+            datasets: [{
+                data: [<%= scoreDist.low %>, <%= scoreDist.medium %>, <%= scoreDist.high %>, <%= scoreDist.veryHigh %>],
+                backgroundColor: ['#dc3545', '#ffc107', '#17a2b8', '#28a745'],
+                hoverBackgroundColor: ['#bd2130', '#e0a800', '#138496', '#218838'],
+                hoverBorderColor: "rgba(234, 236, 244, 1)"
+            }]
+        };
+        
+        const leadsByStatusData = {
+            labels: ['New', 'Contacted', 'Qualified', 'Proposal', 'Converted', 'Lost'],
+            datasets: [{
+                data: [
+                    <%= statusDist.new %>, 
+                    <%= statusDist.contacted %>, 
+                    <%= statusDist.qualified %>, 
+                    <%= statusDist.proposal %>, 
+                    <%= statusDist.converted %>, 
+                    <%= statusDist.lost %>
+                ],
+                backgroundColor: ['#4e73df', '#36b9cc', '#f6c23e', '#1cc88a', '#28a745', '#dc3545'],
+                hoverBackgroundColor: ['#2e59d9', '#2c9faf', '#dda20a', '#17a673', '#218838', '#bd2130'],
+                hoverBorderColor: "rgba(234, 236, 244, 1)"
+            }]
+        };
+        
+        const chartOptions = {
+            maintainAspectRatio: false,
+            tooltips: {
+                backgroundColor: "rgb(255,255,255)",
+                bodyFontColor: "#858796",
+                borderColor: '#dddfeb',
+                borderWidth: 1,
+                xPadding: 15,
+                yPadding: 15,
+                displayColors: false,
+                caretPadding: 10
+            },
+            legend: {
+                display: false
+            },
+            cutoutPercentage: 70
+        };
+        
+        const scoreCtx = document.getElementById('leadsByScoreChart');
+        if (scoreCtx) {
+            new Chart(scoreCtx, {
+                type: 'doughnut',
+                data: leadsByScoreData,
+                options: chartOptions
+            });
+        }
+        
+        const statusCtx = document.getElementById('leadsByStatusChart');
+        if (statusCtx) {
+            new Chart(statusCtx, {
+                type: 'doughnut',
+                data: leadsByStatusData,
+                options: chartOptions
+            });
+        }
+        
+        // Handle custom filter options toggle
+        const targetLeadsSelect = document.getElementById('targetLeads');
+        const customFilterOptions = document.getElementById('customFilterOptions');
+        
+        targetLeadsSelect.addEventListener('change', function() {
+            if (this.value === 'custom') {
+                customFilterOptions.classList.remove('d-none');
+            } else {
+                customFilterOptions.classList.add('d-none');
+            }
+        });
+        
+        // Handle scheduling options toggle
+        const scheduleCheckbox = document.getElementById('scheduleEmail');
+        const scheduleOptions = document.getElementById('scheduleOptions');
+        
+        scheduleCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                scheduleOptions.classList.remove('d-none');
+            } else {
+                scheduleOptions.classList.add('d-none');
+            }
+        });
+    });
+</script>
+
+<%- include('../partials/footer') %> 

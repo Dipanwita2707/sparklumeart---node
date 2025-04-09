@@ -1,0 +1,344 @@
+<%- include('../partials/header') %>
+
+<div class="container-fluid seller-dashboard p-0">
+    <div class="row g-0">
+        <!-- Include the shared sidebar partial with the current page parameter -->
+        <% const currentPage = 'paintings-requests'; %>
+        <%- include('../partials/seller-sidebar', { currentPage }) %>
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+            <!-- Topbar -->
+            <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow-sm rounded">
+                <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle me-3">
+                    <i class="fa fa-bars"></i>
+                </button>
+                <h1 class="h3 mb-0 text-gray-800 d-none d-sm-inline-block">My Painting Requests</h1>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item dropdown no-arrow">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="me-2 d-none d-lg-inline text-gray-600 small"><%= user ? user.name : 'User' %></span>
+                            <i class="fas fa-user-circle fa-lg"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Content Row -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card shadow-sm border-0">
+                        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                            <h5 class="card-title text-primary mb-0 fw-bold">
+                                <i class="fas fa-paint-brush me-2"></i>Painting Requests
+                            </h5>
+                            <a href="/seller/paintings/add" class="btn btn-primary">
+                                <i class="fas fa-plus-circle me-1"></i>Submit New Painting
+                            </a>
+                        </div>
+                        <div class="card-body">
+                            <% if (requests.length === 0) { %>
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    You haven't submitted any painting requests yet.
+                                    <a href="/seller/paintings/add" class="alert-link">Submit your first painting</a>
+                                </div>
+                            <% } else { %>
+                                <div class="mb-4">
+                                    <ul class="nav nav-pills small" id="requestsTab" role="tablist">
+                                        <li class="nav-item" role="presentation">
+                                            <button class="nav-link active" id="all-tab" data-bs-toggle="tab" data-bs-target="#all" type="button" role="tab">
+                                                All (<%= requests.length %>)
+                                            </button>
+                                        </li>
+                                        <li class="nav-item" role="presentation">
+                                            <button class="nav-link" id="pending-tab" data-bs-toggle="tab" data-bs-target="#pending" type="button" role="tab">
+                                                Pending (<%= requests.filter(r => r.status === 'pending').length %>)
+                                            </button>
+                                        </li>
+                                        <li class="nav-item" role="presentation">
+                                            <button class="nav-link" id="approved-tab" data-bs-toggle="tab" data-bs-target="#approved" type="button" role="tab">
+                                                Approved (<%= requests.filter(r => r.status === 'approved').length %>)
+                                            </button>
+                                        </li>
+                                        <li class="nav-item" role="presentation">
+                                            <button class="nav-link" id="rejected-tab" data-bs-toggle="tab" data-bs-target="#rejected" type="button" role="tab">
+                                                Rejected (<%= requests.filter(r => r.status === 'rejected').length %>)
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
+                                
+                                <div class="tab-content" id="requestsTabContent">
+                                    <div class="tab-pane fade show active" id="all" role="tabpanel">
+                                        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                                            <% requests.forEach(request => { %>
+                                                <div class="col">
+                                                    <div class="card h-100 painting-card">
+                                                        <div class="card-img-wrapper">
+                                                            <img src="<%= request.imageUrl %>" class="card-img-top" alt="<%= request.title %>" loading="lazy">
+                                                            <div class="status-badge <%= request.status === 'pending' ? 'bg-warning' : request.status === 'approved' ? 'bg-success' : 'bg-danger' %>">
+                                                                <%= request.status.charAt(0).toUpperCase() + request.status.slice(1) %>
+                                                            </div>
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <h5 class="card-title fw-bold mb-2"><%= request.title %></h5>
+                                                            <p class="card-text description-text mb-1"><%= request.description %></p>
+                                                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                                                <span class="fw-bold text-primary">₹<%= request.price %></span>
+                                                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#paintingModal<%= request._id %>">
+                                                                    <i class="fas fa-eye me-1"></i>Details
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                        <div class="card-footer text-muted">
+                                                            <small>Submitted on <%= new Date(request.createdAt).toLocaleDateString() %></small>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <!-- Painting Details Modal -->
+                                                <div class="modal fade" id="paintingModal<%= request._id %>" tabindex="-1" aria-hidden="true">
+                                                    <div class="modal-dialog modal-lg">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title fw-bold"><%= request.title %></h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <div class="row">
+                                                                    <div class="col-md-6 mb-3 mb-md-0">
+                                                                        <img src="<%= request.imageUrl %>" class="img-fluid rounded" alt="<%= request.title %>">
+                                                                    </div>
+                                                                    <div class="col-md-6">
+                                                                        <div class="mb-3">
+                                                                            <span class="badge <%= request.status === 'pending' ? 'bg-warning' : 
+                                                                                            request.status === 'approved' ? 'bg-success' : 
+                                                                                            'bg-danger' %> mb-2">
+                                                                                <%= request.status.charAt(0).toUpperCase() + request.status.slice(1) %>
+                                                                            </span>
+                                                                            <h6 class="fw-bold mb-1">Price</h6>
+                                                                            <p>₹<%= request.price %></p>
+                                                                        </div>
+                                                                        <div class="mb-3">
+                                                                            <h6 class="fw-bold mb-1">Artist</h6>
+                                                                            <p><%= request.artistName %></p>
+                                                                        </div>
+                                                                        <div class="mb-3">
+                                                                            <h6 class="fw-bold mb-1">Created On</h6>
+                                                                            <p><%= new Date(request.createdDate).toLocaleDateString() %></p>
+                                                                        </div>
+                                                                        <div class="mb-3">
+                                                                            <h6 class="fw-bold mb-1">Description</h6>
+                                                                            <p><%= request.description %></p>
+                                                                        </div>
+                                                                        <% if (request.adminComment) { %>
+                                                                            <div class="alert alert-secondary">
+                                                                                <h6 class="fw-bold mb-1">Admin Feedback</h6>
+                                                                                <p class="mb-0"><%= request.adminComment %></p>
+                                                                            </div>
+                                                                        <% } %>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            <% }); %>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Pending Tab -->
+                                    <div class="tab-pane fade" id="pending" role="tabpanel">
+                                        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                                            <% requests.filter(r => r.status === 'pending').forEach(request => { %>
+                                                <div class="col">
+                                                    <div class="card h-100 painting-card">
+                                                        <div class="card-img-wrapper">
+                                                            <img src="<%= request.imageUrl %>" class="card-img-top" alt="<%= request.title %>" loading="lazy">
+                                                            <div class="status-badge bg-warning">Pending</div>
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <h5 class="card-title fw-bold mb-2"><%= request.title %></h5>
+                                                            <p class="card-text description-text mb-1"><%= request.description %></p>
+                                                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                                                <span class="fw-bold text-primary">₹<%= request.price %></span>
+                                                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#paintingModal<%= request._id %>">
+                                                                    <i class="fas fa-eye me-1"></i>Details
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                        <div class="card-footer text-muted">
+                                                            <small>Submitted on <%= new Date(request.createdAt).toLocaleDateString() %></small>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            <% }); %>
+                                            <% if (requests.filter(r => r.status === 'pending').length === 0) { %>
+                                                <div class="col-12">
+                                                    <div class="alert alert-info">
+                                                        <i class="fas fa-info-circle me-2"></i>
+                                                        You don't have any pending painting requests.
+                                                    </div>
+                                                </div>
+                                            <% } %>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Approved Tab -->
+                                    <div class="tab-pane fade" id="approved" role="tabpanel">
+                                        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                                            <% requests.filter(r => r.status === 'approved').forEach(request => { %>
+                                                <div class="col">
+                                                    <div class="card h-100 painting-card">
+                                                        <div class="card-img-wrapper">
+                                                            <img src="<%= request.imageUrl %>" class="card-img-top" alt="<%= request.title %>" loading="lazy">
+                                                            <div class="status-badge bg-success">Approved</div>
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <h5 class="card-title fw-bold mb-2"><%= request.title %></h5>
+                                                            <p class="card-text description-text mb-1"><%= request.description %></p>
+                                                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                                                <span class="fw-bold text-primary">₹<%= request.price %></span>
+                                                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#paintingModal<%= request._id %>">
+                                                                    <i class="fas fa-eye me-1"></i>Details
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                        <div class="card-footer text-muted">
+                                                            <small>Submitted on <%= new Date(request.createdAt).toLocaleDateString() %></small>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            <% }); %>
+                                            <% if (requests.filter(r => r.status === 'approved').length === 0) { %>
+                                                <div class="col-12">
+                                                    <div class="alert alert-info">
+                                                        <i class="fas fa-info-circle me-2"></i>
+                                                        You don't have any approved painting requests yet.
+                                                    </div>
+                                                </div>
+                                            <% } %>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Rejected Tab -->
+                                    <div class="tab-pane fade" id="rejected" role="tabpanel">
+                                        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                                            <% requests.filter(r => r.status === 'rejected').forEach(request => { %>
+                                                <div class="col">
+                                                    <div class="card h-100 painting-card">
+                                                        <div class="card-img-wrapper">
+                                                            <img src="<%= request.imageUrl %>" class="card-img-top" alt="<%= request.title %>" loading="lazy">
+                                                            <div class="status-badge bg-danger">Rejected</div>
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <h5 class="card-title fw-bold mb-2"><%= request.title %></h5>
+                                                            <p class="card-text description-text mb-1"><%= request.description %></p>
+                                                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                                                <span class="fw-bold text-primary">₹<%= request.price %></span>
+                                                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#paintingModal<%= request._id %>">
+                                                                    <i class="fas fa-eye me-1"></i>Details
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                        <div class="card-footer text-muted">
+                                                            <small>Submitted on <%= new Date(request.createdAt).toLocaleDateString() %></small>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            <% }); %>
+                                            <% if (requests.filter(r => r.status === 'rejected').length === 0) { %>
+                                                <div class="col-12">
+                                                    <div class="alert alert-info">
+                                                        <i class="fas fa-info-circle me-2"></i>
+                                                        You don't have any rejected painting requests.
+                                                    </div>
+                                                </div>
+                                            <% } %>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<style>
+.card-img-wrapper {
+    position: relative;
+    overflow: hidden;
+    height: 200px;
+}
+
+.card-img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.painting-card:hover .card-img-wrapper img {
+    transform: scale(1.05);
+}
+
+.status-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 0.25rem;
+    color: white;
+}
+
+.description-text {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-size: 0.9rem;
+}
+
+.nav-pills .nav-link {
+    color: var(--dark-color);
+    border-radius: 0.5rem;
+    padding: 0.4rem 1rem;
+    margin-right: 0.25rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.nav-pills .nav-link.active {
+    background-color: var(--primary-color);
+    color: white;
+}
+</style>
+
+<script>
+    // Toggle sidebar on small screens
+    document.addEventListener('DOMContentLoaded', function() {
+        const sidebarToggleTop = document.getElementById('sidebarToggleTop');
+        const sidebar = document.getElementById('sidebar');
+        
+        if (sidebarToggleTop) {
+            sidebarToggleTop.addEventListener('click', function() {
+                sidebar.classList.toggle('show');
+            });
+        }
+    });
+</script>
+
+<!-- Link to custom CSS -->
+<link rel="stylesheet" href="/css/seller-dashboard.css">
+
+<%- include('../partials/footer') %> 

@@ -1,0 +1,68 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run tests
+      run: npm test
+      
+    - name: Build Docker image
+      run: docker build -t app:latest .
+      
+    - name: Run Docker container
+      run: |
+        docker run -d -p 3000:3000 --name app-container app:latest
+        sleep 5
+        docker ps
+      
+    # Add this step if you have some integration tests to run against the container
+    # - name: Run integration tests
+    #   run: |
+    #     npm run integration-test
+    #     docker stop app-container
+    #     docker rm app-container
+
+  deploy:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+    
+    steps:
+    - uses: actions/checkout@v2
+    
+    # In a real-world scenario, you would add steps to:
+    # 1. Build and push the Docker image to a registry (e.g., Docker Hub, GitHub Container Registry)
+    # 2. Deploy to your Docker Swarm cluster (e.g., using SSH to connect to your manager node)
+    
+    - name: Build and push Docker image
+      run: |
+        echo "Building and pushing Docker image to registry..."
+        # Example (uncomment and modify as needed):
+        # docker build -t username/app:latest .
+        # echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+        # docker push username/app:latest
+    
+    - name: Deploy to Docker Swarm
+      run: |
+        echo "Deploying to Docker Swarm..."
+        # Example (uncomment and modify as needed):
+        # Install SSH key
+        # ssh user@swarm-manager "cd /path/to/app && docker stack deploy -c docker-compose.yml app-stack" 

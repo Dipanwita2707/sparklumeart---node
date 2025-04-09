@@ -1,0 +1,495 @@
+<%- include('../partials/header') %>
+
+<div class="container-fluid">
+    <div class="row g-0">
+        <!-- Sidebar -->
+        <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse">
+            <div class="position-sticky pt-4">
+                <div class="d-flex align-items-center justify-content-center mb-4">
+                    <i class="fas fa-user-shield fa-2x text-light me-2"></i>
+                    <h5 class="text-light mb-0">Admin Portal</h5>
+                </div>
+                
+                <div class="nav flex-column px-2">
+                    <a href="/admin/dashboard" class="nav-link text-white py-2 my-1">
+                        <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                    </a>
+                    <a href="/admin/users" class="nav-link text-white py-2 my-1">
+                        <i class="fas fa-users me-2"></i> Users
+                    </a>
+                    <a href="/admin/gallery" class="nav-link text-white py-2 my-1">
+                        <i class="fas fa-images me-2"></i> Gallery
+                    </a>
+                    <a href="/admin/requests" class="nav-link text-white py-2 my-1">
+                        <i class="fas fa-paint-brush me-2"></i> Painting Requests
+                    </a>
+                    <a href="/admin/products" class="nav-link text-white py-2 my-1">
+                        <i class="fas fa-shopping-cart me-2"></i> Products
+                    </a>
+                    <a href="/admin/orders" class="nav-link text-white py-2 my-1">
+                        <i class="fas fa-shopping-bag me-2"></i> Orders
+                    </a>
+                    <a href="/admin/psychometric-tests" class="nav-link active py-2 my-1">
+                        <i class="fas fa-brain me-2"></i> Psychometric Tests
+                    </a>
+                    <a href="/admin/leads" class="nav-link text-white py-2 my-1">
+                        <i class="fas fa-funnel-dollar me-2"></i> Lead Management
+                    </a>
+                    <a href="/admin/seller-performance" class="nav-link text-white py-2 my-1">
+                        <i class="fas fa-chart-line me-2"></i> Seller Performance
+                    </a>
+                    <a href="/admin/sellers" class="nav-link text-white py-2 my-1">
+                        <i class="fas fa-store me-2"></i> Sellers
+                    </a>
+                </div>
+            </div>
+        </nav>
+        
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-0">
+            <div class="content-wrapper p-4">
+                <!-- Indian Culture Banner -->
+                <div class="card mb-4 border-0 shadow-sm overflow-hidden">
+                    <div class="card-body p-0">
+                        <div class="bg-gradient-culture py-3 px-4">
+                            <div class="d-flex align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <div class="indian-icon-bg me-3">
+                                        <i class="fas fa-om text-white" style="font-size: 22px;"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-white mb-0">Sparklume Art</h4>
+                                        <p class="text-white-50 mb-0">Where Indian Culture Meets Modern Innovation</p>
+                                    </div>
+                                </div>
+                                <div class="ms-auto d-none d-md-block">
+                                    <div class="d-flex align-items-center">
+                                        <div class="indian-pattern me-2"></div>
+                                        <div class="indian-pattern me-2"></div>
+                                        <div class="indian-pattern"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-3 mb-4 border-bottom">
+                    <div>
+                        <h1 class="h2 mb-0">Psychometric Tests Management</h1>
+                        <p class="text-muted mb-0">Manage and track customer psychometric assessments</p>
+                    </div>
+                    <div class="btn-group">
+                        <a href="/admin/psychometric-tests" class="btn btn-outline-primary">
+                            <i class="fas fa-sync-alt me-1"></i> Refresh
+                        </a>
+                    </div>
+                </div>
+
+                <% if (locals.success_msg && success_msg !== '') { %>
+                    <div class="alert alert-success alert-dismissible fade show mb-4">
+                        <%= success_msg %>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                <% } %>
+
+                <% if (locals.error_msg && error_msg !== '') { %>
+                    <div class="alert alert-danger alert-dismissible fade show mb-4">
+                        <%= error_msg %>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                <% } %>
+
+                <!-- Reviewed Tests Section -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header py-3 d-flex justify-content-between align-items-center bg-white border-start border-info border-4">
+                        <h5 class="mb-0 text-info">
+                            <i class="fas fa-clipboard-check me-2"></i> Tests Ready for Quote
+                        </h5>
+                        <span class="badge bg-info rounded-pill">
+                            <%= testsByStatus.reviewed ? testsByStatus.reviewed.length : 0 %>
+                        </span>
+                    </div>
+                    <div class="card-body p-0">
+                        <% if (!testsByStatus.reviewed || testsByStatus.reviewed.length === 0) { %>
+                            <div class="text-center py-5">
+                                <i class="fas fa-clipboard-list fa-3x text-muted mb-3"></i>
+                                <p class="text-muted mb-0">No tests are ready for quoting at this time.</p>
+                            </div>
+                        <% } else { %>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th class="px-4 py-3">User</th>
+                                            <th class="py-3">Test Date</th>
+                                            <th class="py-3">Review Date</th>
+                                            <th class="py-3 text-end pe-4">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% testsByStatus.reviewed.forEach(test => { %>
+                                            <tr>
+                                                <td class="px-4 py-3">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="avatar-circle bg-info me-3">
+                                                            <span class="initials"><%= test.user ? test.user.name.charAt(0) : 'U' %></span>
+                                                        </div>
+                                                        <div>
+                                                            <div class="fw-medium"><%= test.user ? test.user.name : 'Unknown User' %></div>
+                                                            <small class="text-muted"><%= test.user ? test.user.email : 'N/A' %></small>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="py-3"><%= new Date(test.createdAt).toLocaleDateString() %></td>
+                                                <td class="py-3"><%= test.psychologistFeedback.submittedAt ? new Date(test.psychologistFeedback.submittedAt).toLocaleDateString() : 'N/A' %></td>
+                                                <td class="py-3 text-end pe-4">
+                                                    <a href="/admin/psychometric-test/<%= test._id %>" class="btn btn-sm btn-primary">
+                                                        <i class="fas fa-comment-dollar me-1"></i> Provide Quote
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        <% }); %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+                
+                <!-- Quoted Tests Section -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header py-3 d-flex justify-content-between align-items-center bg-white border-start border-warning border-4">
+                        <h5 class="mb-0 text-warning">
+                            <i class="fas fa-dollar-sign me-2"></i> Quoted Tests (Awaiting Payment)
+                        </h5>
+                        <span class="badge bg-warning rounded-pill text-dark">
+                            <%= testsByStatus.quoted ? testsByStatus.quoted.length : 0 %>
+                        </span>
+                    </div>
+                    <div class="card-body p-0">
+                        <% if (!testsByStatus.quoted || testsByStatus.quoted.length === 0) { %>
+                            <div class="text-center py-5">
+                                <i class="fas fa-file-invoice-dollar fa-3x text-muted mb-3"></i>
+                                <p class="text-muted mb-0">No quoted tests awaiting payment at this time.</p>
+                            </div>
+                        <% } else { %>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th class="px-4 py-3">User</th>
+                                            <th class="py-3">Quote Date</th>
+                                            <th class="py-3">Budget</th>
+                                            <th class="py-3 text-end pe-4">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% testsByStatus.quoted.forEach(test => { %>
+                                            <tr>
+                                                <td class="px-4 py-3">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="avatar-circle bg-warning me-3">
+                                                            <span class="initials"><%= test.user ? test.user.name.charAt(0) : 'U' %></span>
+                                                        </div>
+                                                        <div>
+                                                            <div class="fw-medium"><%= test.user ? test.user.name : 'Unknown User' %></div>
+                                                            <small class="text-muted"><%= test.user ? test.user.email : 'N/A' %></small>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="py-3"><%= test.adminQuote.submittedAt ? new Date(test.adminQuote.submittedAt).toLocaleDateString() : 'N/A' %></td>
+                                                <td class="py-3 fw-medium text-success">₹<%= test.adminQuote.budget.toLocaleString('en-IN', { maximumFractionDigits: 2, minimumFractionDigits: 2 }) %></td>
+                                                <td class="py-3 text-end pe-4">
+                                                    <a href="/admin/psychometric-test/<%= test._id %>" class="btn btn-sm btn-outline-primary">
+                                                        <i class="fas fa-eye me-1"></i> View Details
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        <% }); %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+                
+                <!-- Approved Orders Section -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header py-3 d-flex justify-content-between align-items-center bg-white border-start border-success border-4">
+                        <h5 class="mb-0 text-success">
+                            <i class="fas fa-check-circle me-2"></i> Approved Orders
+                        </h5>
+                        <span class="badge bg-success rounded-pill">
+                            <%= testsByStatus.approved ? testsByStatus.approved.length : 0 %>
+                        </span>
+                    </div>
+                    <div class="card-body p-0">
+                        <% if (!testsByStatus.approved || testsByStatus.approved.length === 0) { %>
+                            <div class="text-center py-5">
+                                <i class="fas fa-check-double fa-3x text-muted mb-3"></i>
+                                <p class="text-muted mb-0">No approved orders at this time.</p>
+                            </div>
+                        <% } else { %>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th class="px-4 py-3">User</th>
+                                            <th class="py-3">Approved Date</th>
+                                            <th class="py-3">Budget</th>
+                                            <th class="py-3 text-end pe-4">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% testsByStatus.approved.forEach(test => { %>
+                                            <tr>
+                                                <td class="px-4 py-3">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="avatar-circle bg-success me-3">
+                                                            <span class="initials"><%= test.user ? test.user.name.charAt(0) : 'U' %></span>
+                                                        </div>
+                                                        <div>
+                                                            <div class="fw-medium"><%= test.user ? test.user.name : 'Unknown User' %></div>
+                                                            <small class="text-muted"><%= test.user ? test.user.email : 'N/A' %></small>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="py-3"><%= test.order.approvedAt ? new Date(test.order.approvedAt).toLocaleDateString() : 'N/A' %></td>
+                                                <td class="py-3 fw-medium text-success">₹<%= test.adminQuote.budget.toLocaleString('en-IN', { maximumFractionDigits: 2, minimumFractionDigits: 2 }) %></td>
+                                                <td class="py-3 text-end pe-4">
+                                                    <a href="/admin/psychometric-test/<%= test._id %>" class="btn btn-sm btn-outline-primary me-1">
+                                                        <i class="fas fa-eye"></i> View
+                                                    </a>
+                                                    <form method="POST" action="/admin/psychometric-test/<%= test._id %>/status" class="d-inline">
+                                                        <input type="hidden" name="status" value="in_progress">
+                                                        <button type="submit" class="btn btn-sm btn-primary">
+                                                            <i class="fas fa-play me-1"></i> Start Work
+                                                        </button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        <% }); %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+                
+                <!-- In Progress Orders Section -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header py-3 d-flex justify-content-between align-items-center bg-white border-start border-primary border-4">
+                        <h5 class="mb-0 text-primary">
+                            <i class="fas fa-tasks me-2"></i> Orders In Progress
+                        </h5>
+                        <span class="badge bg-primary rounded-pill">
+                            <%= testsByStatus.inProgress ? testsByStatus.inProgress.length : 0 %>
+                        </span>
+                    </div>
+                    <div class="card-body p-0">
+                        <% if (!testsByStatus.inProgress || testsByStatus.inProgress.length === 0) { %>
+                            <div class="text-center py-5">
+                                <i class="fas fa-hourglass-half fa-3x text-muted mb-3"></i>
+                                <p class="text-muted mb-0">No orders in progress at this time.</p>
+                            </div>
+                        <% } else { %>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th class="px-4 py-3">User</th>
+                                            <th class="py-3">Started Date</th>
+                                            <th class="py-3">Budget</th>
+                                            <th class="py-3 text-end pe-4">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% testsByStatus.inProgress.forEach(test => { %>
+                                            <tr>
+                                                <td class="px-4 py-3">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="avatar-circle bg-primary me-3">
+                                                            <span class="initials"><%= test.user ? test.user.name.charAt(0) : 'U' %></span>
+                                                        </div>
+                                                        <div>
+                                                            <div class="fw-medium"><%= test.user ? test.user.name : 'Unknown User' %></div>
+                                                            <small class="text-muted"><%= test.user ? test.user.email : 'N/A' %></small>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="py-3"><%= test.order.startedAt ? new Date(test.order.startedAt).toLocaleDateString() : 'N/A' %></td>
+                                                <td class="py-3 fw-medium text-success">₹<%= test.adminQuote.budget.toLocaleString('en-IN', { maximumFractionDigits: 2, minimumFractionDigits: 2 }) %></td>
+                                                <td class="py-3 text-end pe-4">
+                                                    <a href="/admin/psychometric-test/<%= test._id %>" class="btn btn-sm btn-outline-primary me-1">
+                                                        <i class="fas fa-eye"></i> View
+                                                    </a>
+                                                    <form method="POST" action="/admin/psychometric-test/<%= test._id %>/status" class="d-inline">
+                                                        <input type="hidden" name="status" value="completed">
+                                                        <button type="submit" class="btn btn-sm btn-success">
+                                                            <i class="fas fa-check me-1"></i> Mark Complete
+                                                        </button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        <% }); %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+                
+                <!-- Completed Orders Section -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header py-3 d-flex justify-content-between align-items-center bg-white border-start border-dark border-4">
+                        <h5 class="mb-0 text-dark">
+                            <i class="fas fa-trophy me-2"></i> Completed Orders
+                        </h5>
+                        <span class="badge bg-dark rounded-pill">
+                            <%= testsByStatus.completed ? testsByStatus.completed.length : 0 %>
+                        </span>
+                    </div>
+                    <div class="card-body p-0">
+                        <% if (!testsByStatus.completed || testsByStatus.completed.length === 0) { %>
+                            <div class="text-center py-5">
+                                <i class="fas fa-clipboard-check fa-3x text-muted mb-3"></i>
+                                <p class="text-muted mb-0">No completed orders at this time.</p>
+                            </div>
+                        <% } else { %>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th class="px-4 py-3">User</th>
+                                            <th class="py-3">Completed Date</th>
+                                            <th class="py-3">Budget</th>
+                                            <th class="py-3 text-end pe-4">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% testsByStatus.completed.forEach(test => { %>
+                                            <tr>
+                                                <td class="px-4 py-3">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="avatar-circle bg-dark me-3">
+                                                            <span class="initials"><%= test.user ? test.user.name.charAt(0) : 'U' %></span>
+                                                        </div>
+                                                        <div>
+                                                            <div class="fw-medium"><%= test.user ? test.user.name : 'Unknown User' %></div>
+                                                            <small class="text-muted"><%= test.user ? test.user.email : 'N/A' %></small>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td class="py-3"><%= test.order.completedAt ? new Date(test.order.completedAt).toLocaleDateString() : 'N/A' %></td>
+                                                <td class="py-3 fw-medium text-success">₹<%= test.adminQuote.budget.toLocaleString('en-IN', { maximumFractionDigits: 2, minimumFractionDigits: 2 }) %></td>
+                                                <td class="py-3 text-end pe-4">
+                                                    <a href="/admin/psychometric-test/<%= test._id %>" class="btn btn-sm btn-outline-primary">
+                                                        <i class="fas fa-eye me-1"></i> View Details
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        <% }); %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+                
+                <!-- Footer -->
+                <footer class="mt-5 pb-3 text-center">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <div class="indian-pattern-sm me-3"></div>
+                        <p class="text-muted mb-0">© 2023 Sparklume Art | Where Indian Culture Meets Modern Innovation</p>
+                        <div class="indian-pattern-sm ms-3"></div>
+                    </div>
+                </footer>
+            </div>
+        </main>
+    </div>
+</div>
+
+<style>
+.content-wrapper {
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+.bg-gradient-culture {
+    background: linear-gradient(90deg, #FF9933 0%, #138808 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.indian-icon-bg {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.indian-pattern {
+    width: 40px;
+    height: 40px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cpath fill='%23ffffff' fill-opacity='0.2' d='M20 0c11.046 0 20 8.954 20 20s-8.954 20-20 20S0 31.046 0 20 8.954 0 20 0zm0 5c-8.284 0-15 6.716-15 15 0 8.284 6.716 15 15 15 8.284 0 15-6.716 15-15 0-8.284-6.716-15-15-15zm0 5c5.523 0 10 4.477 10 10s-4.477 10-10 10-10-4.477-10-10 4.477-10 10-10zm0 5a5 5 0 100 10 5 5 0 000-10z'/%3E%3C/svg%3E");
+}
+
+.indian-pattern-sm {
+    width: 24px;
+    height: 24px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 40 40'%3E%3Cpath fill='%23cccccc' fill-opacity='0.5' d='M20 0c11.046 0 20 8.954 20 20s-8.954 20-20 20S0 31.046 0 20 8.954 0 20 0zm0 5c-8.284 0-15 6.716-15 15 0 8.284 6.716 15 15 15 8.284 0 15-6.716 15-15 0-8.284-6.716-15-15-15zm0 5c5.523 0 10 4.477 10 10s-4.477 10-10 10-10-4.477-10-10 4.477-10 10-10zm0 5a5 5 0 100 10 5 5 0 000-10z'/%3E%3C/svg%3E");
+}
+
+.avatar-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.initials {
+    color: white;
+    font-weight: 500;
+    font-size: 18px;
+}
+
+.sidebar {
+    height: 100vh;
+    position: sticky;
+    top: 0;
+}
+
+.sidebar .nav-link {
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.75);
+    border-left: 3px solid transparent;
+    border-radius: 0;
+    transition: all 0.2s ease;
+}
+
+.sidebar .nav-link:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar .nav-link.active {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.1);
+    border-left-color: #FF9933;
+}
+
+@media (max-width: 767.98px) {
+    .sidebar {
+        height: auto;
+        position: relative;
+    }
+}
+</style>
+
+<%- include('../partials/footer') %> 

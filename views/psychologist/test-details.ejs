@@ -1,0 +1,320 @@
+<%- include('../partials/header') %>
+<%- include('../partials/psychologist-navbar') %>
+
+<div class="container mt-4">
+    <div class="row mb-3">
+        <div class="col">
+            <a href="/psychologist/dashboard" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Left Column - Test Information -->
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">User Information</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Name:</strong> <%= test.user.name %></p>
+                    <p><strong>Email:</strong> <%= test.user.email %></p>
+                    <p><strong>Test Date:</strong> <%= new Date(test.createdAt).toLocaleDateString() %></p>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">Test Status</h5>
+                </div>
+                <div class="card-body">
+                    <p>
+                        <strong>Status:</strong> 
+                        <% if (test.status === 'test_taken') { %>
+                            <span class="badge bg-warning text-dark">Test Taken</span>
+                        <% } else if (test.status === 'paid') { %>
+                            <span class="badge bg-info">Awaiting Review</span>
+                        <% } else if (test.status === 'under_review') { %>
+                            <span class="badge bg-primary">Under Review</span>
+                        <% } else if (test.status === 'reviewed') { %>
+                            <span class="badge bg-success">Reviewed</span>
+                        <% } %>
+                    </p>
+                    <p><strong>Payment ID:</strong> <%= test.paymentId || 'Not paid yet' %></p>
+                </div>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Test Results</h5>
+                </div>
+                <div class="card-body">
+                    <p>
+                        <strong>Color Preference:</strong> 
+                        <span class="badge bg-info"><%= test.colorPreference %></span>
+                    </p>
+                    <p>
+                        <strong>Style Preference:</strong> 
+                        <span class="badge bg-secondary"><%= test.stylePreference %></span>
+                    </p>
+                    <p><strong>Personality Traits:</strong></p>
+                    <div>
+                        <% test.personalityTraits.forEach(trait => { %>
+                            <span class="badge bg-primary me-1 mb-1"><%= trait %></span>
+                        <% }) %>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column - Test Answers -->
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Test Answers</h5>
+                </div>
+                <div class="card-body">
+                    <div class="accordion" id="accordionAnswers">
+                        <!-- Color Questions -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingColor">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseColor" aria-expanded="true" aria-controls="collapseColor">
+                                    Color Preferences
+                                </button>
+                            </h2>
+                            <div id="collapseColor" class="accordion-collapse collapse show" aria-labelledby="headingColor" data-bs-parent="#accordionAnswers">
+                                <div class="accordion-body">
+                                    <table class="table">
+                                        <tbody>
+                                            <% questions.color.forEach(q => { %>
+                                                <tr>
+                                                    <td width="70%">
+                                                        <strong><%= q.id %>. <%= q.text %></strong>
+                                                    </td>
+                                                    <td>
+                                                        <% if (test._doc && test._doc.answersMap) { %>
+                                                            <% const answerCode = test._doc.answersMap[`q${q.id}`]; %>
+                                                            <% if (answerCode && q.options && q.options[answerCode]) { %>
+                                                                <strong><%= answerCode %>:</strong> <%= q.options[answerCode] %>
+                                                            <% } else { %>
+                                                                <%= answerCode %>
+                                                            <% } %>
+                                                        <% } else if (typeof test.answers === 'object' && !Array.isArray(test.answers)) { %>
+                                                            <% const answerCode = test.answers[`q${q.id}`]; %>
+                                                            <% if (answerCode && q.options && q.options[answerCode]) { %>
+                                                                <strong><%= answerCode %>:</strong> <%= q.options[answerCode] %>
+                                                            <% } else { %>
+                                                                <%= answerCode %>
+                                                            <% } %>
+                                                        <% } else if (Array.isArray(test.answers)) { %>
+                                                            <% const answer = test.answers.find(a => a.questionId === q.id); %>
+                                                            <% if (answer && answer.answer && q.options && q.options[answer.answer]) { %>
+                                                                <strong><%= answer.answer %>:</strong> <%= q.options[answer.answer] %>
+                                                            <% } else { %>
+                                                                <%= answer ? answer.answer : 'No answer' %>
+                                                            <% } %>
+                                                        <% } else { %>
+                                                            No answer available
+                                                        <% } %>
+                                                    </td>
+                                                </tr>
+                                            <% }) %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Style Questions -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingStyle">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseStyle" aria-expanded="false" aria-controls="collapseStyle">
+                                    Style Preferences
+                                </button>
+                            </h2>
+                            <div id="collapseStyle" class="accordion-collapse collapse" aria-labelledby="headingStyle" data-bs-parent="#accordionAnswers">
+                                <div class="accordion-body">
+                                    <table class="table">
+                                        <tbody>
+                                            <% questions.style.forEach(q => { %>
+                                                <tr>
+                                                    <td width="70%">
+                                                        <strong><%= q.id %>. <%= q.text %></strong>
+                                                    </td>
+                                                    <td>
+                                                        <% if (test._doc && test._doc.answersMap) { %>
+                                                            <% const answerCode = test._doc.answersMap[`q${q.id}`]; %>
+                                                            <% if (answerCode && q.options && q.options[answerCode]) { %>
+                                                                <strong><%= answerCode %>:</strong> <%= q.options[answerCode] %>
+                                                            <% } else { %>
+                                                                <%= answerCode %>
+                                                            <% } %>
+                                                        <% } else if (typeof test.answers === 'object' && !Array.isArray(test.answers)) { %>
+                                                            <% const answerCode = test.answers[`q${q.id}`]; %>
+                                                            <% if (answerCode && q.options && q.options[answerCode]) { %>
+                                                                <strong><%= answerCode %>:</strong> <%= q.options[answerCode] %>
+                                                            <% } else { %>
+                                                                <%= answerCode %>
+                                                            <% } %>
+                                                        <% } else if (Array.isArray(test.answers)) { %>
+                                                            <% const answer = test.answers.find(a => a.questionId === q.id); %>
+                                                            <% if (answer && answer.answer && q.options && q.options[answer.answer]) { %>
+                                                                <strong><%= answer.answer %>:</strong> <%= q.options[answer.answer] %>
+                                                            <% } else { %>
+                                                                <%= answer ? answer.answer : 'No answer' %>
+                                                            <% } %>
+                                                        <% } else { %>
+                                                            No answer available
+                                                        <% } %>
+                                                    </td>
+                                                </tr>
+                                            <% }) %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Personality Questions -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingPersonality">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePersonality" aria-expanded="false" aria-controls="collapsePersonality">
+                                    Personality Questions
+                                </button>
+                            </h2>
+                            <div id="collapsePersonality" class="accordion-collapse collapse" aria-labelledby="headingPersonality" data-bs-parent="#accordionAnswers">
+                                <div class="accordion-body">
+                                    <table class="table">
+                                        <tbody>
+                                            <% questions.personality.forEach(q => { %>
+                                                <tr>
+                                                    <td width="70%">
+                                                        <strong><%= q.id %>. <%= q.text %></strong>
+                                                    </td>
+                                                    <td>
+                                                        <% if (test._doc && test._doc.answersMap) { %>
+                                                            <% const answerCode = test._doc.answersMap[`q${q.id}`]; %>
+                                                            <% if (answerCode && q.options && q.options[answerCode]) { %>
+                                                                <strong><%= answerCode %>:</strong> <%= q.options[answerCode] %>
+                                                            <% } else { %>
+                                                                <%= answerCode %>
+                                                            <% } %>
+                                                        <% } else if (typeof test.answers === 'object' && !Array.isArray(test.answers)) { %>
+                                                            <% const answerCode = test.answers[`q${q.id}`]; %>
+                                                            <% if (answerCode && q.options && q.options[answerCode]) { %>
+                                                                <strong><%= answerCode %>:</strong> <%= q.options[answerCode] %>
+                                                            <% } else { %>
+                                                                <%= answerCode %>
+                                                            <% } %>
+                                                        <% } else if (Array.isArray(test.answers)) { %>
+                                                            <% const answer = test.answers.find(a => a.questionId === q.id); %>
+                                                            <% if (answer && answer.answer && q.options && q.options[answer.answer]) { %>
+                                                                <strong><%= answer.answer %>:</strong> <%= q.options[answer.answer] %>
+                                                            <% } else { %>
+                                                                <%= answer ? answer.answer : 'No answer' %>
+                                                            <% } %>
+                                                        <% } else { %>
+                                                            No answer available
+                                                        <% } %>
+                                                    </td>
+                                                </tr>
+                                            <% }) %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feedback Section -->
+            <div class="card mt-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Psychologist Feedback</h5>
+                </div>
+                <div class="card-body">
+                    <% if (test.psychologistFeedback && test.psychologistFeedback.text) { %>
+                        <div class="alert alert-success">
+                            <p><strong>Submitted On:</strong> <%= new Date(test.psychologistFeedback.submittedAt).toLocaleDateString() %></p>
+                            <hr>
+                            <p><%= test.psychologistFeedback.text %></p>
+                        </div>
+                    <% } else if (test.status === 'paid' || test.status === 'under_review') { %>
+                        <form action="/psychologist/test/<%= test._id %>/feedback" method="POST">
+                            <div class="mb-3">
+                                <label for="feedback" class="form-label">Your Professional Assessment</label>
+                                <textarea class="form-control" id="feedback" name="feedback" rows="8" placeholder="Enter your professional assessment of the user's preferences and recommended home decor styles..." required></textarea>
+                                <div class="form-text">
+                                    Based on the test results, provide a professional assessment of the user's preferences and recommendations for home decor styles.
+                                </div>
+                            </div>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-paper-plane me-1"></i> Submit Feedback
+                                </button>
+                            </div>
+                        </form>
+                    <% } else { %>
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            User hasn't completed payment. Feedback can be provided once payment is made.
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+
+            <!-- Admin Quote (if available) -->
+            <% if (test.adminQuote && (test.adminQuote.budget || test.adminQuote.description)) { %>
+                <div class="card mt-4">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">Admin Quote</h5>
+                    </div>
+                    <div class="card-body">
+                        <% if (test.adminQuote.budget) { %>
+                            <p><strong>Budget:</strong> ₹<%= test.adminQuote.budget %></p>
+                        <% } %>
+                        <% if (test.adminQuote.description) { %>
+                            <p><strong>Description:</strong> <%= test.adminQuote.description %></p>
+                        <% } %>
+                    </div>
+                </div>
+            <% } %>
+
+            <!-- Order Details (if available) -->
+            <% if ((test.order && test.order.approved) || test.status === 'completed') { %>
+                <div class="card mt-4">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0">Order Details</h5>
+                    </div>
+                    <div class="card-body">
+                        <% if (test.order && test.order.contactNumber) { %>
+                            <p><strong>Mobile Number:</strong> <%= test.order.contactNumber %></p>
+                        <% } %>
+                        <% if (test.order && test.order.address) { %>
+                            <p><strong>Address:</strong> <%= test.order.address %></p>
+                        <% } %>
+                        <% if (test.order && test.order.paymentId) { %>
+                            <p><strong>Final Payment ID:</strong> <%= test.order.paymentId %></p>
+                        <% } %>
+                        <% if (test.order && test.order.status) { %>
+                            <p>
+                                <strong>Order Status:</strong>
+                                <% if (test.order.status === 'pending') { %>
+                                    <span class="badge bg-warning text-dark">Pending</span>
+                                <% } else if (test.order.status === 'in_progress') { %>
+                                    <span class="badge bg-primary">In Progress</span>
+                                <% } else if (test.order.status === 'completed') { %>
+                                    <span class="badge bg-success">Completed</span>
+                                <% } %>
+                            </p>
+                        <% } %>
+                    </div>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %> 

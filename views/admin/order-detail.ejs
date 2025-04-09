@@ -1,0 +1,194 @@
+<%- include('../partials/header') %>
+<%- include('../partials/admin-navbar') %>
+
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar -->
+    <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse">
+      <div class="position-sticky pt-3">
+        <div class="list-group mb-3">
+          <div class="list-group-item active bg-primary">Navigation</div>
+          <a href="/admin/dashboard" class="list-group-item list-group-item-action"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a>
+          <a href="/admin/users" class="list-group-item list-group-item-action"><i class="fas fa-users me-2"></i> Users</a>
+          <a href="/admin/gallery" class="list-group-item list-group-item-action"><i class="fas fa-images me-2"></i> Gallery</a>
+          <a href="/admin/requests" class="list-group-item list-group-item-action"><i class="fas fa-paint-brush me-2"></i> Painting Requests</a>
+          <a href="/admin/products" class="list-group-item list-group-item-action"><i class="fas fa-shopping-cart me-2"></i> Products</a>
+          <a href="/admin/orders" class="list-group-item list-group-item-action active"><i class="fas fa-shopping-bag me-2"></i> Orders</a>
+          <a href="/admin/sellers" class="list-group-item list-group-item-action"><i class="fas fa-store me-2"></i> Sellers</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main content -->
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">Order Details <small class="text-muted">#<%= order._id.toString().slice(-6) %></small></h1>
+        <a href="/admin/orders" class="btn btn-outline-secondary">
+          <i class="fas fa-arrow-left me-1"></i> Back to Orders
+        </a>
+      </div>
+
+      <!-- Alert messages -->
+      <% if (messages.success) { %>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+          <%= messages.success %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      <% } %>
+      <% if (messages.error) { %>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          <%= messages.error %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      <% } %>
+
+      <div class="row">
+        <!-- Order Info Column -->
+        <div class="col-md-4">
+          <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+              <i class="fas fa-info-circle me-1"></i> Order Information
+            </div>
+            <div class="card-body">
+              <p><strong>Order ID:</strong> #<%= order._id.toString().slice(-6) %></p>
+              <p><strong>Date:</strong> <%= new Date(order.createdAt).toLocaleString() %></p>
+              <p>
+                <strong>Payment Status:</strong>
+                <% if (order.paymentStatus === 'completed') { %>
+                  <span class="badge bg-success">Paid</span>
+                <% } else if (order.paymentStatus === 'pending') { %>
+                  <span class="badge bg-warning text-dark">Pending</span>
+                <% } else { %>
+                  <span class="badge bg-danger">Failed</span>
+                <% } %>
+              </p>
+              <p>
+                <strong>Order Status:</strong>
+                <% if (order.orderStatus === 'processing') { %>
+                  <span class="badge bg-warning text-dark">Processing</span>
+                <% } else if (order.orderStatus === 'approved') { %>
+                  <span class="badge bg-info">Approved</span>
+                <% } else if (order.orderStatus === 'shipped') { %>
+                  <span class="badge bg-primary">Shipped</span>
+                <% } else if (order.orderStatus === 'in_transit') { %>
+                  <span class="badge bg-primary">In Transit</span>
+                <% } else if (order.orderStatus === 'delivered') { %>
+                  <span class="badge bg-success">Delivered</span>
+                <% } else if (order.orderStatus === 'cancelled') { %>
+                  <span class="badge bg-danger">Cancelled</span>
+                <% } %>
+              </p>
+              <p><strong>Total Amount:</strong> ₹<%= order.totalAmount.toFixed(2) %></p>
+              <p><strong>Payment ID:</strong> <%= order.paymentId || 'N/A' %></p>
+            </div>
+          </div>
+
+          <div class="card mb-4">
+            <div class="card-header bg-info text-white">
+              <i class="fas fa-user me-1"></i> Customer Information
+            </div>
+            <div class="card-body">
+              <p><strong>Name:</strong> <%= order.user ? order.user.name : 'Unknown' %></p>
+              <p><strong>Email:</strong> <%= order.user ? order.user.email : 'Unknown' %></p>
+              <p><strong>Address:</strong> <%= order.shippingAddress || 'N/A' %></p>
+              <p><strong>Phone:</strong> <%= order.phoneNumber || 'N/A' %></p>
+            </div>
+          </div>
+
+          <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+              <i class="fas fa-edit me-1"></i> Update Order Status
+            </div>
+            <div class="card-body">
+              <form action="/admin/orders/<%= order._id %>/status" method="POST">
+                <div class="mb-3">
+                  <label for="status" class="form-label">Status</label>
+                  <select class="form-select" id="status" name="status" required>
+                    <option value="processing" <%= order.orderStatus === 'processing' ? 'selected' : '' %>>Processing</option>
+                    <option value="approved" <%= order.orderStatus === 'approved' ? 'selected' : '' %>>Approved</option>
+                    <option value="shipped" <%= order.orderStatus === 'shipped' ? 'selected' : '' %>>Shipped</option>
+                    <option value="in_transit" <%= order.orderStatus === 'in_transit' ? 'selected' : '' %>>In Transit</option>
+                    <option value="delivered" <%= order.orderStatus === 'delivered' ? 'selected' : '' %>>Delivered</option>
+                    <option value="cancelled" <%= order.orderStatus === 'cancelled' ? 'selected' : '' %>>Cancelled</option>
+                  </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Update Status</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Order Items Column -->
+        <div class="col-md-8">
+          <div class="card mb-4">
+            <div class="card-header bg-dark text-white">
+              <i class="fas fa-shopping-cart me-1"></i> Order Items
+            </div>
+            <div class="card-body">
+              <% if (!order.items || order.items.length === 0) { %>
+                <div class="alert alert-info">No items in this order</div>
+              <% } else { %>
+                <div class="table-responsive">
+                  <table class="table table-striped">
+                    <thead>
+                      <tr>
+                        <th>Product</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Subtotal</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% order.items.forEach(item => { %>
+                        <tr>
+                          <td>
+                            <div class="d-flex align-items-center">
+                              <% if (item.product && item.product.image) { %>
+                                <img src="<%= item.product.image %>" alt="<%= item.product.title %>" class="img-thumbnail me-2" style="width: 50px;">
+                              <% } %>
+                              <div>
+                                <h6 class="mb-0"><%= item.product ? item.product.title : (item.title || 'Product not found') %></h6>
+                                <small class="text-muted">
+                                  <%= item.product && item.product.artistName ? `by ${item.product.artistName}` : (item.artistName ? `by ${item.artistName}` : '') %>
+                                </small>
+                              </div>
+                            </div>
+                          </td>
+                          <td>₹<%= item.price ? item.price.toFixed(2) : 'N/A' %></td>
+                          <td><%= item.quantity %></td>
+                          <td>₹<%= (item.price * item.quantity).toFixed(2) %></td>
+                        </tr>
+                      <% }); %>
+                    </tbody>
+                    <tfoot>
+                      <tr>
+                        <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                        <td><strong>₹<%= order.totalAmount.toFixed(2) %></strong></td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+              <% } %>
+            </div>
+          </div>
+
+          <% if (order.orderStatus === 'shipped' || order.orderStatus === 'in_transit' || order.orderStatus === 'delivered') { %>
+            <div class="card mb-4">
+              <div class="card-header bg-primary text-white">
+                <i class="fas fa-truck me-1"></i> Shipping Information
+              </div>
+              <div class="card-body">
+                <p><strong>Tracking Number:</strong> <%= order.trackingNumber || 'Not available' %></p>
+                <p><strong>Shipping Date:</strong> <%= order.shippingDate ? new Date(order.shippingDate).toLocaleDateString() : 'Not available' %></p>
+                <p><strong>Estimated Delivery:</strong> <%= order.estimatedDeliveryDate ? new Date(order.estimatedDeliveryDate).toLocaleDateString() : 'Not available' %></p>
+                <p><strong>Shipping Method:</strong> <%= order.shippingMethod || 'Standard Shipping' %></p>
+              </div>
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<%- include('../partials/footer') %> 

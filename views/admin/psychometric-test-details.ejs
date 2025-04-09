@@ -1,0 +1,792 @@
+<%- include('../partials/header') %>
+<%- include('../partials/admin-navbar') %>
+
+<div class="container-fluid px-2 py-2 bg-light">
+  <div class="row g-2">
+    <!-- Sidebar -->
+    <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse">
+      <div class="position-sticky pt-2">
+        <div class="list-group mb-2">
+          <div class="list-group-item active bg-primary py-2">Navigation</div>
+          <a href="/admin/dashboard" class="list-group-item list-group-item-action py-2"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a>
+          <a href="/admin/users" class="list-group-item list-group-item-action py-2"><i class="fas fa-users me-2"></i> Users</a>
+          <a href="/admin/gallery" class="list-group-item list-group-item-action py-2"><i class="fas fa-images me-2"></i> Gallery</a>
+          <a href="/admin/requests" class="list-group-item list-group-item-action py-2"><i class="fas fa-paint-brush me-2"></i> Painting Requests</a>
+          <a href="/admin/products" class="list-group-item list-group-item-action py-2"><i class="fas fa-shopping-cart me-2"></i> Products</a>
+          <a href="/admin/orders" class="list-group-item list-group-item-action py-2"><i class="fas fa-shopping-bag me-2"></i> Orders</a>
+          <a href="/admin/psychometric-tests" class="list-group-item list-group-item-action active py-2"><i class="fas fa-brain me-2"></i> Psychometric Tests</a>
+          <a href="/admin/sellers" class="list-group-item list-group-item-action py-2"><i class="fas fa-store me-2"></i> Sellers</a>
+        </div>
+      </div>
+    </nav>
+    
+    <!-- Main content -->
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-2">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <div>
+          <h3 class="mb-0">Psychometric Test Details</h3>
+          <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-0 small">
+              <li class="breadcrumb-item"><a href="/admin/dashboard">Dashboard</a></li>
+              <li class="breadcrumb-item"><a href="/admin/psychometric-tests">Tests</a></li>
+              <li class="breadcrumb-item active" aria-current="page">Test Details</li>
+            </ol>
+          </nav>
+        </div>
+        <a href="/admin/psychometric-tests" class="btn btn-sm btn-outline-secondary">
+          <i class="fas fa-arrow-left me-1"></i>Back to Tests
+        </a>
+      </div>
+
+      <% if (locals.success_msg && success_msg !== '') { %>
+        <div class="alert alert-success alert-dismissible fade show py-2 mb-2" role="alert">
+          <i class="fas fa-check-circle me-1"></i><%= success_msg %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      <% } %>
+
+      <% if (locals.error_msg && error_msg !== '') { %>
+        <div class="alert alert-danger alert-dismissible fade show py-2 mb-2" role="alert">
+          <i class="fas fa-exclamation-circle me-1"></i><%= error_msg %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      <% } %>
+
+      <div class="row g-2">
+        <!-- Left Column - User Info and Test Details -->
+        <div class="col-lg-4">
+          <!-- User Information Card -->
+          <div class="card border-0 shadow-sm mb-2">
+            <div class="card-header bg-primary bg-gradient text-white py-2">
+              <div class="d-flex align-items-center">
+                <i class="fas fa-user-circle me-2"></i>
+                <h5 class="mb-0">User Information</h5>
+              </div>
+            </div>
+            <div class="card-body p-2">
+              <div class="row g-2">
+                <div class="col-md-6">
+                  <div class="d-flex flex-column mb-1">
+                    <span class="text-muted small fw-bold">Name</span>
+                    <span><%= test.user.name %></span>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="d-flex flex-column mb-1">
+                    <span class="text-muted small fw-bold">Email</span>
+                    <span><%= test.user.email %></span>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="d-flex flex-column mb-1">
+                    <span class="text-muted small fw-bold">Test Date</span>
+                    <span><%= new Date(test.createdAt).toLocaleDateString() %></span>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="d-flex flex-column mb-1">
+                    <span class="text-muted small fw-bold">Test ID</span>
+                    <span class="text-truncate small"><%= test._id %></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Test Results Card -->
+          <div class="card border-0 shadow-sm mb-2">
+            <div class="card-header bg-info bg-gradient text-white py-2">
+              <div class="d-flex align-items-center">
+                <i class="fas fa-clipboard-check me-2"></i>
+                <h5 class="mb-0">Test Results</h5>
+              </div>
+            </div>
+            <div class="card-body p-2">
+              <div class="row g-2 mb-2">
+                <div class="col-md-6">
+                  <span class="text-muted small fw-bold d-block">Color Preference</span>
+                  <span class="badge bg-primary"><%= test.colorPreference %></span>
+                </div>
+                <div class="col-md-6">
+                  <span class="text-muted small fw-bold d-block">Style Preference</span>
+                  <span class="badge bg-success"><%= test.stylePreference %></span>
+                </div>
+              </div>
+              
+              <div class="mb-2">
+                <span class="text-muted small fw-bold d-block mb-1">Personality Traits</span>
+                <div>
+                  <% test.personalityTraits.forEach(trait => { %>
+                    <span class="badge bg-secondary mb-1 me-1"><%= trait %></span>
+                  <% }) %>
+                </div>
+              </div>
+              
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="text-muted small fw-bold">Status</span>
+                <% if (test.status === 'taken') { %>
+                  <span class="badge bg-secondary">Test Taken</span>
+                <% } else if (test.status === 'awaiting_payment') { %>
+                  <span class="badge bg-warning text-dark">Awaiting Payment</span>
+                <% } else if (test.status === 'paid') { %>
+                  <span class="badge bg-info">Test Paid</span>
+                <% } else if (test.status === 'under_review') { %>
+                  <span class="badge bg-primary">Under Review</span>
+                <% } else if (test.status === 'reviewed') { %>
+                  <span class="badge bg-success">Reviewed</span>
+                <% } %>
+              </div>
+              
+              <% if (test.paymentId) { %>
+                <hr class="my-2">
+                <div class="row g-2">
+                  <div class="col-md-6">
+                    <span class="text-muted small fw-bold d-block">Payment ID</span>
+                    <span class="small"><%= test.paymentId.substring(0, 8) %>...</span>
+                  </div>
+                  <div class="col-md-6">
+                    <span class="text-muted small fw-bold d-block">Amount</span>
+                    <span class="fw-bold text-success">₹<%= test.paymentAmount.toLocaleString('en-IN') %></span>
+                  </div>
+                  <div class="col-12">
+                    <span class="text-muted small fw-bold d-block">Payment Date</span>
+                    <span class="small"><%= new Date(test.paymentDate).toLocaleDateString() %></span>
+                  </div>
+                </div>
+              <% } %>
+            </div>
+          </div>
+
+          <!-- Order Details Card -->
+          <% if (test.order && test.order.approved) { %>
+            <div class="card border-0 shadow-sm mb-2">
+              <div class="card-header bg-success bg-gradient text-white py-2">
+                <div class="d-flex align-items-center">
+                  <i class="fas fa-shopping-cart me-2"></i>
+                  <h5 class="mb-0">Order Details</h5>
+                </div>
+              </div>
+              <div class="card-body p-2">
+                <div class="row g-2">
+                  <div class="col-md-6">
+                    <span class="text-muted small fw-bold d-block">Payment ID</span>
+                    <span class="small"><%= test.order.paymentId ? test.order.paymentId.substring(0, 8) : 'N/A' %></span>
+                  </div>
+                  <div class="col-md-6">
+                    <span class="text-muted small fw-bold d-block">Amount</span>
+                    <span class="fw-bold text-success"><%= test.order.paymentAmount ? '₹' + test.order.paymentAmount.toLocaleString('en-IN') : 'N/A' %></span>
+                  </div>
+                  <div class="col-md-6">
+                    <span class="text-muted small fw-bold d-block">Payment Date</span>
+                    <span class="small"><%= test.order.paymentDate ? new Date(test.order.paymentDate).toLocaleDateString() : 'N/A' %></span>
+                  </div>
+                  <div class="col-md-6">
+                    <span class="text-muted small fw-bold d-block">Contact</span>
+                    <span class="small"><%= test.order.mobileNumber %></span>
+                  </div>
+                  <div class="col-12 mb-2">
+                    <span class="text-muted small fw-bold d-block">Address</span>
+                    <span class="small"><%= test.order.address %></span>
+                  </div>
+                </div>
+
+                <hr class="my-2">
+                <div>
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-muted small fw-bold">Status</span>
+                    <% if (test.order.status === 'pending') { %>
+                      <span class="badge bg-warning text-dark">Pending</span>
+                    <% } else if (test.order.status === 'placed') { %>
+                      <span class="badge bg-info">Order Placed</span>
+                    <% } else if (test.order.status === 'in_progress') { %>
+                      <span class="badge bg-primary">In Progress</span>
+                    <% } else if (test.order.status === 'completed') { %>
+                      <span class="badge bg-success">Completed</span>
+                    <% } %>
+                  </div>
+                  
+                  <% if (['pending', 'placed'].includes(test.order.status)) { %>
+                    <form action="/admin/psychometric-test/<%= test._id %>/status" method="POST">
+                      <input type="hidden" name="status" value="in_progress">
+                      <button type="submit" class="btn btn-warning btn-sm w-100">
+                        <i class="fas fa-play me-1"></i>Start Fulfillment
+                      </button>
+                    </form>
+                  <% } else if (test.order.status === 'in_progress') { %>
+                    <form action="/admin/psychometric-test/<%= test._id %>/status" method="POST">
+                      <input type="hidden" name="status" value="completed">
+                      <button type="submit" class="btn btn-success btn-sm w-100">
+                        <i class="fas fa-check me-1"></i>Mark Completed
+                      </button>
+                    </form>
+                  <% } %>
+                </div>
+              </div>
+            </div>
+          <% } %>
+        </div>
+
+        <!-- Right Column - Test Content and Quote Form -->
+        <div class="col-lg-8">
+          <div class="row g-2">
+            <!-- Psychologist Feedback -->
+            <div class="col-md-6">
+              <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-info bg-gradient text-white py-2">
+                  <div class="d-flex align-items-center">
+                    <i class="fas fa-comment me-2"></i>
+                    <h5 class="mb-0">Psychologist Feedback</h5>
+                  </div>
+                </div>
+                <div class="card-body p-2">
+                  <% if (test.psychologistFeedback && test.psychologistFeedback.text) { %>
+                    <div class="d-flex justify-content-between align-items-center mb-2 small">
+                      <span class="fw-bold">Analysis</span>
+                      <span class="text-muted">
+                        <i class="far fa-calendar me-1"></i><%= new Date(test.psychologistFeedback.submittedAt).toLocaleDateString() %>
+                      </span>
+                    </div>
+                    <div class="p-2 border rounded bg-light">
+                      <p class="mb-0 small"><%= test.psychologistFeedback.text %></p>
+                    </div>
+                  <% } else { %>
+                    <div class="alert alert-warning py-2 small mb-0">
+                      <i class="fas fa-exclamation-circle me-1"></i> No psychologist feedback available
+                    </div>
+                  <% } %>
+                </div>
+              </div>
+            </div>
+
+            <!-- Admin Quote Form -->
+            <div class="col-md-6">
+              <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-success bg-gradient text-white py-2">
+                  <div class="d-flex align-items-center">
+                    <i class="fas fa-dollar-sign me-2"></i>
+                    <h5 class="mb-0">Submitted Quote</h5>
+                  </div>
+                </div>
+                <div class="card-body p-2">
+                  <% if (test.adminQuote && test.adminQuote.budget) { %>
+                    <div class="row g-2 mb-2">
+                      <div class="col-md-6">
+                        <span class="text-muted small fw-bold d-block">Budget Amount</span>
+                        <span class="fw-bold text-success fs-5">₹<%= test.adminQuote.budget.toFixed(2) %></span>
+                      </div>
+                      <div class="col-md-6">
+                        <span class="text-muted small fw-bold d-block">Date Submitted</span>
+                        <span class="small"><%= new Date(test.adminQuote.submittedAt).toLocaleDateString() %></span>
+                      </div>
+                    </div>
+                    <span class="text-muted small fw-bold d-block mb-1">Description</span>
+                    <div class="p-2 border rounded bg-light small">
+                      <p class="mb-0"><%= test.adminQuote.description || 'No description provided' %></p>
+                    </div>
+                  <% } else { %>
+                    <form action="/admin/psychometric-test/<%= test._id %>/quote" method="POST">
+                      <div class="mb-2">
+                        <label for="budget" class="form-label small fw-bold">Budget Amount (₹)</label>
+                        <input type="number" class="form-control form-control-sm" id="budget" name="budget" required>
+                      </div>
+                      <div class="mb-2">
+                        <label for="description" class="form-label small fw-bold">Description</label>
+                        <textarea class="form-control form-control-sm" id="description" name="description" rows="3" required></textarea>
+                      </div>
+                      <button type="submit" class="btn btn-primary btn-sm w-100">
+                        <i class="fas fa-paper-plane me-1"></i>Submit Quote
+                      </button>
+                    </form>
+                  <% } %>
+                </div>
+              </div>
+            </div>
+
+            <!-- Completed Project Photos -->
+            <% if (test.order && (test.order.status === 'in_progress' || test.order.status === 'completed')) { %>
+              <div class="col-12">
+                <div class="card border-0 shadow-sm mb-2">
+                  <div class="card-header bg-primary bg-gradient text-white py-2">
+                    <div class="d-flex align-items-center justify-content-between">
+                      <div>
+                        <i class="fas fa-images me-2"></i>
+                        <h5 class="mb-0 d-inline">Completed Decor Photos</h5>
+                      </div>
+                      <button class="btn btn-sm btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#photoUploadForm">
+                        <i class="fas fa-plus me-1"></i>Add Photo
+                      </button>
+                    </div>
+                  </div>
+                  <div class="card-body p-2">
+                    <!-- Photo Upload Form (Collapsible) -->
+                    <div class="collapse mb-2" id="photoUploadForm">
+                      <div class="card card-body bg-light border p-2">
+                        <form action="/admin/psychometric-test/<%= test._id %>/photos" method="POST" enctype="multipart/form-data" class="row g-2">
+                          <div class="col-md-6">
+                            <label for="projectPhoto" class="form-label small fw-bold">Upload New Photo</label>
+                            <input type="file" class="form-control form-control-sm" id="projectPhoto" name="projectPhoto" accept="image/*" required>
+                          </div>
+                          <div class="col-md-6">
+                            <label for="photoDescription" class="form-label small fw-bold">Description</label>
+                            <input type="text" class="form-control form-control-sm" id="photoDescription" name="photoDescription" placeholder="Brief description">
+                          </div>
+                          <div class="col-12 mt-2">
+                            <button type="submit" class="btn btn-success btn-sm">
+                              <i class="fas fa-upload me-1"></i>Upload Photo
+                            </button>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+
+                    <% if ((test.projectPhotos && test.projectPhotos.length > 0) || (test.order && test.order.photos && test.order.photos.length > 0)) { %>
+                      <div class="row g-2">
+                        <% if (test.projectPhotos && test.projectPhotos.length > 0) { %>
+                          <% test.projectPhotos.forEach((photo, index) => { %>
+                            <div class="col-md-4 col-6">
+                              <div class="card h-100 border-0 shadow-sm">
+                                <img src="<%= photo.url %>" class="card-img-top" alt="Decor Photo" style="height: 120px; object-fit: cover;" onerror="this.src='/img/placeholder.jpg'; this.onerror=null;">
+                                <div class="card-body p-2">
+                                  <p class="card-text small text-muted mb-1"><%= photo.description || 'No description' %></p>
+                                  <form action="/admin/psychometric-test/<%= test._id %>/photos/<%= index %>/delete" method="POST">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger w-100" onclick="return confirm('Delete this photo?')">
+                                      <i class="fas fa-trash-alt me-1"></i>Delete
+                                    </button>
+                                  </form>
+                                </div>
+                              </div>
+                            </div>
+                          <% }); %>
+                        <% } %>
+                        
+                        <% if (test.order && test.order.photos && test.order.photos.length > 0) { %>
+                          <% test.order.photos.forEach((photo, index) => { %>
+                            <% if (!test.projectPhotos || !test.projectPhotos.some(p => p.url === photo)) { %>
+                              <div class="col-md-4 col-6">
+                                <div class="card h-100 border-0 shadow-sm">
+                                  <img src="<%= photo %>" class="card-img-top" alt="Decor Photo" style="height: 120px; object-fit: cover;" onerror="this.src='/img/placeholder.jpg'; this.onerror=null;">
+                                  <div class="card-body p-2">
+                                    <p class="card-text small text-muted mb-1">Order photo</p>
+                                    <form action="/admin/psychometric-test/<%= test._id %>/photos/<%= index %>/delete" method="POST">
+                                      <button type="submit" class="btn btn-sm btn-outline-danger w-100" onclick="return confirm('Delete this photo?')">
+                                        <i class="fas fa-trash-alt me-1"></i>Delete
+                                      </button>
+                                    </form>
+                                  </div>
+                                </div>
+                              </div>
+                            <% } %>
+                          <% }); %>
+                        <% } %>
+                      </div>
+                    <% } else { %>
+                      <div class="alert alert-info py-2 small mb-0">
+                        <i class="fas fa-info-circle me-1"></i> No project photos have been uploaded yet
+                      </div>
+                    <% } %>
+                  </div>
+                </div>
+              </div>
+            <% } %>
+            
+            <!-- Public Gallery Display Settings -->
+            <% if (test.order && test.order.status === 'completed') { %>
+              <div class="col-12">
+                <div class="card border-0 shadow-sm mb-2">
+                  <div class="card-header bg-success bg-gradient text-white py-2">
+                    <div class="d-flex align-items-center">
+                      <i class="fas fa-globe me-2"></i>
+                      <h5 class="mb-0">Public Gallery Display</h5>
+                    </div>
+                  </div>
+                  <div class="card-body p-2">
+                    <form action="/admin/psychometric-test/<%= test._id %>/public-toggle" method="POST" class="row g-2">
+                      <div class="col-md-12 mb-2">
+                        <div class="form-check form-switch">
+                          <input class="form-check-input" type="checkbox" id="publicDisplay" name="publicDisplay" <%= test.order.publicDisplay ? 'checked' : '' %>>
+                          <label class="form-check-label" for="publicDisplay">Display this project in the public gallery</label>
+                        </div>
+                      </div>
+                      
+                      <div class="col-md-12">
+                        <label for="publicDescription" class="form-label small fw-bold">Public Description</label>
+                        <textarea class="form-control form-control-sm" id="publicDescription" name="publicDescription" rows="2" placeholder="Public gallery description"><%= test.order.publicDescription || '' %></textarea>
+                        <div class="form-text small">This description will be visible to public visitors.</div>
+                      </div>
+                      
+                      <div class="col-md-12 mt-2">
+                        <button type="submit" class="btn btn-primary btn-sm">
+                          <i class="fas fa-save me-1"></i>Save Gallery Settings
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            <% } %>
+
+            <!-- User Feedback -->
+            <% if (test.order && test.order.status === 'completed') { %>
+              <div class="col-md-6">
+                <div class="card border-0 shadow-sm h-100">
+                  <div class="card-header bg-warning bg-gradient text-dark py-2">
+                    <div class="d-flex align-items-center">
+                      <i class="fas fa-star me-2"></i>
+                      <h5 class="mb-0">User Feedback</h5>
+                    </div>
+                  </div>
+                  <div class="card-body p-2">
+                    <% if (test.userFeedback) { %>
+                      <div class="mb-2">
+                        <div class="d-flex align-items-center mb-1">
+                          <% for(let i = 1; i <= 5; i++) { %>
+                            <i class="fas fa-star <%= i <= test.userFeedback.rating ? 'text-warning' : 'text-muted' %> me-1"></i>
+                          <% } %>
+                          <span class="ms-2 fw-bold"><%= test.userFeedback.rating %>/5</span>
+                        </div>
+                        <span class="text-muted small d-block mb-2">
+                          <i class="far fa-calendar me-1"></i><%= new Date(test.userFeedback.submittedAt).toLocaleDateString() %>
+                        </span>
+                      </div>
+                      <div class="p-2 border rounded bg-light small">
+                        <p class="mb-0"><%= test.userFeedback.comment %></p>
+                      </div>
+                    <% } else { %>
+                      <div class="alert alert-info py-2 small mb-0">
+                        <i class="fas fa-info-circle me-1"></i> The user hasn't provided feedback yet
+                      </div>
+                    <% } %>
+                  </div>
+                </div>
+              </div>
+            <% } %>
+
+            <!-- Test Answers -->
+            <div class="col-md-<%= test.order && test.order.status === 'completed' ? '6' : '12' %>">
+              <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-secondary bg-gradient text-white py-2">
+                  <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                      <i class="fas fa-list-alt me-2"></i>
+                      <h5 class="mb-0 d-inline">Test Answers</h5>
+                    </div>
+                    <ul class="nav nav-pills nav-pills-sm">
+                      <li class="nav-item">
+                        <button class="nav-link active py-0 px-2" id="color-tab" data-bs-toggle="tab" data-bs-target="#color">Color</button>
+                      </li>
+                      <li class="nav-item">
+                        <button class="nav-link py-0 px-2" id="style-tab" data-bs-toggle="tab" data-bs-target="#style">Style</button>
+                      </li>
+                      <li class="nav-item">
+                        <button class="nav-link py-0 px-2" id="personality-tab" data-bs-toggle="tab" data-bs-target="#personality">Personality</button>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="card-body p-0">
+                  <div class="tab-content" id="answerTabsContent">
+                    <!-- Color Preferences Tab -->
+                    <div class="tab-pane fade show active p-2" id="color" role="tabpanel" aria-labelledby="color-tab">
+                      <div class="table-responsive">
+                        <table class="table table-sm table-striped mb-0">
+                          <thead>
+                            <tr>
+                              <th class="w-50">Question</th>
+                              <th class="w-50">Answer</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <% questions.color.forEach(q => { %>
+                              <tr>
+                                <td class="small"><%= q.text %></td>
+                                <td>
+                                  <% if (test._doc && test._doc.answersMap) { %>
+                                    <% const answerCode = test._doc.answersMap[`q${q.id}`]; %>
+                                    <% if (answerCode && q.options && q.options[answerCode]) { %>
+                                      <span class="badge bg-light text-dark border">
+                                        <%= answerCode %>: <%= q.options[answerCode] %>
+                                      </span>
+                                    <% } else { %>
+                                      <%= answerCode || 'No answer' %>
+                                    <% } %>
+                                  <% } else if (typeof test.answers === 'object' && !Array.isArray(test.answers)) { %>
+                                    <% const answerCode = test.answers[`q${q.id}`]; %>
+                                    <% if (answerCode && q.options && q.options[answerCode]) { %>
+                                      <span class="badge bg-light text-dark border">
+                                        <%= answerCode %>: <%= q.options[answerCode] %>
+                                      </span>
+                                    <% } else { %>
+                                      <%= answerCode || 'No answer' %>
+                                    <% } %>
+                                  <% } else if (Array.isArray(test.answers)) { %>
+                                    <% const answer = test.answers.find(a => a.questionId === q.id); %>
+                                    <% if (answer && answer.answer && q.options && q.options[answer.answer]) { %>
+                                      <span class="badge bg-light text-dark border">
+                                        <%= answer.answer %>: <%= q.options[answer.answer] %>
+                                      </span>
+                                    <% } else { %>
+                                      <%= answer ? answer.answer : 'No answer' %>
+                                    <% } %>
+                                  <% } else { %>
+                                    <span class="text-muted">No answer available</span>
+                                  <% } %>
+                                </td>
+                              </tr>
+                            <% }); %>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    
+                    <!-- Style Preferences Tab -->
+                    <div class="tab-pane fade p-2" id="style" role="tabpanel" aria-labelledby="style-tab">
+                      <div class="table-responsive">
+                        <table class="table table-sm table-striped mb-0">
+                          <thead>
+                            <tr>
+                              <th class="w-50">Question</th>
+                              <th class="w-50">Answer</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <% questions.style.forEach(q => { %>
+                              <tr>
+                                <td class="small"><%= q.text %></td>
+                                <td>
+                                  <% if (test._doc && test._doc.answersMap) { %>
+                                    <% const answerCode = test._doc.answersMap[`q${q.id}`]; %>
+                                    <% if (answerCode && q.options && q.options[answerCode]) { %>
+                                      <span class="badge bg-light text-dark border">
+                                        <%= answerCode %>: <%= q.options[answerCode] %>
+                                      </span>
+                                    <% } else { %>
+                                      <%= answerCode || 'No answer' %>
+                                    <% } %>
+                                  <% } else if (typeof test.answers === 'object' && !Array.isArray(test.answers)) { %>
+                                    <% const answerCode = test.answers[`q${q.id}`]; %>
+                                    <% if (answerCode && q.options && q.options[answerCode]) { %>
+                                      <span class="badge bg-light text-dark border">
+                                        <%= answerCode %>: <%= q.options[answerCode] %>
+                                      </span>
+                                    <% } else { %>
+                                      <%= answerCode || 'No answer' %>
+                                    <% } %>
+                                  <% } else if (Array.isArray(test.answers)) { %>
+                                    <% const answer = test.answers.find(a => a.questionId === q.id); %>
+                                    <% if (answer && answer.answer && q.options && q.options[answer.answer]) { %>
+                                      <span class="badge bg-light text-dark border">
+                                        <%= answer.answer %>: <%= q.options[answer.answer] %>
+                                      </span>
+                                    <% } else { %>
+                                      <%= answer ? answer.answer : 'No answer' %>
+                                    <% } %>
+                                  <% } else { %>
+                                    <span class="text-muted">No answer available</span>
+                                  <% } %>
+                                </td>
+                              </tr>
+                            <% }); %>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    
+                    <!-- Personality Questions Tab -->
+                    <div class="tab-pane fade p-2" id="personality" role="tabpanel" aria-labelledby="personality-tab">
+                      <div class="table-responsive">
+                        <table class="table table-sm table-striped mb-0">
+                          <thead>
+                            <tr>
+                              <th class="w-50">Question</th>
+                              <th class="w-50">Answer</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <% questions.personality.forEach(q => { %>
+                              <tr>
+                                <td class="small"><%= q.text %></td>
+                                <td>
+                                  <% if (test._doc && test._doc.answersMap) { %>
+                                    <% const answerCode = test._doc.answersMap[`q${q.id}`]; %>
+                                    <% if (answerCode && q.options && q.options[answerCode]) { %>
+                                      <span class="badge bg-light text-dark border">
+                                        <%= answerCode %>: <%= q.options[answerCode] %>
+                                      </span>
+                                    <% } else { %>
+                                      <%= answerCode || 'No answer' %>
+                                    <% } %>
+                                  <% } else if (typeof test.answers === 'object' && !Array.isArray(test.answers)) { %>
+                                    <% const answerCode = test.answers[`q${q.id}`]; %>
+                                    <% if (answerCode && q.options && q.options[answerCode]) { %>
+                                      <span class="badge bg-light text-dark border">
+                                        <%= answerCode %>: <%= q.options[answerCode] %>
+                                      </span>
+                                    <% } else { %>
+                                      <%= answerCode || 'No answer' %>
+                                    <% } %>
+                                  <% } else if (Array.isArray(test.answers)) { %>
+                                    <% const answer = test.answers.find(a => a.questionId === q.id); %>
+                                    <% if (answer && answer.answer && q.options && q.options[answer.answer]) { %>
+                                      <span class="badge bg-light text-dark border">
+                                        <%= answer.answer %>: <%= q.options[answer.answer] %>
+                                      </span>
+                                    <% } else { %>
+                                      <%= answer ? answer.answer : 'No answer' %>
+                                    <% } %>
+                                  <% } else { %>
+                                    <span class="text-muted">No answer available</span>
+                                  <% } %>
+                                </td>
+                              </tr>
+                            <% }); %>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<style>
+  /* Card styling */
+  .card {
+    transition: all 0.2s ease;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+  
+  .card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+  }
+  
+  /* Gradient styling */
+  .bg-gradient {
+    background-image: linear-gradient(to right, rgba(0,0,0,0.1), rgba(0,0,0,0));
+  }
+  
+  /* Table styling */
+  .table th, .table td {
+    padding: 0.4rem 0.6rem;
+    vertical-align: middle;
+  }
+  
+  .table-responsive {
+    min-height: 160px;
+    max-height: 250px;
+    overflow-y: auto;
+  }
+  
+  /* Navigation pills */
+  .nav-pills-sm .nav-link {
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 0.2rem 0.5rem;
+    margin-right: 2px;
+  }
+  
+  .nav-pills-sm .nav-link.active {
+    background-color: #6c757d;
+  }
+  
+  /* Badge styling */
+  .badge {
+    font-weight: 500;
+    padding: 0.35em 0.65em;
+  }
+  
+  /* Form control sizing */
+  .form-control-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+  }
+  
+  /* Button sizing */
+  .btn-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+  }
+  
+  /* Responsive behavior */
+  @media (max-width: 768px) {
+    .card-body {
+      padding: 0.75rem !important;
+    }
+    
+    .container-fluid {
+      padding: 8px !important;
+    }
+    
+    .table th, .table td {
+      padding: 0.3rem 0.5rem;
+    }
+  }
+  
+  /* Bootstrap overrides and fixes */
+  .breadcrumb-item + .breadcrumb-item::before {
+    content: "›";
+  }
+  
+  /* Sidebar responsiveness */
+  @media (max-width: 767.98px) {
+    .sidebar {
+      top: 3.5rem;
+      padding-top: 0.5rem;
+    }
+    
+    .sidebar .list-group-item {
+      padding: 0.5rem 0.75rem;
+    }
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+    padding: 48px 0 0;
+    box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+  }
+
+  .sidebar-sticky {
+    position: relative;
+    top: 0;
+    height: calc(100vh - 48px);
+    padding-top: .5rem;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  
+  /* Card height equalization */
+  .row.equal-height > [class*='col-'] {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .row.equal-height .card {
+    flex: 1;
+  }
+  
+  /* Alert styling */
+  .alert {
+    margin-bottom: 0.5rem;
+  }
+  
+  /* Typography */
+  .small {
+    font-size: 85%;
+  }
+  
+  .text-muted {
+    color: #6c757d !important;
+  }
+</style>
+
+<%- include('../partials/footer') %> 

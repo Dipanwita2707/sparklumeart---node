@@ -1,0 +1,193 @@
+<%- include('../partials/header') %>
+
+
+<div class="container-fluid py-3 px-3 bg-light">
+  <div class="row mb-3">
+    <div class="col-12">
+      <div class="d-flex justify-content-between align-items-center">
+        <h2 class="mb-0">Your Psychometric Tests</h2>
+        <a href="/user/psychometric-test" class="btn btn-primary">
+          <i class="fas fa-plus-circle me-1"></i>Take New Test
+        </a>
+      </div>
+      <p class="text-muted mb-0">View and manage your home decor personality tests</p>
+    </div>
+  </div>
+
+  <% if (locals.success_msg && success_msg !== '') { %>
+    <div class="alert alert-success alert-dismissible fade show py-2" role="alert">
+      <i class="fas fa-check-circle me-1"></i><%= success_msg %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  <% } %>
+
+  <% if (locals.error_msg && error_msg !== '') { %>
+    <div class="alert alert-danger alert-dismissible fade show py-2" role="alert">
+      <i class="fas fa-exclamation-circle me-1"></i><%= error_msg %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  <% } %>
+
+  <div class="card border-0 shadow-sm">
+    <div class="card-body p-0">
+      <% if (tests && tests.length > 0) { %>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Results</th>
+                <th>Quote</th>
+                <th>Order Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% tests.forEach(test => { %>
+                <tr>
+                  <td><%= new Date(test.createdAt).toLocaleDateString() %></td>
+                  <td>
+                    <% if (test.status === 'taken') { %>
+                      <span class="badge bg-secondary">Test Taken</span>
+                    <% } else if (test.status === 'awaiting_payment') { %>
+                      <span class="badge bg-warning text-dark">Awaiting Payment</span>
+                    <% } else if (test.status === 'paid') { %>
+                      <span class="badge bg-info">Test Paid</span>
+                    <% } else if (test.status === 'under_review') { %>
+                      <span class="badge bg-primary">Under Review</span>
+                    <% } else if (test.status === 'reviewed') { %>
+                      <span class="badge bg-success">Reviewed</span>
+                    <% } else if (test.status === 'order_placed') { %>
+                      <span class="badge bg-success">Order Placed</span>
+                    <% } %>
+                  </td>
+                  <td>
+                    <% if (test.colorPreference) { %>
+                      <span class="badge bg-primary me-1"><%= test.colorPreference %></span>
+                      <span class="badge bg-success"><%= test.stylePreference %></span>
+                    <% } else { %>
+                      <span class="text-muted">Not available</span>
+                    <% } %>
+                  </td>
+                  <td>
+                    <% if (test.adminQuote && test.adminQuote.budget) { %>
+                      <span class="fw-bold">₹<%= test.adminQuote.budget.toLocaleString('en-IN') %></span>
+                      <% if (!test.order || !test.order.approved) { %>
+                        <div><span class="badge bg-warning text-dark">Pending Approval</span></div>
+                      <% } %>
+                    <% } else if (test.status === 'reviewed') { %>
+                      <span class="badge bg-info">Quote Pending</span>
+                    <% } else { %>
+                      <span class="text-muted">-</span>
+                    <% } %>
+                  </td>
+                  <td>
+                    <% if (test.order && test.order.status) { %>
+                      <% if (test.order.status === 'pending') { %>
+                        <span class="badge bg-warning text-dark">Pending</span>
+                      <% } else if (test.order.status === 'placed') { %>
+                        <span class="badge bg-info">Order Placed</span>
+                      <% } else if (test.order.status === 'in_progress') { %>
+                        <span class="badge bg-primary">In Progress</span>
+                      <% } else if (test.order.status === 'completed') { %>
+                        <span class="badge bg-success">Completed</span>
+                      <% } %>
+                    <% } else { %>
+                      <span class="text-muted">-</span>
+                    <% } %>
+                  </td>
+                  <td>
+                    <div class="d-flex gap-2">
+                      <a href="/user/psychometric-test/<%= test._id %>" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-eye me-1"></i>View
+                      </a>
+                      <% if (test.status === 'awaiting_payment') { %>
+                        <a href="/user/psychometric-test/<%= test._id %>/payment" class="btn btn-sm btn-success">
+                          <i class="fas fa-credit-card me-1"></i>Pay
+                        </a>
+                      <% } %>
+                    </div>
+                  </td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+      <% } else { %>
+        <div class="text-center py-5">
+          <div class="mb-3">
+            <i class="fas fa-clipboard-list fa-3x text-muted"></i>
+          </div>
+          <h4>No tests found</h4>
+          <p class="text-muted mb-4">You haven't taken any psychometric tests yet. Take a test to get personalized home decor recommendations!</p>
+          <a href="/user/psychometric-test" class="btn btn-primary">
+            <i class="fas fa-plus-circle me-1"></i>Take Home Decor Test
+          </a>
+        </div>
+      <% } %>
+    </div>
+  </div>
+
+  <div class="row mt-4">
+    <div class="col-md-6">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-header bg-primary bg-gradient text-white py-2">
+          <div class="d-flex align-items-center">
+            <i class="fas fa-info-circle me-2"></i>
+            <h5 class="mb-0">About Psychometric Tests</h5>
+          </div>
+        </div>
+        <div class="card-body">
+          <p>Our psychometric tests analyze your home decor preferences and personality traits to provide custom recommendations for your living space.</p>
+          <p>After taking the test, our psychologists will review your responses and provide personalized feedback along with design recommendations.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card border-0 shadow-sm h-100">
+        <div class="card-header bg-warning bg-gradient text-dark py-2">
+          <div class="d-flex align-items-center">
+            <i class="fas fa-lightbulb me-2"></i>
+            <h5 class="mb-0">How It Works</h5>
+          </div>
+        </div>
+        <div class="card-body">
+          <ol class="mb-0">
+            <li>Take the home decor psychometric test</li>
+            <li>Our experts review your responses</li>
+            <li>Receive personalized recommendations</li>
+            <li>Get a custom quote for implementation</li>
+            <li>Approve the quote and place your order</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .card {
+    overflow: hidden;
+    transition: all 0.2s ease;
+  }
+  
+  .card:hover {
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1) !important;
+  }
+  
+  .bg-gradient {
+    background-image: linear-gradient(to right, rgba(0,0,0,0.1), rgba(0,0,0,0));
+  }
+  
+  .table th, .table td {
+    padding: 0.75rem 1rem;
+  }
+  
+  .table-hover tbody tr:hover {
+    background-color: rgba(0,0,0,0.02);
+  }
+</style>
+
+<%- include('../partials/footer') %> 

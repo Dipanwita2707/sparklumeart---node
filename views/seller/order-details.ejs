@@ -1,0 +1,282 @@
+<%- include('../partials/header') %>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse">
+            <div class="position-sticky pt-3">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="/seller/dashboard">
+                            <i class="fas fa-tachometer-alt me-2"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="/seller/paintings/add">
+                            <i class="fas fa-plus-circle me-2"></i>
+                            Submit New Painting
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="/seller/paintings/requests">
+                            <i class="fas fa-paint-brush me-2"></i>
+                            My Painting Requests
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active text-white" href="/seller/orders">
+                            <i class="fas fa-shopping-cart me-2"></i>
+                            Orders
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="/seller/profile">
+                            <i class="fas fa-user me-2"></i>
+                            Profile
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="/seller/products">
+                            <i class="fas fa-shopping-bag me-2"></i>
+                            My Products
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="/seller/products/add">
+                            <i class="fas fa-plus-circle me-2"></i>
+                            Add New Product
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Order Details</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <a href="/seller/orders" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-1"></i> Back to Orders
+                    </a>
+                </div>
+            </div>
+
+            <!-- Flash Messages -->
+            <% if (messages.success) { %>
+                <div class="alert alert-success alert-dismissible fade show">
+                    <%= messages.success %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <% } %>
+
+            <% if (messages.error) { %>
+                <div class="alert alert-danger alert-dismissible fade show">
+                    <%= messages.error %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <% } %>
+
+            <div class="row">
+                <!-- Order Info -->
+                <div class="col-md-8">
+                    <div class="card mb-4">
+                        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Order #<%= order._id.toString().substring(0, 8) %>...</h5>
+                            <span class="badge 
+                                <%= order.orderStatus === 'processing' ? 'bg-warning' : 
+                                   order.orderStatus === 'approved' ? 'bg-info' : 
+                                   order.orderStatus === 'in_transit' ? 'bg-primary' : 
+                                   order.orderStatus === 'delivered' ? 'bg-success' : 
+                                   order.orderStatus === 'cancelled' ? 'bg-danger' : 'bg-secondary' %>">
+                                <%= order.orderStatus === 'in_transit' ? 'In Transit' : 
+                                   (order.orderStatus.charAt(0).toUpperCase() + order.orderStatus.slice(1)) %>
+                            </span>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <p><strong>Order Date:</strong> <%= new Date(order.createdAt).toLocaleString() %></p>
+                                    <p><strong>Customer:</strong> <%= order.user ? order.user.name : 'Unknown User' %></p>
+                                    <p><strong>Email:</strong> <%= order.user ? order.user.email : 'Unknown Email' %></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
+                                    <p><strong>Payment Status:</strong> 
+                                        <span class="badge 
+                                            <%= order.paymentStatus === 'pending' ? 'bg-warning' : 
+                                               order.paymentStatus === 'completed' ? 'bg-success' : 
+                                               order.paymentStatus === 'failed' ? 'bg-danger' : 'bg-info' %>">
+                                            <%= order.paymentStatus.charAt(0).toUpperCase() + order.paymentStatus.slice(1) %>
+                                        </span>
+                                    </p>
+                                    <% if (order.trackingNumber) { %>
+                                        <p><strong>Tracking #:</strong> <%= order.trackingNumber %></p>
+                                    <% } %>
+                                    <% if (order.estimatedDeliveryDate) { %>
+                                        <p><strong>Est. Delivery:</strong> <%= new Date(order.estimatedDeliveryDate).toLocaleDateString() %></p>
+                                    <% } %>
+                                </div>
+                            </div>
+
+                            <h5 class="card-title">Your Products in This Order</h5>
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Product</th>
+                                            <th>Price</th>
+                                            <th>Quantity</th>
+                                            <th>Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% 
+                                        let totalSales = 0;
+                                        sellerItems.forEach(item => {
+                                            const itemTotal = item.price * item.quantity;
+                                            totalSales += itemTotal;
+                                        %>
+                                            <tr>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <% if (item.product && item.product.image) { %>
+                                                            <img src="<%= item.product.image %>" alt="<%= item.title %>" width="50" class="me-3 img-thumbnail">
+                                                        <% } %>
+                                                        <div>
+                                                            <p class="mb-0"><%= item.title %></p>
+                                                            <small class="text-muted">By <%= item.artistName %></small>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>$<%= item.price.toFixed(2) %></td>
+                                                <td><%= item.quantity %></td>
+                                                <td>$<%= itemTotal.toFixed(2) %></td>
+                                            </tr>
+                                        <% }); %>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="3" class="text-end"><strong>Your Total:</strong></td>
+                                            <td><strong>$<%= totalSales.toFixed(2) %></strong></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions & Shipping -->
+                <div class="col-md-4">
+                    <!-- Shipping Address -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-dark text-white">
+                            <h5 class="mb-0">Shipping Address</h5>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Name:</strong> <%= order.shippingAddress.firstName %> <%= order.shippingAddress.lastName %></p>
+                            <p><strong>Email:</strong> <%= order.shippingAddress.email %></p>
+                            <p><strong>Phone:</strong> <%= order.shippingAddress.phone %></p>
+                            <p><strong>Address:</strong> <%= order.shippingAddress.address %></p>
+                            <p><strong>City:</strong> <%= order.shippingAddress.city %></p>
+                            <p><strong>Postal Code:</strong> <%= order.shippingAddress.postalCode %></p>
+                            <p><strong>Country:</strong> <%= order.shippingAddress.country %></p>
+                        </div>
+                    </div>
+
+                    <!-- Order Actions -->
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">Order Actions</h5>
+                        </div>
+                        <div class="card-body">
+                            <% if (order.orderStatus === 'processing') { %>
+                                <div class="d-grid gap-2 mb-3">
+                                    <h6>Step 1: Approve Order</h6>
+                                    <form action="/seller/orders/<%= order._id %>/approve" method="POST">
+                                        <button type="submit" class="btn btn-success w-100">
+                                            <i class="fas fa-check-circle me-2"></i>Approve Order
+                                        </button>
+                                    </form>
+                                </div>
+                            <% } else if (order.orderStatus === 'approved') { %>
+                                <div class="d-grid gap-2 mb-3">
+                                    <h6>Step 2: Ship Order</h6>
+                                    <form action="/seller/orders/<%= order._id %>/ship" method="POST">
+                                        <div class="mb-3">
+                                            <label for="trackingNumber" class="form-label">Tracking Number</label>
+                                            <input type="text" class="form-control" id="trackingNumber" name="trackingNumber" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="estimatedDeliveryDate" class="form-label">Estimated Delivery Date</label>
+                                            <input type="date" class="form-control" id="estimatedDeliveryDate" name="estimatedDeliveryDate">
+                                        </div>
+                                        <button type="submit" class="btn btn-primary w-100">
+                                            <i class="fas fa-shipping-fast me-2"></i>Mark as Shipped
+                                        </button>
+                                    </form>
+                                </div>
+                            <% } else if (order.orderStatus === 'in_transit') { %>
+                                <div class="d-grid gap-2 mb-3">
+                                    <h6>Step 3: Deliver Order</h6>
+                                    <form action="/seller/orders/<%= order._id %>/deliver" method="POST">
+                                        <button type="submit" class="btn btn-success w-100">
+                                            <i class="fas fa-check-circle me-2"></i>Mark as Delivered
+                                        </button>
+                                    </form>
+                                </div>
+                            <% } else if (order.orderStatus === 'delivered') { %>
+                                <div class="alert alert-success">
+                                    <i class="fas fa-check-circle me-2"></i>This order has been successfully delivered.
+                                </div>
+                            <% } else if (order.orderStatus === 'cancelled') { %>
+                                <div class="alert alert-danger">
+                                    <i class="fas fa-times-circle me-2"></i>This order has been cancelled.
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<style>
+    .sidebar {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 100;
+        padding: 48px 0 0;
+        box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+    }
+
+    .sidebar .nav-link {
+        font-weight: 500;
+        color: #333;
+    }
+
+    .sidebar .nav-link.active {
+        color: #2470dc;
+    }
+
+    main {
+        padding-top: 48px;
+    }
+
+    @media (max-width: 767.98px) {
+        .sidebar {
+            position: static;
+            padding-top: 0;
+        }
+        main {
+            padding-top: 0;
+        }
+    }
+</style>
+
+<%- include('../partials/footer') %> 

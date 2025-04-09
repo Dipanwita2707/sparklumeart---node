@@ -1,0 +1,302 @@
+<%- include('../partials/header') %>
+<%- include('../partials/user-navbar') %>
+
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-md-12 mb-4">
+      <a href="/user/dashboard" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+      </a>
+    </div>
+  </div>
+
+  <% if (locals.success_msg && success_msg !== '') { %>
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      <%= success_msg %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  <% } %>
+
+  <% if (locals.error_msg && error_msg !== '') { %>
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+      <%= error_msg %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  <% } %>
+
+  <div class="row">
+    <!-- Left Column - Test Details -->
+    <div class="col-lg-5">
+      <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+          <h4 class="mb-0">Psychometric Test Details</h4>
+        </div>
+        <div class="card-body">
+          <p><strong>Test ID:</strong> <%= test._id %></p>
+          <p><strong>Date Taken:</strong> <%= new Date(test.createdAt).toLocaleDateString() %></p>
+          <p>
+            <strong>Status:</strong> 
+            <% if (test.status === 'taken') { %>
+              <span class="badge bg-secondary">Test Taken</span>
+            <% } else if (test.status === 'awaiting_payment') { %>
+              <span class="badge bg-warning text-dark">Awaiting Payment</span>
+              <a href="/user/psychometric-test/<%= test._id %>/payment" class="btn btn-sm btn-primary ms-2">Pay Now</a>
+            <% } else if (test.status === 'paid') { %>
+              <span class="badge bg-info">Test Paid</span>
+            <% } else if (test.status === 'under_review') { %>
+              <span class="badge bg-primary">Under Review</span>
+            <% } else if (test.status === 'reviewed') { %>
+              <span class="badge bg-success">Reviewed</span>
+            <% } %>
+          </p>
+          <% if (test.paymentId) { %>
+            <p><strong>Payment ID:</strong> <%= test.paymentId %></p>
+            <p><strong>Payment Amount:</strong> ₹<%= test.paymentAmount.toLocaleString('en-IN') %></p>
+            <p><strong>Payment Date:</strong> <%= new Date(test.paymentDate).toLocaleDateString() %></p>
+          <% } %>
+        </div>
+      </div>
+
+      <div class="card mb-4">
+        <div class="card-header bg-info text-white">
+          <h4 class="mb-0">Your Home Decor Preferences</h4>
+        </div>
+        <div class="card-body">
+          <p>
+            <strong>Color Preference:</strong> 
+            <span class="badge bg-primary"><%= test.colorPreference %></span>
+          </p>
+          <p>
+            <strong>Style Preference:</strong> 
+            <span class="badge bg-success"><%= test.stylePreference %></span>
+          </p>
+          <p><strong>Personality Traits:</strong></p>
+          <div class="mb-3">
+            <% test.personalityTraits.forEach(trait => { %>
+              <span class="badge bg-secondary mb-1 me-1"><%= trait %></span>
+            <% }) %>
+          </div>
+        </div>
+      </div>
+      
+      <% if (test.order && test.order.approved) { %>
+        <div class="card mb-4">
+          <div class="card-header bg-success text-white">
+            <h4 class="mb-0">Your Order Details</h4>
+          </div>
+          <div class="card-body">
+            <p><strong>Order ID:</strong> <%= test.order.paymentId || 'N/A' %></p>
+            <p><strong>Amount Paid:</strong> <%= test.order.paymentAmount ? '₹' + test.order.paymentAmount.toLocaleString('en-IN') : 'N/A' %></p>
+            <p><strong>Order Date:</strong> <%= test.order.paymentDate ? new Date(test.order.paymentDate).toLocaleDateString() : 'N/A' %></p>
+            <p>
+              <strong>Status:</strong> 
+              <% if (test.order.status === 'pending') { %>
+                <span class="badge bg-warning text-dark">Pending</span>
+              <% } else if (test.order.status === 'placed') { %>
+                <span class="badge bg-info">Order Placed</span>
+              <% } else if (test.order.status === 'in_progress') { %>
+                <span class="badge bg-primary">In Progress</span>
+              <% } else if (test.order.status === 'completed') { %>
+                <span class="badge bg-success">Completed</span>
+              <% } %>
+            </p>
+            <p><strong>Mobile Number:</strong> <%= test.order.mobileNumber || 'N/A' %></p>
+            <p><strong>Address:</strong> <%= test.order.address || 'N/A' %></p>
+            
+            <% if (test.order.startedAt) { %>
+              <p><strong>Started On:</strong> <%= new Date(test.order.startedAt).toLocaleDateString() %></p>
+            <% } %>
+            
+            <% if (test.order.completedAt) { %>
+              <p><strong>Completed On:</strong> <%= new Date(test.order.completedAt).toLocaleDateString() %></p>
+            <% } %>
+            
+            <% if (test.order.publicDisplay) { %>
+              <div class="alert alert-info mt-3">
+                <i class="fas fa-globe me-2"></i> This project is featured in our <a href="/home-decor-gallery" class="alert-link">Home Decor Gallery</a>!
+              </div>
+            <% } %>
+          </div>
+        </div>
+      <% } %>
+      
+      <!-- User Comment Form -->
+      <% if (test.order && test.order.status === 'completed' && !test.userFeedback) { %>
+        <div class="card mb-4">
+          <div class="card-header bg-warning text-dark">
+            <h4 class="mb-0">Leave a Comment</h4>
+          </div>
+          <div class="card-body">
+            <p>Tell us about your experience with the home decor project. Your comments help us improve!</p>
+            
+            <form action="/user/psychometric-test/<%= test._id %>/feedback" method="POST">
+              <div class="mb-3">
+                <label for="comment" class="form-label">Your Comments</label>
+                <textarea class="form-control" id="comment" name="comment" rows="3" placeholder="Tell us what you liked or how we can improve..." required></textarea>
+              </div>
+              
+              <button type="submit" class="btn btn-primary">Submit Comment</button>
+            </form>
+          </div>
+        </div>
+      <% } else if (test.userFeedback) { %>
+        <div class="card mb-4">
+          <div class="card-header bg-success text-white">
+            <h4 class="mb-0">Your Comment</h4>
+          </div>
+          <div class="card-body">
+            <p><%= test.userFeedback.comment %></p>
+            <small class="text-muted">Submitted on <%= new Date(test.userFeedback.submittedAt).toLocaleDateString() %></small>
+          </div>
+        </div>
+      <% } %>
+    </div>
+
+    <!-- Right Column - Psychologist Feedback and Admin Quote -->
+    <div class="col-lg-7">
+      <!-- Project Photos Section -->
+      <% if (test.order && test.order.photos && test.order.photos.length > 0) { %>
+        <div class="card mb-4">
+          <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Your Home Decor Project</h4>
+          </div>
+          <div class="card-body">
+            <div id="projectPhotosCarousel" class="carousel slide mb-4" data-bs-ride="carousel">
+              <div class="carousel-inner">
+                <% test.order.photos.forEach((photo, index) => { %>
+                  <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
+                    <img src="<%= photo %>" class="d-block w-100" alt="Home Decor Photo" style="max-height: 400px; object-fit: contain;">
+                  </div>
+                <% }); %>
+              </div>
+              <% if (test.order.photos.length > 1) { %>
+                <button class="carousel-control-prev" type="button" data-bs-target="#projectPhotosCarousel" data-bs-slide="prev">
+                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#projectPhotosCarousel" data-bs-slide="next">
+                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Next</span>
+                </button>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      <% } %>
+      
+      <!-- Psychologist Feedback Section - Always visible -->
+      <div class="card mb-4">
+        <div class="card-header bg-info text-white">
+          <h4 class="mb-0">Psychologist's Feedback</h4>
+        </div>
+        <div class="card-body">
+          <% if (test.psychologistFeedback && test.psychologistFeedback.text) { %>
+            <div class="feedback-content p-3 border rounded bg-light">
+              <p><strong>Date:</strong> <%= new Date(test.psychologistFeedback.submittedAt).toLocaleDateString() %></p>
+              <hr>
+              <p><%= test.psychologistFeedback.text %></p>
+            </div>
+          <% } else if (test.status === 'paid' || test.status === 'under_review') { %>
+            <div class="feedback-content p-3 border rounded bg-info bg-opacity-25">
+              Your test is currently being reviewed by our psychologist. Feedback will be available soon.
+            </div>
+          <% } else { %>
+            <div class="feedback-content p-3 border rounded bg-warning bg-opacity-25">
+              No psychologist feedback available yet.
+            </div>
+          <% } %>
+        </div>
+      </div>
+      
+      <% if (test.adminQuote && test.adminQuote.budget) { %>
+        <div class="card mb-4">
+          <div class="card-header bg-warning text-dark">
+            <h4 class="mb-0">Home Decor Quote</h4>
+          </div>
+          <div class="card-body">
+            <p><strong>Budget:</strong> ₹<%= test.adminQuote.budget.toLocaleString('en-IN') %></p>
+            <p><strong>Date:</strong> <%= new Date(test.adminQuote.submittedAt).toLocaleDateString() %></p>
+            <div class="quote-content p-3 border rounded bg-light">
+              <p><strong>Description:</strong></p>
+              <p><%= test.adminQuote.description %></p>
+            </div>
+            
+            <% if (!test.order || test.order.approved !== true) { %>
+              <div class="card mt-4">
+                <div class="card-header bg-primary text-white">
+                  <h5 class="mb-0">Approve Quote and Pay</h5>
+                </div>
+                <div class="card-body">
+                  <% if (test.order && test.order.status === 'placed') { %>
+                    <div class="alert alert-success">
+                      Your order has been placed and is being processed. Thank you!
+                    </div>
+                  <% } else { %>
+                    <p>If you would like to proceed with this quote, please provide your delivery details below and proceed to payment.</p>
+                    
+                    <form action="/user/psychometric-test/<%= test._id %>/approve-quote" method="POST">
+                      <div class="mb-3">
+                        <label for="mobileNumber" class="form-label">Mobile Number</label>
+                        <input type="text" class="form-control" id="mobileNumber" name="mobileNumber" required>
+                      </div>
+                      
+                      <div class="mb-3">
+                        <label for="address" class="form-label">Complete Address</label>
+                        <textarea class="form-control" id="address" name="address" rows="3" placeholder="Please provide your complete address including street, city, state and pincode" required></textarea>
+                      </div>
+                      
+                      <div class="payment-summary p-3 border rounded bg-warning bg-opacity-10">
+                        <p><strong>Payment Summary:</strong></p>
+                        <div class="d-flex justify-content-between">
+                          <span>Quote Amount:</span>
+                          <span>₹<%= test.adminQuote.budget.toLocaleString('en-IN') %></span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                          <span>GST (18%):</span>
+                          <span>₹<%= (test.adminQuote.budget * 0.18).toFixed(2) %></span>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between fw-bold">
+                          <span>Total:</span>
+                          <span>₹<%= (test.adminQuote.budget * 1.18).toFixed(2) %></span>
+                        </div>
+                      </div>
+                      
+                      <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="agreeTerms" required>
+                        <label class="form-check-label" for="agreeTerms">
+                          I agree to the terms and conditions and wish to proceed with the payment
+                        </label>
+                      </div>
+                      
+                      <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Proceed to Payment</button>
+                      </div>
+                    </form>
+                  <% } %>
+                </div>
+              </div>
+            <% } else { %>
+              <div class="alert alert-success mt-3">
+                <strong><i class="fas fa-check-circle me-2"></i> Order Placed!</strong> Your order has been placed and is being processed.
+              </div>
+            <% } %>
+          </div>
+        </div>
+      <% } else if (test.status === 'reviewed') { %>
+        <div class="card mb-4">
+          <div class="card-header bg-warning text-dark">
+            <h4 class="mb-0">Home Decor Quote</h4>
+          </div>
+          <div class="card-body">
+            <div class="quote-pending p-3 border rounded bg-info bg-opacity-25">
+              Our team is currently preparing a personalized home decor quote based on your psychometric test results and the psychologist's feedback. Please check back soon.
+            </div>
+          </div>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %> 

@@ -1,0 +1,42 @@
+<%- include('../partials/header') %>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-lg">
+                <div class="card-header bg-primary text-white text-center py-3">
+                    <h3 class="mb-0">Psychologist Login</h3>
+                </div>
+                <div class="card-body p-4">
+                    <% if (locals.error) { %>
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <%= error %>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    <% } %>
+                    
+                    <form action="/psychologist/login" method="POST">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">Login</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer bg-light text-center py-3">
+                    <p class="text-muted mb-0">This login is exclusively for authorized psychologists.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %> 

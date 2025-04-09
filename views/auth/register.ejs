@@ -1,0 +1,54 @@
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="text-center">Register</h3>
+            </div>
+            <div class="card-body">
+                <form action="/auth/register" method="POST">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Full Name</label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email address</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="confirmPassword" class="form-label">Confirm Password</label>
+                        <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="role" class="form-label">Role</label>
+                        <select class="form-select" id="role" name="role">
+                            <option value="user">User</option>
+                            <option value="seller">Seller</option>
+                        </select>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Register</button>
+                    </div>
+                </form>
+                <div class="text-center mt-3">
+                    <p>Already have an account? <a href="/auth/login">Login here</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.querySelector('form').addEventListener('submit', function(e) {
+    const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+    
+    if (password !== confirmPassword) {
+        e.preventDefault();
+        alert('Passwords do not match!');
+    }
+});
+</script> 

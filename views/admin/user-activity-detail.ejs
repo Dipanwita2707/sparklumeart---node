@@ -1,0 +1,627 @@
+<%- include('../partials/header') %>
+<%- include('../partials/admin-navbar') %>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse">
+            <div class="position-sticky pt-3">
+                <div class="list-group mb-3">
+                    <div class="list-group-item active bg-primary">Navigation</div>
+                    <a href="/admin/dashboard" class="list-group-item list-group-item-action"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a>
+                    <a href="/admin/users" class="list-group-item list-group-item-action"><i class="fas fa-users me-2"></i> Users</a>
+                    <a href="/admin/gallery" class="list-group-item list-group-item-action"><i class="fas fa-images me-2"></i> Gallery</a>
+                    <a href="/admin/requests" class="list-group-item list-group-item-action"><i class="fas fa-paint-brush me-2"></i> Painting Requests</a>
+                    <a href="/admin/products" class="list-group-item list-group-item-action"><i class="fas fa-shopping-cart me-2"></i> Products</a>
+                    <a href="/admin/orders" class="list-group-item list-group-item-action"><i class="fas fa-shopping-bag me-2"></i> Orders</a>
+                    <a href="/admin/psychometric-tests" class="list-group-item list-group-item-action"><i class="fas fa-brain me-2"></i> Psychometric Tests</a>
+                    <a href="/admin/leads" class="list-group-item list-group-item-action"><i class="fas fa-funnel-dollar me-2"></i> AI Lead Management</a>
+                    <a href="/admin/seller-performance" class="list-group-item list-group-item-action"><i class="fas fa-chart-line me-2"></i> Seller Performance</a>
+                    <a href="/admin/user-activity" class="list-group-item list-group-item-action active"><i class="fas fa-user-clock me-2"></i> User Activity</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">User Activity: <%= targetUser.name %></h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <div class="btn-group me-2">
+                        <a href="/admin/user-activity" class="btn btn-sm btn-outline-secondary">Back to User Activity</a>
+                        <a href="/admin/leads" class="btn btn-sm btn-outline-secondary">Lead Management</a>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="timeframeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            Last <%= timeframe %> Days
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="timeframeDropdown">
+                            <li><a class="dropdown-item" href="/admin/user-activity/<%= targetUser._id %>?timeframe=7">Last 7 Days</a></li>
+                            <li><a class="dropdown-item" href="/admin/user-activity/<%= targetUser._id %>?timeframe=30">Last 30 Days</a></li>
+                            <li><a class="dropdown-item" href="/admin/user-activity/<%= targetUser._id %>?timeframe=90">Last 90 Days</a></li>
+                            <li><a class="dropdown-item" href="/admin/user-activity/<%= targetUser._id %>?timeframe=180">Last 180 Days</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <% if (locals.success_msg && success_msg !== '') { %>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <%= success_msg %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <% } %>
+
+            <% if (locals.error_msg && error_msg !== '') { %>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <%= error_msg %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <% } %>
+
+            <!-- User Info and Potential Score -->
+            <div class="row mb-4">
+                <div class="col-lg-4">
+                    <div class="card shadow">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">User Information</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="text-center mb-4">
+                                <i class="fas fa-user-circle fa-5x text-gray-300 mb-3"></i>
+                                <h4><%= targetUser.name %></h4>
+                                <p class="text-muted"><%= targetUser.email %></p>
+                                <% if (targetUser.mobileNumber) { %>
+                                    <p class="text-muted"><i class="fas fa-phone me-2"></i><%= targetUser.mobileNumber %></p>
+                                <% } %>
+                                <div class="mt-3">
+                                    <span class="badge <%= targetUser.isActive ? 'bg-success' : 'bg-danger' %>">
+                                        <%= targetUser.isActive ? 'Active' : 'Inactive' %>
+                                    </span>
+                                    <span class="badge bg-primary"><%= targetUser.role.charAt(0).toUpperCase() + targetUser.role.slice(1) %></span>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row text-center">
+                                <div class="col-6">
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                        <%= new Date(targetUser.createdAt).toLocaleDateString() %>
+                                    </div>
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Joined Date</div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                        <%= analysis.metrics.totalActivities %>
+                                    </div>
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Activities</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-8">
+                    <div class="card shadow">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Potential Score</h6>
+                        </div>
+                        <div class="card-body">
+                            <h4 class="small font-weight-bold">Potential Score <span class="float-end"><%= analysis.potentialScore %>%</span></h4>
+                            <div class="progress mb-4">
+                                <div class="progress-bar <%= 
+                                    analysis.potentialScore >= 80 ? 'progress-bar-success' : 
+                                    analysis.potentialScore >= 60 ? 'progress-bar-info' : 
+                                    analysis.potentialScore >= 40 ? 'progress-bar-primary' : 
+                                    analysis.potentialScore >= 20 ? 'progress-bar-warning' : 'progress-bar-danger' 
+                                %> progress-bar-width" role="progressbar" 
+                                    style="--progress-width: <%= analysis.potentialScore %>%" 
+                                    aria-valuenow="<%= analysis.potentialScore %>" aria-valuemin="0" aria-valuemax="100">
+                                    <%= analysis.potentialScore %>%
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <h6 class="font-weight-bold">Interaction Level</h6>
+                                <span class="badge bg-<%= 
+                                    analysis.interactionLevel === 'very_high' ? 'success' : 
+                                    analysis.interactionLevel === 'high' ? 'primary' : 
+                                    analysis.interactionLevel === 'medium' ? 'info' : 
+                                    analysis.interactionLevel === 'low' ? 'warning' : 'danger' 
+                                %> p-2">
+                                    <%= analysis.interactionLevel.replace('_', ' ').toUpperCase() %>
+                                </span>
+                            </div>
+
+                            <h6 class="font-weight-bold">AI Insights</h6>
+                            <ul class="list-group mb-4">
+                                <% if (analysis.insights && analysis.insights.length > 0) { %>
+                                    <% analysis.insights.forEach(insight => { %>
+                                        <li class="list-group-item">
+                                            <i class="fas fa-lightbulb text-warning me-2"></i> <%= insight %>
+                                        </li>
+                                    <% }); %>
+                                <% } else { %>
+                                    <li class="list-group-item">No insights available.</li>
+                                <% } %>
+                            </ul>
+
+                            <% if (lead) { %>
+                                <div class="alert alert-info">
+                                    <strong>Lead Status:</strong> <%= lead.status.toUpperCase() %> 
+                                    <% if (lead.assignedSeller) { %>
+                                        | <strong>Assigned to:</strong> <%= lead.assignedSeller.name %>
+                                    <% } %>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Activity Metrics -->
+            <div class="row mb-4">
+                <div class="col-md-3 mb-4">
+                    <div class="card border-left-primary shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Visits</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800"><%= analysis.metrics.uniqueVisits %></div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3 mb-4">
+                    <div class="card border-left-success shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Avg. Time (min)</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800"><%= analysis.metrics.avgTimeSpent %></div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-clock fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3 mb-4">
+                    <div class="card border-left-info shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Product Views</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800"><%= analysis.metrics.productViews %></div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-eye fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3 mb-4">
+                    <div class="card border-left-warning shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Cart Actions</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800"><%= analysis.metrics.addToCart %></div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-shopping-cart fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Behavior Patterns -->
+            <div class="row mb-4">
+                <div class="col-lg-6">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Behavior Patterns</h6>
+                        </div>
+                        <div class="card-body">
+                            <% if (analysis.patterns && analysis.patterns.length > 0) { %>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>Pattern</th>
+                                                <th>Confidence</th>
+                                                <th>Details</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% analysis.patterns.forEach(pattern => { %>
+                                                <tr>
+                                                    <td>
+                                                        <%= pattern.type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) %>
+                                                    </td>
+                                                    <td>
+                                                        <div class="progress" style="height: 20px;">
+                                                            <div class="progress-bar <%= 
+                                                                pattern.confidence >= 80 ? 'progress-bar-success' : 
+                                                                pattern.confidence >= 60 ? 'progress-bar-info' : 
+                                                                pattern.confidence >= 40 ? 'progress-bar-primary' : 'progress-bar-warning' 
+                                                            %> progress-bar-width" role="progressbar" 
+                                                                style="--progress-width: <%= pattern.confidence %>%" 
+                                                                aria-valuenow="<%= pattern.confidence %>" aria-valuemin="0" aria-valuemax="100">
+                                                                <%= pattern.confidence %>%
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td><%= pattern.details %></td>
+                                                </tr>
+                                            <% }); %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            <% } else { %>
+                                <div class="alert alert-info">No behavior patterns identified.</div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Most Viewed Products</h6>
+                        </div>
+                        <div class="card-body">
+                            <% if (analysis.topProducts && analysis.topProducts.length > 0) { %>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>Product</th>
+                                                <th>Views</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% analysis.topProducts.forEach(product => { %>
+                                                <tr>
+                                                    <td>
+                                                        <% 
+                                                            const productDetails = products.find(p => p._id.toString() === product.id);
+                                                            const productName = productDetails ? productDetails.title : 'Product ID: ' + product.id;
+                                                        %>
+                                                        <%= productName %>
+                                                    </td>
+                                                    <td><%= product.count %></td>
+                                                </tr>
+                                            <% }); %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            <% } else { %>
+                                <div class="alert alert-info">No product views recorded.</div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-lg-6">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Activity Distribution</h6>
+                        </div>
+                        <div class="card-body">
+                            <% if (activityTypeCounts && Object.keys(activityTypeCounts).length > 0) { %>
+                                <div class="chart-pie pt-4 pb-2">
+                                    <canvas id="activityTypeChart"></canvas>
+                                </div>
+                                <div class="mt-4 text-center small">
+                                    <div class="chart-legend">
+                                        <% Object.keys(activityTypeCounts).forEach((type, index) => { %>
+                                            <span class="mr-2">
+                                                <i class="fas fa-circle chart-color-<%= index %>"></i> 
+                                                <%= type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) %>
+                                            </span>
+                                        <% }); %>
+                                    </div>
+                                </div>
+                            <% } else { %>
+                                <div class="alert alert-info">No activity data available.</div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Activity Over Time</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-area">
+                                <canvas id="activityTimeChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Orders -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Recent Orders</h6>
+                </div>
+                <div class="card-body">
+                    <% if (orders && orders.length > 0) { %>
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Date</th>
+                                        <th>Total</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% orders.forEach(order => { %>
+                                        <tr>
+                                            <td><%= order._id.toString().substring(0, 8) %>...</td>
+                                            <td><%= new Date(order.createdAt).toLocaleDateString() %></td>
+                                            <td>$<%= order.totalAmount.toFixed(2) %></td>
+                                            <td>
+                                                <span class="badge bg-<%= 
+                                                    order.orderStatus === 'delivered' ? 'success' : 
+                                                    order.orderStatus === 'shipped' || order.orderStatus === 'in_transit' ? 'info' : 
+                                                    order.orderStatus === 'cancelled' ? 'danger' : 'warning' 
+                                                %>">
+                                                    <%= order.orderStatus.toUpperCase() %>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <a href="/admin/orders/<%= order._id %>" class="btn btn-sm btn-primary">View Order</a>
+                                            </td>
+                                        </tr>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
+                    <% } else { %>
+                        <div class="alert alert-info">No orders found for this user.</div>
+                    <% } %>
+                </div>
+            </div>
+
+            <!-- Recent Activities -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Activity Timeline</h6>
+                </div>
+                <div class="card-body">
+                    <% if (activities && activities.length > 0) { %>
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Date & Time</th>
+                                        <th>Activity</th>
+                                        <th>Page</th>
+                                        <th>Time Spent</th>
+                                        <th>Details</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% activities.forEach(activity => { %>
+                                        <tr>
+                                            <td><%= new Date(activity.createdAt).toLocaleString() %></td>
+                                            <td>
+                                                <span class="badge bg-<%= 
+                                                    activity.activityType === 'page_view' ? 'secondary' : 
+                                                    activity.activityType === 'product_view' ? 'primary' : 
+                                                    activity.activityType === 'search' ? 'info' : 
+                                                    activity.activityType === 'add_to_cart' ? 'success' : 
+                                                    activity.activityType === 'checkout' ? 'warning' : 'dark' 
+                                                %>">
+                                                    <%= activity.activityType.replace(/_/g, ' ').toUpperCase() %>
+                                                </span>
+                                            </td>
+                                            <td><code><%= activity.route %></code></td>
+                                            <td>
+                                                <% if (activity.timeSpent > 0) { %>
+                                                    <%= Math.floor(activity.timeSpent / 60) %>m <%= activity.timeSpent % 60 %>s
+                                                <% } else { %>
+                                                    -
+                                                <% } %>
+                                            </td>
+                                            <td>
+                                                <% if (activity.metadata && Object.keys(activity.metadata).length > 0) { %>
+                                                    <button class="btn btn-sm btn-outline-info" type="button" data-bs-toggle="collapse" data-bs-target="#metadata-<%= activity._id %>" aria-expanded="false">
+                                                        View Details
+                                                    </button>
+                                                    <div class="collapse mt-2" id="metadata-<%= activity._id %>">
+                                                        <div class="card card-body">
+                                                            <pre class="small"><%= JSON.stringify(activity.metadata, null, 2) %></pre>
+                                                        </div>
+                                                    </div>
+                                                <% } else { %>
+                                                    <span class="text-muted">No additional details</span>
+                                                <% } %>
+                                            </td>
+                                        </tr>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
+                    <% } else { %>
+                        <div class="alert alert-info">No activities recorded for this user in the selected timeframe.</div>
+                    <% } %>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<style>
+    .progress-bar-success { background-color: #28a745; }
+    .progress-bar-info { background-color: #17a2b8; }
+    .progress-bar-primary { background-color: #007bff; }
+    .progress-bar-warning { background-color: #ffc107; }
+    .progress-bar-danger { background-color: #dc3545; }
+    
+    .progress-bar-width {
+        width: var(--progress-width);
+    }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Activity Type Distribution Chart
+    const chartColors = ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b', '#6f42c1', '#fd7e14', '#20c9a6'];
+    const chartHoverColors = ['#2e59d9', '#17a673', '#2c9faf', '#dda20a', '#be2617', '#5a3a99', '#c96a17', '#17a185'];
+    
+    // Get activity type data from server-side variables
+    const activityTypeData = {
+        labels: Object.keys(activityTypeCounts || {}).map(type => 
+            type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+        ),
+        datasets: [{
+            data: Object.values(activityTypeCounts || {}),
+            backgroundColor: chartColors,
+            hoverBackgroundColor: chartHoverColors,
+            hoverBorderColor: "rgba(234, 236, 244, 1)"
+        }]
+    };
+
+    const activityTypeOptions = {
+        maintainAspectRatio: false,
+        tooltips: {
+            backgroundColor: "rgb(255,255,255)",
+            bodyFontColor: "#858796",
+            borderColor: '#dddfeb',
+            borderWidth: 1,
+            xPadding: 15,
+            yPadding: 15,
+            displayColors: false,
+            caretPadding: 10
+        },
+        legend: {
+            display: false
+        },
+        cutoutPercentage: 70
+    };
+
+    function initActivityTypeChart() {
+        const ctx = document.getElementById('activityTypeChart');
+        if (ctx && Object.keys(activityTypeCounts || {}).length > 0) {
+            new Chart(ctx.getContext('2d'), {
+                type: 'doughnut',
+                data: activityTypeData,
+                options: activityTypeOptions
+            });
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', initActivityTypeChart);
+
+    // Activity Time Chart - Fetch data from API
+    function initActivityTimeChart(data) {
+        if (!data.dailyActivity || data.dailyActivity.length === 0) return;
+
+        const ctx = document.getElementById('activityTimeChart');
+        if (!ctx) return;
+
+        const labels = data.dailyActivity.map(item => item._id);
+        const activityData = data.dailyActivity.map(item => item.count);
+        
+        const timeChartData = {
+            labels: labels,
+            datasets: [{
+                label: 'Activity Count',
+                lineTension: 0.3,
+                backgroundColor: "rgba(78, 115, 223, 0.05)",
+                borderColor: "rgba(78, 115, 223, 1)",
+                pointRadius: 3,
+                pointBackgroundColor: "rgba(78, 115, 223, 1)",
+                pointBorderColor: "rgba(78, 115, 223, 1)",
+                pointHoverRadius: 3,
+                pointHoverBackgroundColor: "rgba(78, 115, 223, 1)",
+                pointHoverBorderColor: "rgba(78, 115, 223, 1)",
+                pointHitRadius: 10,
+                pointBorderWidth: 2,
+                data: activityData
+            }]
+        };
+
+        const timeChartOptions = {
+            maintainAspectRatio: false,
+            scales: {
+                xAxes: [{
+                    gridLines: {
+                        display: false,
+                        drawBorder: false
+                    },
+                    ticks: {
+                        maxTicksLimit: 7
+                    }
+                }],
+                yAxes: [{
+                    ticks: {
+                        maxTicksLimit: 5,
+                        padding: 10,
+                        beginAtZero: true
+                    },
+                    gridLines: {
+                        color: "rgb(234, 236, 244)",
+                        zeroLineColor: "rgb(234, 236, 244)",
+                        drawBorder: false,
+                        borderDash: [2],
+                        zeroLineBorderDash: [2]
+                    }
+                }]
+            },
+            legend: {
+                display: false
+            },
+            tooltips: {
+                backgroundColor: "rgb(255,255,255)",
+                bodyFontColor: "#858796",
+                titleMarginBottom: 10,
+                titleFontColor: '#6e707e',
+                titleFontSize: 14,
+                borderColor: '#dddfeb',
+                borderWidth: 1,
+                xPadding: 15,
+                yPadding: 15,
+                displayColors: false,
+                intersect: false,
+                mode: 'index',
+                caretPadding: 10
+            }
+        };
+
+        new Chart(ctx.getContext('2d'), {
+            type: 'line',
+            data: timeChartData,
+            options: timeChartOptions
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        fetch('/admin/api/user-activity/<%= targetUser._id %>?timeframe=<%= timeframe %>')
+            .then(response => response.json())
+            .then(initActivityTimeChart)
+            .catch(error => console.error('Error fetching activity data:', error));
+    });
+</script>
+
+<%- include('../partials/footer') %> 

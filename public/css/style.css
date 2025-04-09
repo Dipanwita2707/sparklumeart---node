@@ -1,0 +1,434 @@
+/* 
+ * Sparklume Art - Custom CSS
+ * Indian Culture x Tech Theme
+*/
+
+:root {
+    /* Indian-inspired color palette with tech accents */
+    --primary-color: #E85A4F; /* Vermilion Red */
+    --secondary-color: #FFB03B; /* Turmeric Gold */
+    --accent-color: #138086; /* Peacock Teal */
+    --deep-accent: #7B1FA2; /* Royal Purple */
+    --light-color: #FDF5E6; /* Off-white */
+    --dark-color: #343434; /* Deep Charcoal */
+    --gradient-1: linear-gradient(135deg, var(--primary-color), var(--deep-accent));
+    --gradient-2: linear-gradient(135deg, var(--secondary-color), var(--accent-color));
+    --text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+    --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    --border-radius: 8px;
+}
+
+/* Main Styles */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--light-color);
+    color: var(--dark-color);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+}
+
+main {
+    flex: 1 0 auto;
+}
+
+footer {
+    flex-shrink: 0;
+    margin-top: auto;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', serif;
+    font-weight: 600;
+}
+
+.section-title {
+    position: relative;
+    margin-bottom: 2rem;
+    color: var(--dark-color);
+}
+
+.section-title::after {
+    content: '';
+    display: block;
+    width: 80px;
+    height: 3px;
+    background: var(--gradient-1);
+    margin-top: 12px;
+}
+
+.section-title.centered::after {
+    margin: 12px auto 0;
+}
+
+/* Navigation Styles */
+.navbar {
+    background-color: var(--dark-color);
+    padding: 1rem 0;
+    transition: all 0.3s ease;
+}
+
+.navbar.scrolled {
+    padding: 0.5rem 0;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+}
+
+.navbar-brand {
+    display: flex;
+    align-items: center;
+}
+
+.brand-text {
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 1.8rem;
+    color: var(--secondary-color);
+    letter-spacing: 1px;
+}
+
+.nav-link {
+    color: rgba(255, 255, 255, 0.8) !important;
+    margin: 0 5px;
+    padding: 8px 15px !important;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.nav-link:hover, .nav-link.active {
+    color: white !important;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.signup-link {
+    background-color: var(--accent-color);
+    color: white !important;
+    border-radius: 30px;
+    padding: 8px 20px !important;
+}
+
+.signup-link:hover {
+    background-color: var(--primary-color);
+    transform: translateY(-2px);
+}
+
+/* Hero Section */
+.hero-section {
+    background: var(--gradient-1);
+    color: white;
+    padding: 8rem 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('/images/mandala-pattern.png');
+    background-repeat: repeat;
+    background-size: 300px;
+    opacity: 0.1;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    text-shadow: var(--text-shadow);
+}
+
+.hero-subtitle {
+    font-size: 1.5rem;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+}
+
+/* Button Styles */
+.btn {
+    border-radius: 30px;
+    padding: 12px 28px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.btn::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 0;
+    background-color: rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    z-index: -1;
+}
+
+.btn:hover::after {
+    height: 100%;
+}
+
+.btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+.btn-secondary {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+    color: var(--dark-color);
+}
+
+.btn-accent {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+    color: white;
+}
+
+.btn-outline-accent {
+    border: 2px solid var(--accent-color);
+    color: var(--accent-color);
+}
+
+.btn-outline-accent:hover {
+    background-color: var(--accent-color);
+    color: white;
+}
+
+/* Card Styles */
+.card {
+    border: none;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+    height: 100%;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+}
+
+.card-img-top {
+    height: 250px;
+    object-fit: cover;
+}
+
+.card-body {
+    padding: 2rem;
+}
+
+.card-title {
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--dark-color);
+}
+
+.card-text {
+    color: #666;
+    margin-bottom: 1.5rem;
+}
+
+/* Feature Icons */
+.feature-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: var(--gradient-2);
+    color: white;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.feature-icon i {
+    font-size: 1.8rem;
+}
+
+/* Gallery Styles */
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-gap: 1.5rem;
+}
+
+.gallery-item {
+    position: relative;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--box-shadow);
+}
+
+.gallery-item img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.gallery-item:hover img {
+    transform: scale(1.05);
+}
+
+.gallery-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 50%);
+    display: flex;
+    align-items: flex-end;
+    padding: 1.5rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.gallery-item:hover .gallery-overlay {
+    opacity: 1;
+}
+
+.gallery-overlay h4 {
+    color: white;
+    margin-bottom: 0.5rem;
+}
+
+.gallery-overlay p {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* Testimonial Styles */
+.testimonial-card {
+    background-color: white;
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    position: relative;
+}
+
+.testimonial-card::before {
+    content: '\201C';
+    font-family: Georgia, serif;
+    font-size: 5rem;
+    color: var(--primary-color);
+    opacity: 0.1;
+    position: absolute;
+    top: 10px;
+    left: 20px;
+}
+
+.client-info {
+    display: flex;
+    align-items: center;
+}
+
+.client-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin-right: 1rem;
+    object-fit: cover;
+}
+
+.client-name {
+    font-weight: 600;
+    margin-bottom: 0.2rem;
+}
+
+.client-role {
+    font-size: 0.9rem;
+    color: #777;
+}
+
+/* Footer Styles */
+.footer {
+    background-color: var(--dark-color);
+    color: white;
+}
+
+.footer h5 {
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+}
+
+.footer a {
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer a:hover {
+    color: var(--secondary-color) !important;
+}
+
+.social-icons {
+    display: flex;
+    align-items: center;
+}
+
+.social-icons a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.social-icons a:hover {
+    transform: translateY(-3px);
+    background-color: var(--accent-color);
+}
+
+/* Responsive Styles */
+@media (max-width: 992px) {
+    .hero-title {
+        font-size: 2.8rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-section {
+        padding: 5rem 0;
+    }
+    
+    .hero-title {
+        font-size: 2.3rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.2rem;
+    }
+    
+    .card-img-top {
+        height: 200px;
+    }
+    
+    .section-padding {
+        padding: 3rem 0;
+    }
+} 

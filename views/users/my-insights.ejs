@@ -1,0 +1,281 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<div class="container py-5">
+    <% if (locals.success_msg && success_msg !== '') { %>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <%= success_msg %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    <% } %>
+
+    <% if (locals.error_msg && error_msg !== '') { %>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <%= error_msg %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    <% } %>
+
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="display-5 fw-bold">Your Personal Art Insights</h1>
+            <p class="lead">Here's how we're personalizing your experience based on your interests.</p>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <!-- Recommendations Section -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Personalized Recommendations</h5>
+                </div>
+                <div class="card-body">
+                    <% if (recommendations && recommendations.length > 0) { %>
+                        <div class="row g-4">
+                            <% recommendations.forEach((recommendation, index) => { %>
+                                <div class="col-md-6">
+                                    <div class="card border-0 shadow-sm h-100">
+                                        <div class="card-body">
+                                            <h5><i class="fas fa-lightbulb text-warning me-2"></i> Art Suggestion <%= index + 1 %></h5>
+                                            <p class="text-muted"><%= recommendation %></p>
+                                        </div>
+                                        <div class="card-footer bg-transparent border-0">
+                                            <a href="/gallery" class="btn btn-outline-primary btn-sm">Explore Related Art</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        </div>
+                    <% } else { %>
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i> As you explore our gallery, we'll learn more about your preferences and provide personalized recommendations.
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+
+        <!-- Activity Score -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Your Interest Profile</h5>
+                </div>
+                <div class="card-body text-center">
+                    <% if (lead && lead.aiScore) { %>
+                        <div class="mb-4">
+                            <div class="position-relative d-inline-block">
+                                <canvas id="interestGauge" width="200" height="200"></canvas>
+                                <div class="position-absolute top-50 start-50 translate-middle">
+                                    <h1 class="mb-0"><%= lead.aiScore %></h1>
+                                    <p class="text-muted mb-0">Interest Score</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <span class="badge bg-<%= 
+                                lead.interestLevel === 'very_high' ? 'success' : 
+                                lead.interestLevel === 'high' ? 'primary' : 
+                                lead.interestLevel === 'medium' ? 'info' : 
+                                lead.interestLevel === 'low' ? 'warning' : 'danger' 
+                            %> p-2 fs-6">
+                                <%= lead.interestLevel.replace('_', ' ').toUpperCase() %> INTEREST
+                            </span>
+                        </div>
+                        
+                        <p>Based on your browsing habits and interactions, we've tailored your experience to match your interests.</p>
+                    <% } else { %>
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i> As you interact with our site, we'll build your interest profile.
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <!-- Insights Section -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Art Insights For You</h5>
+                </div>
+                <div class="card-body">
+                    <% if (insights && insights.length > 0) { %>
+                        <ul class="list-group list-group-flush">
+                            <% insights.forEach(insight => { %>
+                                <li class="list-group-item px-0">
+                                    <div class="d-flex">
+                                        <div class="flex-shrink-0">
+                                            <i class="fas fa-star text-warning fs-4"></i>
+                                        </div>
+                                        <div class="flex-grow-1 ms-3">
+                                            <p class="mb-0"><%= insight %></p>
+                                        </div>
+                                    </div>
+                                </li>
+                            <% }); %>
+                        </ul>
+                    <% } else { %>
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i> As you explore our gallery, we'll provide personalized insights about art that matches your taste.
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+
+        <!-- Email Preferences -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Email Preferences</h5>
+                </div>
+                <div class="card-body">
+                    <form action="/users/email-preferences" method="POST">
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="emailEnabled" name="emailEnabled" <%= lead && lead.preferences && lead.preferences.emailEnabled ? 'checked' : '' %>>
+                            <label class="form-check-label" for="emailEnabled">Receive personalized emails</label>
+                        </div>
+                        
+                        <p class="text-muted small">Select the types of emails you'd like to receive:</p>
+                        
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="emailType1" name="emailTypes" value="recommendations" <%= lead && lead.preferences && lead.preferences.emailTypes && lead.preferences.emailTypes.includes('recommendations') ? 'checked' : '' %>>
+                            <label class="form-check-label" for="emailType1">Art Recommendations</label>
+                        </div>
+                        
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="emailType2" name="emailTypes" value="cart_reminders" <%= lead && lead.preferences && lead.preferences.emailTypes && lead.preferences.emailTypes.includes('cart_reminders') ? 'checked' : '' %>>
+                            <label class="form-check-label" for="emailType2">Cart Reminders</label>
+                        </div>
+                        
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="emailType3" name="emailTypes" value="special_offers" <%= lead && lead.preferences && lead.preferences.emailTypes && lead.preferences.emailTypes.includes('special_offers') ? 'checked' : '' %>>
+                            <label class="form-check-label" for="emailType3">Special Offers</label>
+                        </div>
+                        
+                        <% if (emailHistory) { %>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="text-muted small">Last email sent:</span>
+                                <span class="badge bg-secondary"><%= new Date(emailHistory.lastSent).toLocaleDateString() %></span>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-muted small">Emails opened:</span>
+                                <span class="badge bg-success"><%= emailHistory.opened %> of <%= emailHistory.totalSent %></span>
+                            </div>
+                        <% } %>
+                        
+                        <div class="mt-3">
+                            <button type="submit" class="btn btn-primary">Update Preferences</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Your Recent Activity</h5>
+                </div>
+                <div class="card-body">
+                    <% if (activities && activities.length > 0) { %>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Activity</th>
+                                        <th>Details</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% activities.forEach(activity => { %>
+                                        <tr>
+                                            <td><%= new Date(activity.createdAt).toLocaleString() %></td>
+                                            <td>
+                                                <span class="badge bg-<%= 
+                                                    activity.activityType === 'page_view' ? 'secondary' : 
+                                                    activity.activityType === 'product_view' ? 'primary' : 
+                                                    activity.activityType === 'search' ? 'info' : 
+                                                    activity.activityType === 'add_to_cart' ? 'success' : 
+                                                    activity.activityType === 'checkout' ? 'warning' : 'dark' 
+                                                %>">
+                                                    <%= activity.activityType.replace(/_/g, ' ').toUpperCase() %>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <% if (activity.activityType === 'product_view' && activity.metadata && activity.metadata.productId) { %>
+                                                    <a href="/products/<%= activity.metadata.productId %>">View Product</a>
+                                                <% } else if (activity.activityType === 'search' && activity.metadata && activity.metadata.query) { %>
+                                                    Searched for: "<%= activity.metadata.query %>"
+                                                <% } else { %>
+                                                    <%= activity.route %>
+                                                <% } %>
+                                            </td>
+                                        </tr>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
+                    <% } else { %>
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i> No recent activity to display.
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize interest gauge
+        const gaugeCtx = document.getElementById('interestGauge');
+        if (gaugeCtx) {
+            const score = <%= lead && lead.aiScore ? lead.aiScore : 0 %>;
+            
+            new Chart(gaugeCtx, {
+                type: 'doughnut',
+                data: {
+                    datasets: [{
+                        data: [score, 100 - score],
+                        backgroundColor: [
+                            score >= 80 ? '#28a745' : 
+                            score >= 60 ? '#007bff' : 
+                            score >= 40 ? '#17a2b8' : 
+                            score >= 20 ? '#ffc107' : '#dc3545',
+                            '#f5f5f5'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    cutout: '75%',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            enabled: false
+                        }
+                    }
+                }
+            });
+        }
+    });
+</script>
+
+<%- include('../partials/footer') %> 

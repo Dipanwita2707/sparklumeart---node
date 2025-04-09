@@ -1,0 +1,138 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/seller/custom-requests">Custom Requests</a></li>
+                    <li class="breadcrumb-item active" aria-current="page"><%= request.title %></li>
+                </ol>
+            </nav>
+
+            <% if (messages.success) { %>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <%= messages.success %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <% } %>
+
+            <% if (messages.error) { %>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <%= messages.error %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <% } %>
+
+            <div class="card mb-4">
+                <% if (request.imageUrl) { %>
+                    <img src="<%= request.imageUrl %>" class="card-img-top" alt="Reference Image" style="max-height: 400px; object-fit: contain; background: #f8f9fa;">
+                <% } %>
+                <div class="card-body">
+                    <h2 class="card-title"><%= request.title %></h2>
+                    <p class="text-muted">
+                        Posted by <%= request.user.name %> • <%= new Date(request.createdAt).toLocaleDateString() %>
+                    </p>
+                    
+                    <div class="mb-4">
+                        <span class="badge bg-primary me-2">Budget: ₹<%= request.budget %></span>
+                        <span class="badge bg-<%= request.status === 'open' ? 'success' : 'warning' %>">
+                            <%= request.status.charAt(0).toUpperCase() + request.status.slice(1) %>
+                        </span>
+                    </div>
+
+                    <h5>Description</h5>
+                    <p class="card-text"><%= request.description %></p>
+
+                    <% if (request.specifications) { %>
+                        <h5>Specifications</h5>
+                        <ul class="list-unstyled">
+                            <% if (request.specifications.size) { %>
+                                <li><strong>Size:</strong> <%= request.specifications.size %></li>
+                            <% } %>
+                            <% if (request.specifications.medium) { %>
+                                <li><strong>Preferred Medium:</strong> <%= request.specifications.medium %></li>
+                            <% } %>
+                            <% if (request.specifications.style) { %>
+                                <li><strong>Style:</strong> <%= request.specifications.style %></li>
+                            <% } %>
+                            <% if (request.specifications.deadline) { %>
+                                <li><strong>Deadline:</strong> <%= new Date(request.specifications.deadline).toLocaleDateString() %></li>
+                            <% } %>
+                        </ul>
+                    <% } %>
+
+                    <% if (request.referenceImages && request.referenceImages.length > 0) { %>
+                        <h5>Reference Images</h5>
+                        <div class="row">
+                            <% request.referenceImages.forEach(image => { %>
+                                <div class="col-md-4 mb-3">
+                                    <img src="<%= image %>" class="img-fluid rounded" alt="Reference Image">
+                                </div>
+                            <% }); %>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+
+            <% if (request.status === 'open' && !hasUserBid) { %>
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Place Your Bid</h5>
+                    </div>
+                    <div class="card-body">
+                        <form action="/customRequests/<%= request._id %>/bid" method="POST">
+                            <div class="mb-3">
+                                <label for="amount" class="form-label">Bid Amount (₹)</label>
+                                <input type="number" class="form-control" id="amount" name="amount" required min="1" max="<%= request.budget %>">
+                                <div class="form-text">Maximum budget is ₹<%= request.budget %></div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="deliveryTime" class="form-label">Estimated Delivery Time (days)</label>
+                                <input type="number" class="form-control" id="deliveryTime" name="deliveryTime" required min="1">
+                            </div>
+                            <div class="mb-3">
+                                <label for="proposal" class="form-label">Your Proposal</label>
+                                <textarea class="form-control" id="proposal" name="proposal" rows="4" required></textarea>
+                                <div class="form-text">Describe how you plan to execute this project and why you're the best fit.</div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit Bid</button>
+                        </form>
+                    </div>
+                </div>
+            <% } %>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Current Bids</h5>
+                </div>
+                <div class="card-body">
+                    <% if (!request.bids || request.bids.length === 0) { %>
+                        <p class="text-muted">No bids yet. Be the first to bid!</p>
+                    <% } else { %>
+                        <div class="list-group list-group-flush">
+                            <% request.bids.forEach(bid => { %>
+                                <div class="list-group-item">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h6 class="mb-1"><%= bid.seller.name %></h6>
+                                        <small class="text-muted"><%= new Date(bid.createdAt).toLocaleDateString() %></small>
+                                    </div>
+                                    <p class="mb-1">₹<%= bid.amount %></p>
+                                    <small class="text-muted">Delivery: <%= bid.deliveryTime %> days</small>
+                                    <% if (bid.seller._id.toString() === user._id.toString()) { %>
+                                        <span class="badge bg-info">Your Bid</span>
+                                    <% } %>
+                                </div>
+                            <% }); %>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %> 

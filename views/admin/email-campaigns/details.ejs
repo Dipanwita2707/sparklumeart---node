@@ -1,0 +1,516 @@
+<%- include('../../partials/header') %>
+<%- include('../../partials/admin-navbar') %>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse">
+            <div class="position-sticky pt-3">
+                <div class="list-group mb-3">
+                    <div class="list-group-item active bg-primary">Navigation</div>
+                    <a href="/admin/dashboard" class="list-group-item list-group-item-action"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a>
+                    <a href="/admin/users" class="list-group-item list-group-item-action"><i class="fas fa-users me-2"></i> Users</a>
+                    <a href="/admin/gallery" class="list-group-item list-group-item-action"><i class="fas fa-images me-2"></i> Gallery</a>
+                    <a href="/admin/requests" class="list-group-item list-group-item-action"><i class="fas fa-paint-brush me-2"></i> Painting Requests</a>
+                    <a href="/admin/products" class="list-group-item list-group-item-action"><i class="fas fa-shopping-cart me-2"></i> Products</a>
+                    <a href="/admin/orders" class="list-group-item list-group-item-action"><i class="fas fa-shopping-bag me-2"></i> Orders</a>
+                    <a href="/admin/psychometric-tests" class="list-group-item list-group-item-action"><i class="fas fa-brain me-2"></i> Psychometric Tests</a>
+                    <a href="/admin/leads" class="list-group-item list-group-item-action"><i class="fas fa-funnel-dollar me-2"></i> AI Lead Management</a>
+                    <a href="/admin/seller-performance" class="list-group-item list-group-item-action"><i class="fas fa-chart-line me-2"></i> Seller Performance</a>
+                    <a href="/admin/user-activity" class="list-group-item list-group-item-action"><i class="fas fa-user-clock me-2"></i> User Activity</a>
+                    <a href="/admin/email-campaigns" class="list-group-item list-group-item-action active"><i class="fas fa-envelope me-2"></i> Email Campaigns</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Campaign Details: <%= campaign.name %></h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <a href="/admin/email-campaigns" class="btn btn-sm btn-outline-secondary me-2">
+                        <i class="fas fa-arrow-left me-1"></i>Back to Campaigns
+                    </a>
+                    
+                    <% if (campaign.status === 'draft') { %>
+                        <form method="POST" action="/admin/email-campaigns/<%= campaign._id %>/send" class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Are you sure you want to send this campaign now?')">
+                                <i class="fas fa-paper-plane me-1"></i>Send Now
+                            </button>
+                        </form>
+                    <% } %>
+                    
+                    <% if (campaign.status === 'scheduled') { %>
+                        <form method="POST" action="/admin/email-campaigns/<%= campaign._id %>/cancel" class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to cancel this scheduled campaign?')">
+                                <i class="fas fa-times me-1"></i>Cancel Campaign
+                            </button>
+                        </form>
+                    <% } %>
+                </div>
+            </div>
+            
+            <% if (locals.success_msg && success_msg !== '') { %>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <%= success_msg %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <% } %>
+
+            <% if (locals.error_msg && error_msg !== '') { %>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <%= error_msg %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <% } %>
+            
+            <!-- Campaign Overview -->
+            <div class="row mb-4">
+                <div class="col-lg-8">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                            <h6 class="m-0 font-weight-bold text-primary">Campaign Overview</h6>
+                            <span class="badge 
+                                <%= campaign.status === 'draft' ? 'bg-secondary' : 
+                                campaign.status === 'scheduled' ? 'bg-info' : 
+                                campaign.status === 'sending' ? 'bg-warning' : 
+                                campaign.status === 'sent' ? 'bg-success' : 
+                                campaign.status === 'cancelled' ? 'bg-danger' : 'bg-secondary' %>">
+                                <%= campaign.status.toUpperCase() %>
+                            </span>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-md-3 text-muted">Name:</div>
+                                <div class="col-md-9 font-weight-bold"><%= campaign.name %></div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-3 text-muted">Subject:</div>
+                                <div class="col-md-9"><%= campaign.subject %></div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-3 text-muted">Sent By:</div>
+                                <div class="col-md-9"><%= campaign.sentBy ? campaign.sentBy.name : 'N/A' %></div>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-3 text-muted">Created:</div>
+                                <div class="col-md-9"><%= new Date(campaign.createdAt).toLocaleString() %></div>
+                            </div>
+                            <% if (campaign.scheduledDate) { %>
+                                <div class="row mb-3">
+                                    <div class="col-md-3 text-muted">Scheduled:</div>
+                                    <div class="col-md-9">
+                                        <%= new Date(campaign.scheduledDate).toLocaleString() %>
+                                        <% if (campaign.status === 'scheduled' && new Date(campaign.scheduledDate) < new Date()) { %>
+                                            <span class="badge bg-warning">Delayed</span>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            <% } %>
+                            <% if (campaign.sentDate) { %>
+                                <div class="row mb-3">
+                                    <div class="col-md-3 text-muted">Sent Date:</div>
+                                    <div class="col-md-9"><%= new Date(campaign.sentDate).toLocaleString() %></div>
+                                </div>
+                            <% } %>
+                            <div class="row mb-3">
+                                <div class="col-md-3 text-muted">Recipients:</div>
+                                <div class="col-md-9"><%= campaign.totalLeads %></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-3 text-muted">Target Criteria:</div>
+                                <div class="col-md-9">
+                                    <% try { %>
+                                        <% const criteria = JSON.parse(campaign.targetCriteria); %>
+                                        <% if (Object.keys(criteria).length === 0) { %>
+                                            All leads
+                                        <% } else if (criteria.interestLevel && criteria.interestLevel.$in) { %>
+                                            High potential leads (interest level: <%= criteria.interestLevel.$in.join(', ') %>)
+                                        <% } else if (criteria.tags) { %>
+                                            Tagged leads: <%= criteria.tags %>
+                                        <% } else if (criteria['engagementMetrics.lastInteraction']) { %>
+                                            Recently active leads (last 7 days)
+                                        <% } else { %>
+                                            Custom criteria
+                                        <% } %>
+                                    <% } catch (e) { %>
+                                        Custom criteria
+                                    <% } %>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Performance Metrics</h6>
+                        </div>
+                        <div class="card-body">
+                            <% if (campaign.status === 'draft' || campaign.status === 'scheduled' || campaign.status === 'cancelled') { %>
+                                <div class="text-center py-4">
+                                    <i class="fas fa-chart-line fa-3x text-gray-300 mb-3"></i>
+                                    <h5 class="text-muted">No metrics available</h5>
+                                    <p class="small">Performance metrics will be available after the campaign is sent.</p>
+                                </div>
+                            <% } else { %>
+                                <div class="mb-3">
+                                    <h4 class="small font-weight-bold">Delivery Rate <span class="float-end"><%= metrics && metrics.deliveryRate ? metrics.deliveryRate : 0 %>%</span></h4>
+                                    <div class="progress mb-4">
+                                        <div class="progress-bar bg-info" role="progressbar" style="width:<%= metrics && metrics.deliveryRate ? metrics.deliveryRate : 0 %>%"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <h4 class="small font-weight-bold">Open Rate <span class="float-end"><%= metrics && metrics.openRate ? metrics.openRate : 0 %>%</span></h4>
+                                    <div class="progress mb-4">
+                                        <div class="progress-bar bg-success" role="progressbar" style="width:<%= metrics && metrics.openRate ? metrics.openRate : 0 %>%"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <h4 class="small font-weight-bold">Click Rate <span class="float-end"><%= metrics && metrics.clickRate ? metrics.clickRate : 0 %>%</span></h4>
+                                    <div class="progress mb-4">
+                                        <div class="progress-bar bg-primary" role="progressbar" style="width:<%= metrics && metrics.clickRate ? metrics.clickRate : 0 %>%"></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <h4 class="small font-weight-bold">Conversion Rate <span class="float-end"><%= metrics && metrics.conversionRate ? metrics.conversionRate : 0 %>%</span></h4>
+                                    <div class="progress mb-4">
+                                        <div class="progress-bar bg-warning" role="progressbar" style="width:<%= metrics && metrics.conversionRate ? metrics.conversionRate : 0 %>%"></div>
+                                    </div>
+                                </div>
+                                
+                                <hr>
+                                
+                                <div class="row text-center">
+                                    <div class="col-4">
+                                        <div class="mb-1"><i class="fas fa-envelope-open-text text-info"></i></div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800"><%= campaign.metrics.uniqueOpens %></div>
+                                        <div class="small text-muted">Opens</div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="mb-1"><i class="fas fa-mouse-pointer text-primary"></i></div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800"><%= campaign.metrics.uniqueClicks %></div>
+                                        <div class="small text-muted">Clicks</div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="mb-1"><i class="fas fa-exchange-alt text-success"></i></div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800"><%= campaign.metrics.conversionCount %></div>
+                                        <div class="small text-muted">Conversions</div>
+                                    </div>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Email Content -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Email Content</h6>
+                </div>
+                <div class="card-body">
+                    <div class="card mb-4">
+                        <div class="card-header bg-light">
+                            <strong>Subject:</strong> <%= campaign.subject %>
+                        </div>
+                        <div class="card-body">
+                            <div class="email-content-preview p-3 border rounded">
+                                <%- campaign.content %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recipients Table -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Recipients</h6>
+                    <span class="badge bg-secondary"><%= campaign.recipients.length %> Total</span>
+                </div>
+                <div class="card-body">
+                    <% if (campaign.recipients && campaign.recipients.length > 0) { %>
+                        <div class="table-responsive">
+                            <table class="table table-bordered" id="recipientsTable" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>User</th>
+                                        <th>Email</th>
+                                        <th>Lead Score</th>
+                                        <th>Status</th>
+                                        <th>Opens</th>
+                                        <th>Clicks</th>
+                                        <th>Converted</th>
+                                        <th>Details</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% campaign.recipients.forEach(recipient => { %>
+                                        <tr>
+                                            <td>
+                                                <% if (recipient.user && typeof recipient.user === 'object') { %>
+                                                    <a href="/admin/users/<%= recipient.user._id %>"><%= recipient.user.name %></a>
+                                                <% } else { %>
+                                                    -
+                                                <% } %>
+                                            </td>
+                                            <td><%= recipient.email %></td>
+                                            <td>
+                                                <% if (recipient.lead && typeof recipient.lead === 'object') { %>
+                                                    <%= recipient.lead.aiScore || '-' %>
+                                                    
+                                                    <span class="badge bg-<%= 
+                                                        recipient.lead.interestLevel === 'very_high' ? 'success' : 
+                                                        recipient.lead.interestLevel === 'high' ? 'primary' : 
+                                                        recipient.lead.interestLevel === 'medium' ? 'info' : 
+                                                        recipient.lead.interestLevel === 'low' ? 'warning' : 'danger' 
+                                                    %>">
+                                                        <%= recipient.lead.interestLevel && recipient.lead.interestLevel.replace('_', ' ').toUpperCase() || '-' %>
+                                                    </span>
+                                                <% } else { %>
+                                                    -
+                                                <% } %>
+                                            </td>
+                                            <td>
+                                                <% if (!recipient.sent) { %>
+                                                    <span class="badge bg-secondary">Not Sent</span>
+                                                <% } else if (!recipient.delivered) { %>
+                                                    <span class="badge bg-danger">Failed</span>
+                                                <% } else { %>
+                                                    <span class="badge bg-success">Delivered</span>
+                                                <% } %>
+                                            </td>
+                                            <td>
+                                                <% if (recipient.opened) { %>
+                                                    <span class="badge bg-success"><%= recipient.openCount %></span>
+                                                <% } else { %>
+                                                    <span class="text-muted">None</span>
+                                                <% } %>
+                                            </td>
+                                            <td>
+                                                <% if (recipient.clicked) { %>
+                                                    <span class="badge bg-primary"><%= recipient.clickCount %></span>
+                                                <% } else { %>
+                                                    <span class="text-muted">None</span>
+                                                <% } %>
+                                            </td>
+                                            <td>
+                                                <% if (recipient.converted) { %>
+                                                    <span class="badge bg-warning"><i class="fas fa-check"></i></span>
+                                                <% } else { %>
+                                                    <span class="text-muted">No</span>
+                                                <% } %>
+                                            </td>
+                                            <td>
+                                                <button type="button" class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#recipientModal<%= recipient._id %>">
+                                                    <i class="fas fa-info-circle"></i>
+                                                </button>
+                                                
+                                                <!-- Recipient Details Modal -->
+                                                <div class="modal fade" id="recipientModal<%= recipient._id %>" tabindex="-1" aria-labelledby="recipientModalLabel<%= recipient._id %>" aria-hidden="true">
+                                                    <div class="modal-dialog">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="recipientModalLabel<%= recipient._id %>">Recipient Details</h5>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <h6>Email Activity Timeline</h6>
+                                                                <ul class="timeline">
+                                                                    <% if (recipient.sent) { %>
+                                                                        <li>
+                                                                            <i class="fas fa-envelope bg-primary"></i>
+                                                                            <div class="timeline-item">
+                                                                                <span class="time"><i class="fas fa-clock"></i> <%= recipient.sentAt ? new Date(recipient.sentAt).toLocaleString() : 'N/A' %></span>
+                                                                                <h3 class="timeline-header">Email Sent</h3>
+                                                                            </div>
+                                                                        </li>
+                                                                    <% } %>
+                                                                    
+                                                                    <% if (recipient.delivered) { %>
+                                                                        <li>
+                                                                            <i class="fas fa-check bg-success"></i>
+                                                                            <div class="timeline-item">
+                                                                                <span class="time"><i class="fas fa-clock"></i> <%= recipient.sentAt ? new Date(recipient.sentAt).toLocaleString() : 'N/A' %></span>
+                                                                                <h3 class="timeline-header">Email Delivered</h3>
+                                                                            </div>
+                                                                        </li>
+                                                                    <% } %>
+                                                                    
+                                                                    <% if (recipient.opened) { %>
+                                                                        <li>
+                                                                            <i class="fas fa-envelope-open bg-info"></i>
+                                                                            <div class="timeline-item">
+                                                                                <span class="time"><i class="fas fa-clock"></i> <%= recipient.firstOpenAt ? new Date(recipient.firstOpenAt).toLocaleString() : 'N/A' %></span>
+                                                                                <h3 class="timeline-header">First Opened</h3>
+                                                                                <% if (recipient.openCount > 1) { %>
+                                                                                    <div class="timeline-body">
+                                                                                        <p>Email was opened <%= recipient.openCount %> times.</p>
+                                                                                        <p>Last opened: <%= recipient.lastOpenAt ? new Date(recipient.lastOpenAt).toLocaleString() : 'N/A' %></p>
+                                                                                    </div>
+                                                                                <% } %>
+                                                                            </div>
+                                                                        </li>
+                                                                    <% } %>
+                                                                    
+                                                                    <% if (recipient.clicked) { %>
+                                                                        <li>
+                                                                            <i class="fas fa-mouse-pointer bg-warning"></i>
+                                                                            <div class="timeline-item">
+                                                                                <span class="time"><i class="fas fa-clock"></i> <%= recipient.firstClickAt ? new Date(recipient.firstClickAt).toLocaleString() : 'N/A' %></span>
+                                                                                <h3 class="timeline-header">First Click</h3>
+                                                                                <% if (recipient.clickedLinks && recipient.clickedLinks.length > 0) { %>
+                                                                                    <div class="timeline-body">
+                                                                                        <p>Clicked links:</p>
+                                                                                        <ul>
+                                                                                            <% recipient.clickedLinks.forEach(link => { %>
+                                                                                                <li>
+                                                                                                    <a href="<%= link.url %>" target="_blank"><%= link.url %></a>
+                                                                                                    <span class="text-muted">(<%= link.clickedAt ? new Date(link.clickedAt).toLocaleString() : 'N/A' %>)</span>
+                                                                                                </li>
+                                                                                            <% }); %>
+                                                                                        </ul>
+                                                                                    </div>
+                                                                                <% } %>
+                                                                            </div>
+                                                                        </li>
+                                                                    <% } %>
+                                                                    
+                                                                    <% if (recipient.converted) { %>
+                                                                        <li>
+                                                                            <i class="fas fa-check-circle bg-success"></i>
+                                                                            <div class="timeline-item">
+                                                                                <span class="time"><i class="fas fa-clock"></i> <%= recipient.convertedAt ? new Date(recipient.convertedAt).toLocaleString() : 'N/A' %></span>
+                                                                                <h3 class="timeline-header">Conversion</h3>
+                                                                            </div>
+                                                                        </li>
+                                                                    <% } %>
+                                                                </ul>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                                <% if (recipient.lead && typeof recipient.lead === 'object') { %>
+                                                                    <a href="/admin/leads/<%= recipient.lead._id %>" class="btn btn-primary">View Lead</a>
+                                                                <% } %>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
+                    <% } else { %>
+                        <div class="text-center py-4">
+                            <i class="fas fa-users fa-3x text-gray-300 mb-3"></i>
+                            <h5 class="text-muted">No recipients specified</h5>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<style>
+/* Timeline styles */
+.timeline {
+    position: relative;
+    margin: 0 0 30px 0;
+    padding: 0;
+    list-style: none;
+}
+
+.timeline:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: #ddd;
+    left: 31px;
+    margin: 0;
+    border-radius: 2px;
+}
+
+.timeline > li {
+    position: relative;
+    margin-right: 10px;
+    margin-bottom: 15px;
+}
+
+.timeline > li:before,
+.timeline > li:after {
+    content: " ";
+    display: table;
+}
+
+.timeline > li:after {
+    clear: both;
+}
+
+.timeline > li > .timeline-item {
+    box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+    border-radius: 3px;
+    margin-top: 0;
+    background: #fff;
+    color: #444;
+    margin-left: 60px;
+    margin-right: 15px;
+    padding: 0;
+    position: relative;
+}
+
+.timeline > li > .timeline-item > .time {
+    color: #999;
+    float: right;
+    padding: 10px;
+    font-size: 12px;
+}
+
+.timeline > li > .timeline-item > .timeline-header {
+    margin: 0;
+    color: #555;
+    border-bottom: 1px solid #f4f4f4;
+    padding: 10px;
+    font-size: 16px;
+    line-height: 1.1;
+}
+
+.timeline > li > .timeline-item > .timeline-body,
+.timeline > li > .timeline-item > .timeline-footer {
+    padding: 10px;
+}
+
+.timeline > li > i {
+    width: 30px;
+    height: 30px;
+    font-size: 15px;
+    line-height: 30px;
+    position: absolute;
+    color: #fff;
+    background: #d2d6de;
+    border-radius: 50%;
+    text-align: center;
+    left: 18px;
+    top: 0;
+}
+</style>
+
+<script>
+    $(document).ready(function() {
+        $('#recipientsTable').DataTable({
+            order: [[4, 'desc'], [5, 'desc']],
+            pageLength: 25
+        });
+    });
+</script>
+
+<%- include('../../partials/footer') %> 

@@ -1,0 +1,330 @@
+<%- include('../../partials/header') %>
+<%- include('../../partials/admin-navbar') %>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse">
+            <div class="position-sticky pt-3">
+                <div class="list-group mb-3">
+                    <div class="list-group-item active bg-primary">Navigation</div>
+                    <a href="/admin/dashboard" class="list-group-item list-group-item-action"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a>
+                    <a href="/admin/users" class="list-group-item list-group-item-action"><i class="fas fa-users me-2"></i> Users</a>
+                    <a href="/admin/gallery" class="list-group-item list-group-item-action"><i class="fas fa-images me-2"></i> Gallery</a>
+                    <a href="/admin/requests" class="list-group-item list-group-item-action"><i class="fas fa-paint-brush me-2"></i> Painting Requests</a>
+                    <a href="/admin/products" class="list-group-item list-group-item-action"><i class="fas fa-shopping-cart me-2"></i> Products</a>
+                    <a href="/admin/orders" class="list-group-item list-group-item-action"><i class="fas fa-shopping-bag me-2"></i> Orders</a>
+                    <a href="/admin/psychometric-tests" class="list-group-item list-group-item-action"><i class="fas fa-brain me-2"></i> Psychometric Tests</a>
+                    <a href="/admin/leads" class="list-group-item list-group-item-action"><i class="fas fa-funnel-dollar me-2"></i> AI Lead Management</a>
+                    <a href="/admin/seller-performance" class="list-group-item list-group-item-action"><i class="fas fa-chart-line me-2"></i> Seller Performance</a>
+                    <a href="/admin/user-activity" class="list-group-item list-group-item-action"><i class="fas fa-user-clock me-2"></i> User Activity</a>
+                    <a href="/admin/email-campaigns" class="list-group-item list-group-item-action active"><i class="fas fa-envelope me-2"></i> Email Campaigns</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Create New Email Campaign</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <a href="/admin/email-campaigns" class="btn btn-sm btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>Back to Campaigns
+                    </a>
+                </div>
+            </div>
+            
+            <% if (locals.success_msg && success_msg !== '') { %>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <%= success_msg %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <% } %>
+
+            <% if (locals.error_msg && error_msg !== '') { %>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <%= error_msg %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <% } %>
+            
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Campaign Details</h6>
+                        </div>
+                        <div class="card-body">
+                            <form action="/admin/email-campaigns" method="POST">
+                                <div class="mb-3">
+                                    <label for="name" class="form-label">Campaign Name</label>
+                                    <input type="text" class="form-control" id="name" name="name" required>
+                                    <div class="form-text">Internal name for this campaign</div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="subject" class="form-label">Email Subject</label>
+                                    <input type="text" class="form-control" id="subject" name="subject" required>
+                                    <div class="form-text">Subject line of the email</div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="targetCriteria" class="form-label">Target Audience</label>
+                                    <select class="form-select" id="targetCriteria" name="targetCriteria" required>
+                                        <option value="">-- Select Target Audience --</option>
+                                        <option value="high_potential">High Potential Leads (<%= targetingOptions.highPotentialCount %>)</option>
+                                        <option value="cart_abandoners">Cart Abandoners (<%= targetingOptions.cartAbandoners %>)</option>
+                                        <option value="recently_active">Recently Active Users (<%= targetingOptions.recentlyActive %>)</option>
+                                        <option value="all">All Leads (<%= targetingOptions.totalLeads %>)</option>
+                                    </select>
+                                    <div class="form-text">Who should receive this email</div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="scheduledDate" class="form-label">Schedule (Optional)</label>
+                                    <input type="datetime-local" class="form-control" id="scheduledDate" name="scheduledDate">
+                                    <div class="form-text">Leave blank to save as draft</div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="content" class="form-label">Email Content</label>
+                                    <textarea class="form-control rich-editor" id="content" name="content" rows="15" required></textarea>
+                                    <div class="form-text">You can use HTML for formatting</div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label class="form-label">Available Personalization Tags</label>
+                                    <div class="border p-3 rounded bg-light">
+                                        <p class="mb-2">Insert these tags to personalize your email:</p>
+                                        <ul class="mb-0 list-unstyled">
+                                            <li><code>{{name}}</code> - Recipient's name</li>
+                                            <li><code>{{email}}</code> - Recipient's email</li>
+                                            <li><code>{{lead_score}}</code> - Lead score</li>
+                                            <li><code>{{interest_level}}</code> - Interest level</li>
+                                            <li><code>{{current_date}}</code> - Current date</li>
+                                            <li><code>{{company}}</code> - Company name</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                    <button type="button" class="btn btn-outline-secondary me-md-2" id="previewBtn">
+                                        <i class="fas fa-eye me-1"></i>Preview
+                                    </button>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save me-1"></i>Save Campaign
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Template Library</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="list-group">
+                                <button type="button" class="list-group-item list-group-item-action" data-template="welcome">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">Welcome Email</h6>
+                                        <small>Basic</small>
+                                    </div>
+                                    <p class="mb-1 small">Introduce your brand to new users</p>
+                                </button>
+                                
+                                <button type="button" class="list-group-item list-group-item-action" data-template="cart-abandonment">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">Cart Abandonment</h6>
+                                        <small>Recovery</small>
+                                    </div>
+                                    <p class="mb-1 small">Remind users about items in their cart</p>
+                                </button>
+                                
+                                <button type="button" class="list-group-item list-group-item-action" data-template="personalized-recs">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">Personalized Recommendations</h6>
+                                        <small>Engagement</small>
+                                    </div>
+                                    <p class="mb-1 small">Custom art recommendations based on behavior</p>
+                                </button>
+                                
+                                <button type="button" class="list-group-item list-group-item-action" data-template="re-engagement">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">Re-engagement</h6>
+                                        <small>Winback</small>
+                                    </div>
+                                    <p class="mb-1 small">Bring back inactive users</p>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Tips</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="small">
+                                <ul class="mb-0">
+                                    <li class="mb-2">Keep subject lines under 50 characters</li>
+                                    <li class="mb-2">Use personalization tags to improve engagement</li>
+                                    <li class="mb-2">Include a clear call-to-action</li>
+                                    <li class="mb-2">Test your email in different email clients</li>
+                                    <li class="mb-2">Use mobile-responsive templates</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Email Preview Modal -->
+            <div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="previewModalLabel">Email Preview</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="card mb-3">
+                                <div class="card-header bg-light">
+                                    <strong>Subject:</strong> <span id="previewSubject"></span>
+                                </div>
+                                <div class="card-body">
+                                    <div id="previewContent" class="email-preview border p-3 rounded"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script>
+    // Initialize rich text editor
+    document.addEventListener('DOMContentLoaded', function() {
+        // Set up click handler for preview button
+        document.getElementById('previewBtn').addEventListener('click', function() {
+            // Get values from form
+            const subject = document.getElementById('subject').value || '[No subject]';
+            const content = document.getElementById('content').value || '[No content]';
+            
+            // Update preview modal
+            document.getElementById('previewSubject').textContent = subject;
+            document.getElementById('previewContent').innerHTML = content;
+            
+            // Show the modal
+            const previewModal = new bootstrap.Modal(document.getElementById('previewModal'));
+            previewModal.show();
+        });
+        
+        // Set up click handlers for template buttons
+        document.querySelectorAll('[data-template]').forEach(button => {
+            button.addEventListener('click', function() {
+                const template = this.getAttribute('data-template');
+                
+                // Load the appropriate template
+                let subject = '';
+                let content = '';
+                
+                switch(template) {
+                    case 'welcome':
+                        subject = 'Welcome to ArtifyMe - Your Personal Art Journey Begins';
+                        content = `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                            <h2>Welcome to ArtifyMe, {{name}}!</h2>
+                            <p>We're thrilled to have you join our community of art enthusiasts.</p>
+                            <p>At ArtifyMe, we believe everyone has a unique artistic preference, and we're dedicated to helping you discover art that resonates with your personal style.</p>
+                            <h3>What's Next?</h3>
+                            <ul>
+                                <li>Explore our gallery of unique artworks</li>
+                                <li>Take our psychometric test to discover your art preferences</li>
+                                <li>Get personalized recommendations based on your tastes</li>
+                            </ul>
+                            <p style="text-align: center; margin-top: 30px;">
+                                <a href="http://example.com/explore" style="background-color: #4e73df; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; font-weight: bold;">Explore Now</a>
+                            </p>
+                            <p style="margin-top: 30px; font-size: 12px; color: #666;">
+                                If you have any questions, simply reply to this email. We're here to help!
+                            </p>
+                        </div>`;
+                        break;
+                        
+                    case 'cart-abandonment':
+                        subject = 'Your Art Selections Are Waiting for You';
+                        content = `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                            <h2>Hello {{name}},</h2>
+                            <p>We noticed you were exploring some beautiful artwork in your cart but didn't complete your purchase.</p>
+                            <p>Your selections are still waiting for you, and we've held them for a limited time to ensure you don't miss out.</p>
+                            <div style="background-color: #f8f9fc; padding: 15px; border-radius: 5px; margin: 20px 0;">
+                                <p style="font-weight: bold; margin-top: 0;">Your Cart Summary:</p>
+                                <p>• Selected artworks (2)</p>
+                                <p style="margin-bottom: 0;">• Custom framing options available</p>
+                            </div>
+                            <p style="text-align: center; margin-top: 30px;">
+                                <a href="http://example.com/cart" style="background-color: #4e73df; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; font-weight: bold;">Complete Your Purchase</a>
+                            </p>
+                            <p style="margin-top: 30px; font-size: 12px; color: #666;">
+                                If you encountered any issues or have questions about your selections, our art consultants are ready to assist you.
+                            </p>
+                        </div>`;
+                        break;
+                        
+                    case 'personalized-recs':
+                        subject = 'Art Selections Curated Just for You, {{name}}';
+                        content = `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                            <h2>Your Personalized Art Recommendations</h2>
+                            <p>Based on your unique interests and browsing history, we've curated a selection of artworks we think you'll love.</p>
+                            <p>Your art preference profile shows an affinity for {{interestLevel}} interest in abstract expressionism and modern portraits.</p>
+                            <div style="background-color: #f8f9fc; padding: 15px; border-radius: 5px; margin: 20px 0;">
+                                <p style="font-weight: bold; margin-top: 0;">Recommended for You:</p>
+                                <p>• "Sunset Reflections" by Maria Chen</p>
+                                <p>• "Urban Perspective" by James Wilson</p>
+                                <p style="margin-bottom: 0;">• "Tranquil Waters" collection</p>
+                            </div>
+                            <p style="text-align: center; margin-top: 30px;">
+                                <a href="http://example.com/recommendations" style="background-color: #4e73df; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; font-weight: bold;">View Your Recommendations</a>
+                            </p>
+                            <p style="margin-top: 30px; font-size: 12px; color: #666;">
+                                These recommendations are based on your lead score of {{lead_score}} and your recent interactions with our gallery.
+                            </p>
+                        </div>`;
+                        break;
+                        
+                    case 're-engagement':
+                        subject = 'We Miss You, {{name}} - Special Offer Inside';
+                        content = `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                            <h2>We've Missed You!</h2>
+                            <p>It's been a while since your last visit to ArtifyMe, and we wanted to check in.</p>
+                            <p>The art world is constantly evolving, and we've added hundreds of new pieces that match your preferences since you last browsed our collections.</p>
+                            <div style="background-color: #f8f9fc; padding: 15px; border-radius: 5px; margin: 20px 0;">
+                                <p style="font-weight: bold; margin-top: 0; text-align: center; font-size: 18px;">SPECIAL OFFER</p>
+                                <p style="text-align: center; font-size: 16px; margin-bottom: 0;">Use code <strong>WELCOME-BACK</strong> for 15% off your next purchase</p>
+                            </div>
+                            <p style="text-align: center; margin-top: 30px;">
+                                <a href="http://example.com/new-arrivals" style="background-color: #4e73df; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; font-weight: bold;">Discover New Arrivals</a>
+                            </p>
+                            <p style="margin-top: 30px; font-size: 12px; color: #666;">
+                                This offer is valid for 7 days from {{current_date}}. We hope to see you soon!
+                            </p>
+                        </div>`;
+                        break;
+                }
+                
+                // Update form with template
+                document.getElementById('subject').value = subject;
+                document.getElementById('content').value = content;
+            });
+        });
+    });
+</script>
+
+<%- include('../../partials/footer') %> 

@@ -1,0 +1,41 @@
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="text-center">Verify Your Email</h3>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-4">
+                    <i class="fas fa-envelope fa-3x text-primary mb-3"></i>
+                    <p>We've sent a verification code to your email address.</p>
+                    <p>Please enter the code below to verify your account.</p>
+                </div>
+                <form action="/auth/verify-otp" method="POST">
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email address</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="otp" class="form-label">Verification Code</label>
+                        <input type="text" class="form-control" id="otp" name="otp" required>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Verify Email</button>
+                        <button type="button" class="btn btn-outline-primary" id="resendOtp">Resend Code</button>
+                    </div>
+                </form>
+                <div class="text-center mt-3">
+                    <p>Didn't receive the code? <a href="#" id="resendLink">Click here to resend</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('resendLink').addEventListener('click', function(e) {
+    e.preventDefault();
+    // Add resend OTP functionality here
+    alert('New verification code has been sent to your email.');
+});
+</script> 

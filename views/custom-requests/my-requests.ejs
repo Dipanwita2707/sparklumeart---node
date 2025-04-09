@@ -1,0 +1,54 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>My Custom Requests</h2>
+        <a href="/customRequests/create" class="btn btn-primary">Create New Request</a>
+    </div>
+
+    <% if (requests.length === 0) { %>
+        <div class="alert alert-info">
+            You haven't created any custom requests yet.
+        </div>
+    <% } else { %>
+        <div class="row">
+            <% requests.forEach(request => { %>
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><%= request.title %></h5>
+                            <span class="badge bg-<%= request.status === 'open' ? 'primary' : 
+                                                    request.status === 'assigned' ? 'info' :
+                                                    request.status === 'in_progress' ? 'warning' :
+                                                    request.status === 'completed' ? 'success' : 'danger' %>">
+                                <%= request.status.replace('_', ' ').toUpperCase() %>
+                            </span>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <img src="<%= request.imageUrl %>" class="img-fluid rounded" alt="Reference Image">
+                                </div>
+                                <div class="col-md-8">
+                                    <p><strong>Type:</strong> <%= request.type.replace('_', ' ').toUpperCase() %></p>
+                                    <p><strong>Budget:</strong> ₹<%= request.budget %></p>
+                                    <p><strong>Created:</strong> <%= new Date(request.createdAt).toLocaleDateString() %></p>
+                                    <% if (request.assignedSeller) { %>
+                                        <p><strong>Assigned to:</strong> <%= request.assignedSeller.name %></p>
+                                    <% } %>
+                                    <% if (request.expectedDeliveryDate) { %>
+                                        <p><strong>Expected Delivery:</strong> <%= new Date(request.expectedDeliveryDate).toLocaleDateString() %></p>
+                                    <% } %>
+                                    <a href="/customRequests/<%= request._id %>" class="btn btn-info">View Details</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+    <% } %>
+</div>
+
+<%- include('../partials/footer') %> 

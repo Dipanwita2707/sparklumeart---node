@@ -1,0 +1,393 @@
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12 mb-4">
+            <% if (user.role === 'user') { %>
+                <a href="/user/dashboard" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Dashboard
+                </a>
+            <% } else if (user.role === 'admin') { %>
+                <a href="/admin/dashboard" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Admin Dashboard
+                </a>
+            <% } else if (user.role === 'seller') { %>
+                <a href="/seller/dashboard" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Seller Dashboard
+                </a>
+            <% } else if (user.role === 'psychologist') { %>
+                <a href="/psychologist/dashboard" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Psychologist Dashboard
+                </a>
+            <% } %>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Home Decor Psychometric Test</h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <p><strong>Welcome to our Psychometric Test!</strong></p>
+                        <p>This test will help our psychologist understand your preferences and personality traits to provide personalized home decor recommendations.</p>
+                        <p>Please answer all questions honestly. After completing the test, you will need to make a payment of ₹100 for the psychologist's review.</p>
+                    </div>
+
+                    <form action="/user/psychometric-test" method="POST" id="psychometricForm">
+                        <!-- Color Preference Questions -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2">Color Preferences</h5>
+                            
+                            <div class="question mb-3">
+                                <p class="fw-bold">1. Which color scheme do you prefer for your living room?</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question1" id="q1a" value="a" required>
+                                    <label class="form-check-label" for="q1a">Warm colors (reds, oranges, yellows)</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question1" id="q1b" value="b">
+                                    <label class="form-check-label" for="q1b">Cool colors (blues, greens, purples)</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question1" id="q1c" value="c">
+                                    <label class="form-check-label" for="q1c">Neutral colors (whites, grays, beiges)</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question1" id="q1d" value="d">
+                                    <label class="form-check-label" for="q1d">Bold, vibrant colors</label>
+                                </div>
+                            </div>
+
+                            <div class="question mb-3">
+                                <p class="fw-bold">2. When you enter a room, which color draws your attention first?</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question2" id="q2a" value="a" required>
+                                    <label class="form-check-label" for="q2a">Red or orange</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question2" id="q2b" value="b">
+                                    <label class="form-check-label" for="q2b">Blue or green</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question2" id="q2c" value="c">
+                                    <label class="form-check-label" for="q2c">White or beige</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question2" id="q2d" value="d">
+                                    <label class="form-check-label" for="q2d">Purple or pink</label>
+                                </div>
+                            </div>
+
+                            <div class="question mb-3">
+                                <p class="fw-bold">3. Which color would you prefer for your bedroom walls?</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question3" id="q3a" value="a" required>
+                                    <label class="form-check-label" for="q3a">Warm beige or terracotta</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question3" id="q3b" value="b">
+                                    <label class="form-check-label" for="q3b">Soft blue or green</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question3" id="q3c" value="c">
+                                    <label class="form-check-label" for="q3c">White or light gray</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question3" id="q3d" value="d">
+                                    <label class="form-check-label" for="q3d">Deep, dramatic colors</label>
+                                </div>
+                            </div>
+
+                            <div class="question mb-3">
+                                <p class="fw-bold">4. Which color combination do you find most appealing?</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question4" id="q4a" value="a" required>
+                                    <label class="form-check-label" for="q4a">Red and gold</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question4" id="q4b" value="b">
+                                    <label class="form-check-label" for="q4b">Blue and silver</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question4" id="q4c" value="c">
+                                    <label class="form-check-label" for="q4c">White and black</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question4" id="q4d" value="d">
+                                    <label class="form-check-label" for="q4d">Purple and teal</label>
+                                </div>
+                            </div>
+
+                            <div class="question mb-3">
+                                <p class="fw-bold">5. How do you feel about colorful accent pieces in your home?</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question5" id="q5a" value="a" required>
+                                    <label class="form-check-label" for="q5a">I prefer warm-toned accents</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question5" id="q5b" value="b">
+                                    <label class="form-check-label" for="q5b">I like cool-toned accents</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question5" id="q5c" value="c">
+                                    <label class="form-check-label" for="q5c">I prefer minimal, neutral accents</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question5" id="q5d" value="d">
+                                    <label class="form-check-label" for="q5d">I love bold, eclectic color mixes</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Style Preference Questions -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2">Style Preferences</h5>
+                            
+                            <div class="question mb-3">
+                                <p class="fw-bold">6. Which interior design style appeals to you most?</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question6" id="q6a" value="a" required>
+                                    <label class="form-check-label" for="q6a">Modern and contemporary</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question6" id="q6b" value="b">
+                                    <label class="form-check-label" for="q6b">Traditional and classic</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question6" id="q6c" value="c">
+                                    <label class="form-check-label" for="q6c">Minimalist and clean</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question6" id="q6d" value="d">
+                                    <label class="form-check-label" for="q6d">Eclectic and artistic</label>
+                                </div>
+                            </div>
+
+                            <div class="question mb-3">
+                                <p class="fw-bold">7. Which furniture style do you prefer?</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question7" id="q7a" value="a" required>
+                                    <label class="form-check-label" for="q7a">Sleek and modern</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question7" id="q7b" value="b">
+                                    <label class="form-check-label" for="q7b">Ornate and traditional</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question7" id="q7c" value="c">
+                                    <label class="form-check-label" for="q7c">Simple and functional</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question7" id="q7d" value="d">
+                                    <label class="form-check-label" for="q7d">Diverse and unique pieces</label>
+                                </div>
+                            </div>
+
+                            <div class="question mb-3">
+                                <p class="fw-bold">8. How would you describe your ideal living space?</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question8" id="q8a" value="a" required>
+                                    <label class="form-check-label" for="q8a">High-tech with smart features</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question8" id="q8b" value="b">
+                                    <label class="form-check-label" for="q8b">Cozy and comfortable with classic elements</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question8" id="q8c" value="c">
+                                    <label class="form-check-label" for="q8c">Open and uncluttered</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question8" id="q8d" value="d">
+                                    <label class="form-check-label" for="q8d">Creative and full of interesting pieces</label>
+                                </div>
+                            </div>
+
+                            <div class="question mb-3">
+                                <p class="fw-bold">9. What type of artwork would you display in your home?</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question9" id="q9a" value="a" required>
+                                    <label class="form-check-label" for="q9a">Abstract or digital art</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question9" id="q9b" value="b">
+                                    <label class="form-check-label" for="q9b">Classical paintings or landscapes</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question9" id="q9c" value="c">
+                                    <label class="form-check-label" for="q9c">Minimalist or black and white</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question9" id="q9d" value="d">
+                                    <label class="form-check-label" for="q9d">Eclectic mix or cultural pieces</label>
+                                </div>
+                            </div>
+
+                            <div class="question mb-3">
+                                <p class="fw-bold">10. What kind of lighting do you prefer?</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question10" id="q10a" value="a" required>
+                                    <label class="form-check-label" for="q10a">Modern fixtures with smart controls</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question10" id="q10b" value="b">
+                                    <label class="form-check-label" for="q10b">Traditional lamps and chandeliers</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question10" id="q10c" value="c">
+                                    <label class="form-check-label" for="q10c">Simple, functional lighting</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question10" id="q10d" value="d">
+                                    <label class="form-check-label" for="q10d">Unique, statement lighting pieces</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Personality Questions -->
+                        <div class="mb-4">
+                            <h5 class="border-bottom pb-2">Personality Questions</h5>
+                            
+                            <div class="question mb-3">
+                                <p class="fw-bold">11. How do you organize your belongings?</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question11" id="q11a" value="a" required>
+                                    <label class="form-check-label" for="q11a">Everything has its place; I'm very organized</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question11" id="q11b" value="b">
+                                    <label class="form-check-label" for="q11b">I have a more flexible system; some organized chaos</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question11" id="q11c" value="c">
+                                    <label class="form-check-label" for="q11c">I maintain a balance between organization and flexibility</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question11" id="q11d" value="d">
+                                    <label class="form-check-label" for="q11d">I adapt my organization style to different situations</label>
+                                </div>
+                            </div>
+
+                            <div class="question mb-3">
+                                <p class="fw-bold">12. How do you feel about having guests in your home?</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question12" id="q12a" value="a" required>
+                                    <label class="form-check-label" for="q12a">I love entertaining and having people over</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question12" id="q12b" value="b">
+                                    <label class="form-check-label" for="q12b">I prefer my home to be my private sanctuary</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question12" id="q12c" value="c">
+                                    <label class="form-check-label" for="q12c">I enjoy a balance of social time and alone time</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question12" id="q12d" value="d">
+                                    <label class="form-check-label" for="q12d">It depends on my mood and the specific guests</label>
+                                </div>
+                            </div>
+
+                            <div class="question mb-3">
+                                <p class="fw-bold">13. How do you typically spend your evenings at home?</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question13" id="q13a" value="a" required>
+                                    <label class="form-check-label" for="q13a">Active pursuits like cooking, exercising, or creative hobbies</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question13" id="q13b" value="b">
+                                    <label class="form-check-label" for="q13b">Quiet activities like reading or meditation</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question13" id="q13c" value="c">
+                                    <label class="form-check-label" for="q13c">A mix of different activities depending on the day</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question13" id="q13d" value="d">
+                                    <label class="form-check-label" for="q13d">I change my routine frequently based on how I feel</label>
+                                </div>
+                            </div>
+
+                            <div class="question mb-3">
+                                <p class="fw-bold">14. When buying something for your home, what's most important?</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question14" id="q14a" value="a" required>
+                                    <label class="form-check-label" for="q14a">Functionality and practicality</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question14" id="q14b" value="b">
+                                    <label class="form-check-label" for="q14b">Aesthetic appeal and beauty</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question14" id="q14c" value="c">
+                                    <label class="form-check-label" for="q14c">Quality and durability</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question14" id="q14d" value="d">
+                                    <label class="form-check-label" for="q14d">Uniqueness and personal connection</label>
+                                </div>
+                            </div>
+
+                            <div class="question mb-3">
+                                <p class="fw-bold">15. How do you feel about changes in your home environment?</p>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question15" id="q15a" value="a" required>
+                                    <label class="form-check-label" for="q15a">I prefer consistency and familiar surroundings</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question15" id="q15b" value="b">
+                                    <label class="form-check-label" for="q15b">I enjoy regularly updating and changing my space</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question15" id="q15c" value="c">
+                                    <label class="form-check-label" for="q15c">I appreciate some familiar elements with occasional updates</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="question15" id="q15d" value="d">
+                                    <label class="form-check-label" for="q15d">I like to stay current with the latest trends</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">Submit Test</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('psychometricForm').addEventListener('submit', function(e) {
+        const questions = 15;
+        let answeredCount = 0;
+        
+        for (let i = 1; i <= questions; i++) {
+            const radios = document.getElementsByName('question' + i);
+            let answered = false;
+            
+            for (let j = 0; j < radios.length; j++) {
+                if (radios[j].checked) {
+                    answered = true;
+                    answeredCount++;
+                    break;
+                }
+            }
+            
+            if (!answered) {
+                alert('Please answer question ' + i + ' before submitting.');
+                e.preventDefault();
+                return;
+            }
+        }
+        
+        if (answeredCount === questions) {
+            if (!confirm('Are you ready to submit your test? After submission, you will be directed to a payment page.')) {
+                e.preventDefault();
+            }
+        }
+    });
+</script> 

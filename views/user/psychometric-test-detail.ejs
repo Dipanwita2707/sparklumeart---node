@@ -1,0 +1,452 @@
+<%- include('../partials/header') %>
+<%- include('../partials/user-navbar') %>
+
+<div class="container-fluid py-3 px-3 bg-light">
+  <nav aria-label="breadcrumb" class="mb-2">
+    <ol class="breadcrumb mb-0 py-1 px-2">
+      <li class="breadcrumb-item"><a href="/user/dashboard" class="text-decoration-none">Dashboard</a></li>
+      <li class="breadcrumb-item active">Test Details</li>
+    </ol>
+  </nav>
+
+  <% if (locals.success_msg && success_msg !== '') { %>
+    <div class="alert alert-success alert-dismissible fade show py-1 px-2 mb-2" role="alert">
+      <i class="fas fa-check-circle me-1"></i><%= success_msg %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  <% } %>
+
+  <% if (locals.error_msg && error_msg !== '') { %>
+    <div class="alert alert-danger alert-dismissible fade show py-1 px-2 mb-2" role="alert">
+      <i class="fas fa-exclamation-circle me-1"></i><%= error_msg %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  <% } %>
+
+  <div class="row g-2">
+    <!-- Left Column - Test Details -->
+    <div class="col-lg-4 col-md-6">
+      <div class="row g-2">
+        <div class="col-12">
+          <div class="card border-0 shadow-sm mb-0">
+            <div class="card-header bg-primary bg-gradient text-white py-1 px-2">
+              <div class="d-flex align-items-center">
+                <i class="fas fa-clipboard-list me-1"></i>
+                <h6 class="mb-0">Test Overview</h6>
+              </div>
+            </div>
+            <div class="card-body p-2">
+              <div class="row g-1">
+                <div class="col-md-6">
+                  <div class="d-flex flex-column mb-2">
+                    <span class="text-muted small fw-bold">Test ID</span>
+                    <span class="text-truncate small"><%= test._id %></span>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="d-flex flex-column mb-2">
+                    <span class="text-muted small fw-bold">Date Taken</span>
+                    <span class="small"><%= new Date(test.createdAt).toLocaleDateString() %></span>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="fw-bold text-muted small">Status</span>
+                <div>
+                  <% if (test.status === 'taken') { %>
+                    <span class="badge bg-secondary">Test Taken</span>
+                  <% } else if (test.status === 'awaiting_payment') { %>
+                    <span class="badge bg-warning text-dark">Awaiting Payment</span>
+                  <% } else if (test.status === 'paid') { %>
+                    <span class="badge bg-info">Test Paid</span>
+                  <% } else if (test.status === 'under_review') { %>
+                    <span class="badge bg-primary">Under Review</span>
+                  <% } else if (test.status === 'reviewed') { %>
+                    <span class="badge bg-success">Reviewed</span>
+                  <% } %>
+                  
+                  <% if (test.status === 'awaiting_payment') { %>
+                    <a href="/user/psychometric-test/<%= test._id %>/payment" class="btn btn-sm btn-primary ms-1">
+                      <i class="fas fa-credit-card"></i>
+                    </a>
+                  <% } %>
+                </div>
+              </div>
+              
+              <% if (test.paymentId) { %>
+                <hr class="my-1">
+                <div class="row g-1">
+                  <div class="col-md-4 mb-1">
+                    <span class="fw-bold text-muted small d-block">Payment ID</span>
+                    <span class="small"><%= test.paymentId.substring(0, 10) %>...</span>
+                  </div>
+                  <div class="col-md-4 mb-1">
+                    <span class="fw-bold text-muted small d-block">Amount</span>
+                    <span class="small fw-bold text-success">₹<%= test.paymentAmount.toLocaleString('en-IN') %></span>
+                  </div>
+                  <div class="col-md-4 mb-1">
+                    <span class="fw-bold text-muted small d-block">Date</span>
+                    <span class="small"><%= new Date(test.paymentDate).toLocaleDateString() %></span>
+                  </div>
+                </div>
+              <% } %>
+            </div>
+          </div>
+        </div>
+        
+        <div class="col-12">
+          <div class="card border-0 shadow-sm mb-0">
+            <div class="card-header bg-info bg-gradient text-white py-1 px-2">
+              <div class="d-flex align-items-center">
+                <i class="fas fa-palette me-1"></i>
+                <h6 class="mb-0">Your Preferences</h6>
+              </div>
+            </div>
+            <div class="card-body p-2">
+              <div class="row g-2 mb-2">
+                <div class="col-6">
+                  <span class="fw-bold text-muted small d-block">Color</span>
+                  <span class="badge bg-primary"><%= test.colorPreference %></span>
+                </div>
+                <div class="col-6">
+                  <span class="fw-bold text-muted small d-block">Style</span>
+                  <span class="badge bg-success"><%= test.stylePreference %></span>
+                </div>
+              </div>
+              
+              <div>
+                <span class="fw-bold text-muted small d-block mb-1">Personality Traits</span>
+                <div>
+                  <% test.personalityTraits.forEach(trait => { %>
+                    <span class="badge bg-secondary mb-1 me-1 bg-opacity-75 small"><%= trait %></span>
+                  <% }) %>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <% if (test.order && test.order.approved) { %>
+          <div class="col-12">
+            <div class="card border-0 shadow-sm mb-0">
+              <div class="card-header bg-success bg-gradient text-white py-1 px-2">
+                <div class="d-flex align-items-center">
+                  <i class="fas fa-shopping-cart me-1"></i>
+                  <h6 class="mb-0">Order Details</h6>
+                </div>
+              </div>
+              <div class="card-body p-2">
+                <div class="row g-2">
+                  <div class="col-md-4 col-6">
+                    <span class="fw-bold text-muted small d-block">Order ID</span>
+                    <span class="small"><%= test.order.paymentId ? test.order.paymentId.substring(0, 8) : 'N/A' %></span>
+                  </div>
+                  <div class="col-md-4 col-6">
+                    <span class="fw-bold text-muted small d-block">Status</span>
+                    <% if (test.order.status === 'pending') { %>
+                      <span class="badge bg-warning text-dark">Pending</span>
+                    <% } else if (test.order.status === 'placed') { %>
+                      <span class="badge bg-info">Placed</span>
+                    <% } else if (test.order.status === 'in_progress') { %>
+                      <span class="badge bg-primary">In Progress</span>
+                    <% } else if (test.order.status === 'completed') { %>
+                      <span class="badge bg-success">Completed</span>
+                    <% } %>
+                  </div>
+                  <div class="col-md-4 col-6">
+                    <span class="fw-bold text-muted small d-block">Amount</span>
+                    <span class="fw-bold text-success small"><%= test.order.paymentAmount ? '₹' + test.order.paymentAmount.toLocaleString('en-IN') : 'N/A' %></span>
+                  </div>
+                  <div class="col-md-6 col-6">
+                    <span class="fw-bold text-muted small d-block">Contact</span>
+                    <span class="small"><%= test.order.mobileNumber || 'N/A' %></span>
+                  </div>
+                  <div class="col-12">
+                    <span class="fw-bold text-muted small d-block">Address</span>
+                    <span class="small"><%= test.order.address || 'N/A' %></span>
+                  </div>
+                </div>
+                
+                <% if (test.order.startedAt || test.order.completedAt) { %>
+                  <hr class="my-1">
+                  <div class="row g-2">
+                    <% if (test.order.startedAt) { %>
+                      <div class="col-6">
+                        <span class="fw-bold text-muted small d-block">Started</span>
+                        <span class="small"><%= new Date(test.order.startedAt).toLocaleDateString() %></span>
+                      </div>
+                    <% } %>
+                    
+                    <% if (test.order.completedAt) { %>
+                      <div class="col-6">
+                        <span class="fw-bold text-muted small d-block">Completed</span>
+                        <span class="small"><%= new Date(test.order.completedAt).toLocaleDateString() %></span>
+                      </div>
+                    <% } %>
+                  </div>
+                <% } %>
+                
+                <% if (test.order.publicDisplay) { %>
+                  <div class="alert alert-info mt-2 mb-0 py-1 px-2 small">
+                    <i class="fas fa-globe me-1"></i> Featured in our <a href="/home-decor-gallery" class="alert-link">Gallery</a>
+                  </div>
+                <% } %>
+              </div>
+            </div>
+          </div>
+        <% } %>
+        
+        <!-- User Feedback -->
+        <% if (test.order && test.order.status === 'completed' && !test.userFeedback) { %>
+          <div class="col-12">
+            <div class="card border-0 shadow-sm mb-0">
+              <div class="card-header bg-warning bg-gradient text-dark py-1 px-2">
+                <div class="d-flex align-items-center">
+                  <i class="fas fa-comment-alt me-1"></i>
+                  <h6 class="mb-0">Leave Feedback</h6>
+                </div>
+              </div>
+              <div class="card-body p-2">
+                <form action="/user/psychometric-test/<%= test._id %>/feedback" method="POST">
+                  <div class="mb-2">
+                    <textarea class="form-control form-control-sm" id="comment" name="comment" rows="2" placeholder="Share your experience..." required></textarea>
+                  </div>
+                  
+                  <button type="submit" class="btn btn-primary btn-sm w-100">
+                    <i class="fas fa-paper-plane me-1"></i>Submit
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        <% } else if (test.userFeedback) { %>
+          <div class="col-12">
+            <div class="card border-0 shadow-sm mb-0">
+              <div class="card-header bg-success bg-gradient text-white py-1 px-2">
+                <div class="d-flex align-items-center">
+                  <i class="fas fa-comment me-1"></i>
+                  <h6 class="mb-0">Your Feedback</h6>
+                </div>
+              </div>
+              <div class="card-body p-2">
+                <p class="mb-1 small"><%= test.userFeedback.comment %></p>
+                <div class="text-end">
+                  <small class="text-muted fst-italic">Submitted on <%= new Date(test.userFeedback.submittedAt).toLocaleDateString() %></small>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- Middle Column - Project Photos and Feedback -->
+    <div class="col-lg-4 col-md-6">
+      <div class="row g-2">
+        <!-- Project Photos Section -->
+        <% if (test.order && test.order.photos && test.order.photos.length > 0) { %>
+          <div class="col-12">
+            <div class="card border-0 shadow-sm mb-0">
+              <div class="card-header bg-primary bg-gradient text-white py-1 px-2">
+                <div class="d-flex align-items-center">
+                  <i class="fas fa-images me-1"></i>
+                  <h6 class="mb-0">Project Photos</h6>
+                </div>
+              </div>
+              <div class="card-body p-2">
+                <div id="projectPhotosCarousel" class="carousel slide mb-0" data-bs-ride="carousel">
+                  <div class="carousel-inner rounded">
+                    <% test.order.photos.forEach((photo, index) => { %>
+                      <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
+                        <img src="<%= photo %>" class="d-block w-100" alt="Home Decor Photo" style="height: 180px; object-fit: cover;">
+                      </div>
+                    <% }); %>
+                  </div>
+                  <% if (test.order.photos.length > 1) { %>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#projectPhotosCarousel" data-bs-slide="prev">
+                      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                      <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#projectPhotosCarousel" data-bs-slide="next">
+                      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                      <span class="visually-hidden">Next</span>
+                    </button>
+                  <% } %>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% } %>
+        
+        <!-- Psychologist Feedback Section -->
+        <div class="col-12">
+          <div class="card border-0 shadow-sm mb-0">
+            <div class="card-header bg-info bg-gradient text-white py-1 px-2">
+              <div class="d-flex align-items-center">
+                <i class="fas fa-brain me-1"></i>
+                <h6 class="mb-0">Psychologist's Feedback</h6>
+              </div>
+            </div>
+            <div class="card-body p-2">
+              <% if (test.psychologistFeedback && test.psychologistFeedback.text) { %>
+                <div class="d-flex justify-content-between align-items-center mb-1 small">
+                  <span class="fw-bold">Analysis Report</span>
+                  <span class="text-muted"><%= new Date(test.psychologistFeedback.submittedAt).toLocaleDateString() %></span>
+                </div>
+                <div class="p-2 border rounded bg-light">
+                  <p class="mb-0 small"><%= test.psychologistFeedback.text %></p>
+                </div>
+              <% } else if (test.status === 'paid' || test.status === 'under_review') { %>
+                <div class="p-2 border rounded bg-info bg-opacity-10 text-center">
+                  <i class="fas fa-spinner fa-pulse mb-1"></i>
+                  <p class="mb-0 small">Your test is currently being reviewed. Feedback will be available soon.</p>
+                </div>
+              <% } else { %>
+                <div class="p-2 border rounded bg-warning bg-opacity-10 text-center">
+                  <i class="fas fa-exclamation-circle mb-1"></i>
+                  <p class="mb-0 small">No psychologist feedback available yet.</p>
+                </div>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Right Column - Admin Quote -->
+    <div class="col-lg-4">
+      <% if (test.adminQuote && test.adminQuote.budget) { %>
+        <div class="card border-0 shadow-sm mb-0">
+          <div class="card-header bg-warning bg-gradient text-dark py-1 px-2">
+            <div class="d-flex align-items-center">
+              <i class="fas fa-tag me-1"></i>
+              <h6 class="mb-0">Home Decor Quote</h6>
+            </div>
+          </div>
+          <div class="card-body p-2">
+            <div class="row g-2 mb-2">
+              <div class="col-6">
+                <span class="fw-bold text-muted small d-block">Budget</span>
+                <span class="fw-bold text-success">₹<%= test.adminQuote.budget.toLocaleString('en-IN') %></span>
+              </div>
+              <div class="col-6">
+                <span class="fw-bold text-muted small d-block">Quote Date</span>
+                <span class="small"><%= new Date(test.adminQuote.submittedAt).toLocaleDateString() %></span>
+              </div>
+            </div>
+            
+            <div class="mb-2">
+              <span class="fw-bold text-muted small d-block mb-1">Description</span>
+              <div class="p-2 border rounded bg-light small" style="max-height: 150px; overflow-y: auto;">
+                <p class="mb-0"><%= test.adminQuote.description %></p>
+              </div>
+            </div>
+            
+            <% if (!test.order || test.order.approved !== true) { %>
+              <div class="card border-0 bg-light mb-0">
+                <div class="card-header bg-primary bg-gradient text-white py-1 px-2">
+                  <h6 class="mb-0"><i class="fas fa-credit-card me-1"></i>Approve & Pay</h6>
+                </div>
+                <div class="card-body p-2">
+                  <% if (test.order && test.order.status === 'placed') { %>
+                    <div class="alert alert-success py-1 px-2 mb-0 small">
+                      <i class="fas fa-check-circle me-1"></i> Order placed and processing.
+                    </div>
+                  <% } else { %>
+                    <form action="/user/psychometric-test/<%= test._id %>/approve-quote" method="POST">
+                      <div class="row g-2">
+                        <div class="col-md-6">
+                          <input type="text" class="form-control form-control-sm" id="mobileNumber" name="mobileNumber" placeholder="Mobile Number" required>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="d-flex justify-content-between small fw-bold">
+                            <span>Total:</span>
+                            <span>₹<%= (test.adminQuote.budget * 1.18).toFixed(2) %></span>
+                          </div>
+                        </div>
+                        <div class="col-12">
+                          <textarea class="form-control form-control-sm" id="address" name="address" rows="2" placeholder="Full address with pincode" required></textarea>
+                        </div>
+                        <div class="col-12">
+                          <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" id="agreeTerms" required>
+                            <label class="form-check-label small" for="agreeTerms">
+                              I agree to the terms and conditions
+                            </label>
+                          </div>
+                        </div>
+                        <div class="col-12">
+                          <button type="submit" class="btn btn-primary btn-sm w-100">
+                            <i class="fas fa-credit-card me-1"></i>Proceed to Payment
+                          </button>
+                        </div>
+                      </div>
+                    </form>
+                  <% } %>
+                </div>
+              </div>
+            <% } else { %>
+              <div class="alert alert-success py-1 px-2 mb-0 small">
+                <i class="fas fa-check-circle me-1"></i> Order placed and processing.
+              </div>
+            <% } %>
+          </div>
+        </div>
+      <% } else if (test.status === 'reviewed') { %>
+        <div class="card border-0 shadow-sm mb-0">
+          <div class="card-header bg-warning bg-gradient text-dark py-1 px-2">
+            <div class="d-flex align-items-center">
+              <i class="fas fa-tag me-1"></i>
+              <h6 class="mb-0">Home Decor Quote</h6>
+            </div>
+          </div>
+          <div class="card-body p-2 text-center">
+            <i class="fas fa-hourglass-half fa-2x mb-2 text-info"></i>
+            <p class="mb-0 small">Our team is preparing a personalized quote based on your test results. Please check back soon.</p>
+          </div>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<style>
+  .card {
+    transition: all 0.2s ease;
+    overflow: hidden;
+    height: 100%;
+  }
+  
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1) !important;
+  }
+  
+  .bg-gradient {
+    background-image: linear-gradient(to right, rgba(0,0,0,0.1), rgba(0,0,0,0));
+  }
+  
+  .breadcrumb {
+    background-color: white;
+    border-radius: 0.25rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  
+  .carousel-item img {
+    border-radius: 0.25rem;
+  }
+  
+  @media (max-width: 768px) {
+    .container-fluid {
+      padding-left: 10px !important;
+      padding-right: 10px !important;
+    }
+    
+    .card-body {
+      padding: 10px !important;
+    }
+  }
+</style>
+
+<%- include('../partials/footer') %> 

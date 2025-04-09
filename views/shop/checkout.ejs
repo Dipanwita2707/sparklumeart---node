@@ -1,0 +1,218 @@
+<%- include('../partials/header') %>
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">Checkout</h1>
+        <div>
+            <a href="/shop/cart" class="btn btn-outline-primary">
+                <i class="fas fa-arrow-left me-1"></i>Back to Cart
+            </a>
+        </div>
+    </div>
+
+    <!-- Flash Messages -->
+    <% if(messages.success){ %>
+        <div class="alert alert-success alert-dismissible fade show">
+            <%= messages.success %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    <% } %>
+    
+    <% if(messages.error){ %>
+        <div class="alert alert-danger alert-dismissible fade show">
+            <%= messages.error %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    <% } %>
+
+    <% if (!cart || !cart.items || cart.items.length === 0) { %>
+        <div class="card mb-4">
+            <div class="card-body text-center py-5">
+                <img src="/images/empty-cart.svg" alt="Empty Cart" style="max-height: 200px; opacity: 0.7;" class="mb-3">
+                <h3>Your cart is empty</h3>
+                <p class="text-muted">You need to add products to your cart before proceeding to checkout.</p>
+                <a href="/shop" class="btn btn-primary mt-3">
+                    <i class="fas fa-shopping-bag me-2"></i>Shop Now
+                </a>
+            </div>
+        </div>
+    <% } else { %>
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card mb-4">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">Shipping Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <form action="/shop/place-order" method="POST" id="checkout-form">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="firstName" class="form-label">First Name</label>
+                                    <input type="text" class="form-control" id="firstName" name="firstName" value="<%= user.firstName %>" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="lastName" class="form-label">Last Name</label>
+                                    <input type="text" class="form-control" id="lastName" name="lastName" value="<%= user.lastName %>" required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" value="<%= user.email %>" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="address" class="form-label">Address</label>
+                                <input type="text" class="form-control" id="address" name="address" required>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="city" class="form-label">City</label>
+                                    <input type="text" class="form-control" id="city" name="city" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="postalCode" class="form-label">Postal Code</label>
+                                    <input type="text" class="form-control" id="postalCode" name="postalCode" required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="country" class="form-label">Country</label>
+                                <select class="form-select" id="country" name="country" required>
+                                    <option value="">Select Country</option>
+                                    <option value="USA">United States</option>
+                                    <option value="Canada">Canada</option>
+                                    <option value="UK">United Kingdom</option>
+                                    <option value="Australia">Australia</option>
+                                    <option value="Germany">Germany</option>
+                                    <option value="France">France</option>
+                                    <option value="Japan">Japan</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="phone" class="form-label">Phone</label>
+                                <input type="tel" class="form-control" id="phone" name="phone" required>
+                            </div>
+
+                            <div class="card mb-4 mt-4">
+                                <div class="card-header bg-white">
+                                    <h5 class="mb-0">Payment Method</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="form-check mb-3">
+                                        <input class="form-check-input" type="radio" name="paymentMethod" id="paymentCash" value="cash" checked>
+                                        <label class="form-check-label" for="paymentCash">
+                                            <i class="fas fa-money-bill-wave me-2 text-success"></i>Cash on Delivery
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="paymentMethod" id="paymentCredit" value="credit" disabled>
+                                        <label class="form-check-label" for="paymentCredit">
+                                            <i class="fas fa-credit-card me-2 text-primary"></i>Credit Card (Coming Soon)
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-check mb-4">
+                                <input class="form-check-input" type="checkbox" id="terms" name="terms" required>
+                                <label class="form-check-label" for="terms">
+                                    I agree to the <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">Terms and Conditions</a>
+                                </label>
+                            </div>
+                            
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-lock me-2"></i>Place Order
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="card mb-4">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0">Order Summary</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <% cart.items.forEach(item => { %>
+                                <% if (item.product) { %>
+                                    <div class="d-flex mb-3 border-bottom pb-2">
+                                        <div class="flex-shrink-0">
+                                            <img src="<%= item.product.image %>" alt="<%= item.product.title %>" class="img-thumbnail" style="width: 60px; height: 60px; object-fit: cover;">
+                                        </div>
+                                        <div class="flex-grow-1 ms-3">
+                                            <h6 class="mb-0"><%= item.product.title %></h6>
+                                            <div class="d-flex justify-content-between align-items-center mt-1">
+                                                <small class="text-muted">
+                                                    $<%= item.price.toFixed(2) %> × <%= item.quantity %>
+                                                </small>
+                                                <span class="text-primary">$<%= (item.price * item.quantity).toFixed(2) %></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <% } %>
+                            <% }); %>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Subtotal:</span>
+                            <span>$<%= cart.totalAmount.toFixed(2) %></span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Shipping:</span>
+                            <span>Free</span>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between mb-4">
+                            <strong>Total:</strong>
+                            <strong class="text-primary">$<%= cart.totalAmount.toFixed(2) %></strong>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Complete the form on the left to place your order.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <% } %>
+</div>
+
+<!-- Terms and Conditions Modal -->
+<div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="termsModalLabel">Terms and Conditions</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h6>1. General Terms</h6>
+                <p>By placing an order, you agree to these terms and conditions. We reserve the right to modify these terms at any time, so please review them frequently.</p>
+                
+                <h6>2. Products</h6>
+                <p>All products are subject to availability. We reserve the right to discontinue any product at any time.</p>
+                
+                <h6>3. Pricing and Payment</h6>
+                <p>All prices are shown in USD and are exclusive of taxes. Payment is due at the time of purchase.</p>
+                
+                <h6>4. Shipping and Delivery</h6>
+                <p>Delivery times are estimates and not guaranteed. We are not responsible for delays beyond our control.</p>
+                
+                <h6>5. Returns and Refunds</h6>
+                <p>You have the right to cancel your order within 14 days of receipt. To be eligible for a return, the item must be unused and in the same condition that you received it.</p>
+                
+                <h6>6. Privacy</h6>
+                <p>Your personal information is collected, stored, and used as described in our Privacy Policy.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">I Understand</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %> 

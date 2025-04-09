@@ -1,0 +1,39 @@
+<%- include('partials/header') %>
+<%- include('partials/navbar') %>
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i>Error</h4>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title"><%= message || 'An error occurred' %></h5>
+                    
+                    <% if (error && error.status) { %>
+                        <p class="text-muted">Status: <%= error.status %></p>
+                    <% } %>
+                    
+                    <div class="alert alert-secondary mt-3">
+                        <a href="/" class="btn btn-primary"><i class="fas fa-home me-1"></i> Back to Home</a>
+                        <a href="javascript:history.back()" class="btn btn-secondary ms-2"><i class="fas fa-arrow-left me-1"></i> Go Back</a>
+                    </div>
+                    
+                    <% if (process.env.NODE_ENV !== 'production' && error && error.stack) { %>
+                        <div class="card mt-4">
+                            <div class="card-header">
+                                <h5 class="mb-0">Stack Trace</h5>
+                            </div>
+                            <div class="card-body">
+                                <pre class="bg-light p-3 rounded"><%= error.stack %></pre>
+                            </div>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %> 

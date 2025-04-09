@@ -1,0 +1,567 @@
+<!-- Compact Admin Dashboard -->
+<div class="container-fluid">
+    <!-- Indian Culture Brand Banner -->
+    <div class="row mb-4 mt-2">
+        <div class="col-12">
+            <div class="card border-0 bg-gradient-culture">
+                <div class="card-body py-3">
+                    <div class="d-flex align-items-center">
+                        <img src="/img/logo.png" alt="Sparklume Art" class="me-3" style="height: 60px;">
+                        <div>
+                            <h4 class="text-white mb-0">Sparklume Art</h4>
+                            <p class="text-white-50 mb-0">Where Indian Culture Meets Modern Innovation</p>
+                        </div>
+                        <div class="ms-auto d-none d-md-block">
+                            <div class="d-flex align-items-center">
+                                <div class="indian-pattern me-2"></div>
+                                <div class="indian-pattern me-2"></div>
+                                <div class="indian-pattern"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Sidebar -->
+        <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse">
+            <div class="position-sticky pt-4">
+                <div class="d-flex align-items-center justify-content-center mb-4">
+                    <i class="fas fa-user-shield fa-2x text-light me-2"></i>
+                    <h5 class="text-light mb-0">Admin Portal</h5>
+                </div>
+                
+                <div class="nav flex-column">
+                    <a href="/admin/dashboard" class="nav-link active">
+                        <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                    </a>
+                    <a href="/admin/users" class="nav-link text-white">
+                        <i class="fas fa-users me-2"></i> Users
+                    </a>
+                    <a href="/admin/gallery" class="nav-link text-white">
+                        <i class="fas fa-images me-2"></i> Gallery
+                    </a>
+                    <a href="/admin/requests" class="nav-link text-white d-flex justify-content-between align-items-center">
+                        <span><i class="fas fa-paint-brush me-2"></i> Painting Requests</span>
+                        <% if (stats.requests > 0) { %>
+                            <span class="badge bg-danger rounded-pill"><%= stats.requests %></span>
+                        <% } %>
+                    </a>
+                    <a href="/admin/products" class="nav-link text-white d-flex justify-content-between align-items-center">
+                        <span><i class="fas fa-shopping-cart me-2"></i> Products</span>
+                        <% if (stats.productRequests > 0) { %>
+                            <span class="badge bg-danger rounded-pill"><%= stats.productRequests %></span>
+                        <% } %>
+                    </a>
+                    <a href="/admin/orders" class="nav-link text-white">
+                        <i class="fas fa-shopping-bag me-2"></i> Orders
+                    </a>
+                    <a href="/admin/psychometric-tests" class="nav-link text-white">
+                        <i class="fas fa-brain me-2"></i> Psychometric Tests
+                    </a>
+                    <a href="/admin/leads" class="nav-link text-white">
+                        <i class="fas fa-funnel-dollar me-2"></i> Lead Management
+                    </a>
+                    <a href="/admin/seller-performance" class="nav-link text-white">
+                        <i class="fas fa-chart-line me-2"></i> Seller Performance
+                    </a>
+                    <hr class="text-light my-3">
+                    <a href="/auth/logout" class="nav-link text-white">
+                        <i class="fas fa-sign-out-alt me-2"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+            <!-- Page Header -->
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-3 mb-4 border-bottom">
+                <h1 class="h2 mb-0">Admin Dashboard</h1>
+                <div class="d-flex">
+                    <a href="/admin/requests" class="btn btn-primary me-2">
+                        <i class="fas fa-paint-brush me-1"></i> Requests
+                        <% if (stats.requests > 0) { %>
+                            <span class="badge bg-light text-dark ms-1"><%= stats.requests %></span>
+                        <% } %>
+                    </a>
+                    <button class="btn btn-outline-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Key Metrics Cards -->
+            <div class="row g-4 mb-4">
+                <div class="col-sm-6 col-md-3">
+                    <div class="card border-start border-4 border-primary h-100 shadow-sm">
+                        <div class="card-body py-3 px-4">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <div class="text-primary fs-7 fw-bold text-uppercase">Users</div>
+                                    <div class="fs-3 fw-bold"><%= stats.users %></div>
+                                </div>
+                                <div class="align-self-center text-primary">
+                                    <i class="fas fa-users fa-2x"></i>
+                                </div>
+                            </div>
+                            <div class="mt-2">
+                                <a href="/admin/users" class="stretched-link text-decoration-none">View details</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-sm-6 col-md-3">
+                    <div class="card border-start border-4 border-success h-100 shadow-sm">
+                        <div class="card-body py-3 px-4">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <div class="text-success fs-7 fw-bold text-uppercase">Gallery</div>
+                                    <div class="fs-3 fw-bold"><%= stats.gallery %></div>
+                                </div>
+                                <div class="align-self-center text-success">
+                                    <i class="fas fa-images fa-2x"></i>
+                                </div>
+                            </div>
+                            <div class="mt-2">
+                                <a href="/admin/gallery" class="stretched-link text-decoration-none">View details</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-sm-6 col-md-3">
+                    <div class="card border-start border-4 border-info h-100 shadow-sm">
+                        <div class="card-body py-3 px-4">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <div class="text-info fs-7 fw-bold text-uppercase">Orders</div>
+                                    <div class="fs-3 fw-bold"><%= stats.orders %></div>
+                                </div>
+                                <div class="align-self-center text-info">
+                                    <i class="fas fa-shopping-bag fa-2x"></i>
+                                </div>
+                            </div>
+                            <div class="mt-2">
+                                <a href="/admin/orders" class="stretched-link text-decoration-none">View details</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-sm-6 col-md-3">
+                    <div class="card border-start border-4 border-warning h-100 shadow-sm">
+                        <div class="card-body py-3 px-4">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <div class="text-warning fs-7 fw-bold text-uppercase">Pending</div>
+                                    <div class="fs-3 fw-bold"><%= stats.requests || 0 %></div>
+                                </div>
+                                <div class="align-self-center text-warning">
+                                    <i class="fas fa-paint-brush fa-2x"></i>
+                                </div>
+                            </div>
+                            <div class="mt-2">
+                                <a href="/admin/requests" class="stretched-link text-decoration-none">View details</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Main Content Grid -->
+            <div class="row g-4">
+                <!-- Left Column -->
+                <div class="col-lg-8">
+                    <div class="row g-4">
+                        <!-- Quick Actions -->
+                        <div class="col-12">
+                            <div class="card mb-4 shadow-sm">
+                                <div class="card-header py-3 bg-light">
+                                    <h6 class="mb-0">Quick Actions</h6>
+                                </div>
+                                <div class="card-body py-3">
+                                    <div class="row g-3">
+                                        <div class="col-6 col-md-3">
+                                            <a href="/admin/users/new" class="btn btn-outline-primary w-100">
+                                                <i class="fas fa-user-plus me-1"></i>Add User
+                                            </a>
+                                        </div>
+                                        <div class="col-6 col-md-3">
+                                            <a href="/admin/gallery/new" class="btn btn-outline-success w-100">
+                                                <i class="fas fa-plus-circle me-1"></i>Add Art
+                                            </a>
+                                        </div>
+                                        <div class="col-6 col-md-3">
+                                            <a href="/admin/products/new" class="btn btn-outline-info w-100">
+                                                <i class="fas fa-cart-plus me-1"></i>Add Product
+                                            </a>
+                                        </div>
+                                        <div class="col-6 col-md-3">
+                                            <a href="/admin/email-campaigns" class="btn btn-outline-secondary w-100">
+                                                <i class="fas fa-envelope me-1"></i>Emails
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Recent Painting Requests -->
+                        <div class="col-12">
+                            <div class="card mb-4 shadow-sm">
+                                <div class="card-header py-3 d-flex justify-content-between align-items-center bg-light">
+                                    <h6 class="mb-0">Recent Painting Requests</h6>
+                                    <a href="/admin/requests" class="btn btn-primary">View All</a>
+                                </div>
+                                <div class="card-body p-0">
+                                    <% if (!recentRequests || recentRequests.length === 0) { %>
+                                        <p class="text-muted text-center py-4 mb-0">No requests to display.</p>
+                                    <% } else { %>
+                                        <div class="table-responsive">
+                                            <table class="table table-hover align-middle mb-0">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th>Title</th>
+                                                        <th>Seller</th>
+                                                        <th>Status</th>
+                                                        <th>Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <% recentRequests.forEach(request => { %>
+                                                        <tr>
+                                                            <td class="fw-medium"><%= request.title %></td>
+                                                            <td><%= request.seller ? request.seller.name : 'Unknown' %></td>
+                                                            <td>
+                                                                <span class="badge <%= request.status === 'approved' ? 'bg-success' : (request.status === 'rejected' ? 'bg-danger' : 'bg-warning') %>">
+                                                                    <%= request.status.charAt(0).toUpperCase() + request.status.slice(1) %>
+                                                                </span>
+                                                            </td>
+                                                            <td>
+                                                                <a href="/admin/requests/<%= request._id %>" class="btn btn-outline-primary">Review</a>
+                                                            </td>
+                                                        </tr>
+                                                    <% }); %>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    <% } %>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Recent Product Requests -->
+                        <div class="col-12">
+                            <div class="card mb-4 shadow-sm">
+                                <div class="card-header py-3 d-flex justify-content-between align-items-center bg-light">
+                                    <h6 class="mb-0">Recent Product Requests</h6>
+                                    <a href="/admin/products" class="btn btn-primary">View All</a>
+                                </div>
+                                <div class="card-body p-0">
+                                    <% if (!recentProductRequests || recentProductRequests.length === 0) { %>
+                                        <p class="text-muted text-center py-4 mb-0">No product requests to display.</p>
+                                    <% } else { %>
+                                        <div class="table-responsive">
+                                            <table class="table table-hover align-middle mb-0">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th>Title</th>
+                                                        <th>Price</th>
+                                                        <th>Seller</th>
+                                                        <th>Status</th>
+                                                        <th>Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <% recentProductRequests.forEach(product => { %>
+                                                        <tr>
+                                                            <td class="fw-medium"><%= product.title %></td>
+                                                            <td>$<%= product.price.toFixed(2) %></td>
+                                                            <td><%= product.seller ? product.seller.name : 'Unknown' %></td>
+                                                            <td>
+                                                                <span class="badge <%= product.status === 'approved' ? 'bg-success' : (product.status === 'rejected' ? 'bg-danger' : 'bg-warning') %>">
+                                                                    <%= product.status.charAt(0).toUpperCase() + product.status.slice(1) %>
+                                                                </span>
+                                                            </td>
+                                                            <td>
+                                                                <a href="/admin/products/<%= product._id %>" class="btn btn-outline-primary">Review</a>
+                                                            </td>
+                                                        </tr>
+                                                    <% }); %>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    <% } %>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Right Column -->
+                <div class="col-lg-4">
+                    <div class="row g-4">
+                        <!-- High Potential Leads -->
+                        <div class="col-12">
+                            <div class="card mb-4 shadow-sm">
+                                <div class="card-header py-3 d-flex justify-content-between align-items-center bg-light">
+                                    <h6 class="mb-0">High Potential Leads</h6>
+                                    <a href="/admin/leads" class="btn btn-primary">View All</a>
+                                </div>
+                                <div class="card-body p-0">
+                                    <% if (!highPotentialLeads || highPotentialLeads.length === 0) { %>
+                                        <p class="text-muted text-center py-4 mb-0">No high potential leads found.</p>
+                                    <% } else { %>
+                                        <div class="table-responsive">
+                                            <table class="table table-hover align-middle mb-0">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th>User</th>
+                                                        <th>Score</th>
+                                                        <th>Interest</th>
+                                                        <th>Action</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <% highPotentialLeads.slice(0, 5).forEach(lead => { %>
+                                                        <tr>
+                                                            <td><%= lead.user ? lead.user.name : 'Unknown' %></td>
+                                                            <td>
+                                                                <div class="d-flex align-items-center">
+                                                                    <div class="progress flex-grow-1 me-1" style="height: 6px; width: 40px;">
+                                                                        <div class="progress-bar bg-<%= lead.aiScore >= 80 ? 'success' : lead.aiScore >= 60 ? 'info' : 'warning' %>"
+                                                                            style="width: <%= lead.aiScore %>%">
+                                                                        </div>
+                                                                    </div>
+                                                                    <span class="small"><%= lead.aiScore %>%</span>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <span class="badge bg-<%= 
+                                                                    lead.interestLevel === 'very_high' ? 'success' : 
+                                                                    lead.interestLevel === 'high' ? 'primary' : 'info' 
+                                                                %>">
+                                                                    <%= lead.interestLevel.replace('_', ' ').substring(0, 4).toUpperCase() %>
+                                                                </span>
+                                                            </td>
+                                                            <td>
+                                                                <a href="/admin/leads/<%= lead._id %>" class="btn btn-outline-primary">View</a>
+                                                            </td>
+                                                        </tr>
+                                                    <% }); %>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    <% } %>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Lead Sources -->
+                        <div class="col-12">
+                            <div class="card mb-4 shadow-sm">
+                                <div class="card-header py-3 bg-light">
+                                    <h6 class="mb-0">Lead Sources</h6>
+                                </div>
+                                <div class="card-body py-3">
+                                    <% if (!leadsBySource || leadsBySource.length === 0) { %>
+                                        <p class="text-muted text-center py-3 mb-0">No lead data available.</p>
+                                    <% } else { %>
+                                        <div class="list-group list-group-flush">
+                                            <% leadsBySource.slice(0, 4).forEach(source => { %>
+                                                <div class="list-group-item py-2 px-0 border-bottom">
+                                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                                        <span class="text-capitalize fw-medium"><%= source._id.replace('_', ' ') %></span>
+                                                        <span class="badge bg-primary rounded-pill"><%= source.count %></span>
+                                                    </div>
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="progress flex-grow-1 me-1" style="height: 5px;">
+                                                            <div class="progress-bar bg-<%= source.avgScore >= 80 ? 'success' : 'info' %>"
+                                                                style="width: <%= source.avgScore %>%">
+                                                            </div>
+                                                        </div>
+                                                        <span class="text-muted x-small"><%= source.avgScore.toFixed(1) %>%</span>
+                                                    </div>
+                                                </div>
+                                            <% }); %>
+                                        </div>
+                                    <% } %>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Recent Gallery - Indian Art Showcase -->
+                        <div class="col-12">
+                            <div class="card mb-4 shadow-sm">
+                                <div class="card-header py-3 d-flex justify-content-between align-items-center bg-light">
+                                    <h6 class="mb-0">Indian Art Showcase</h6>
+                                    <a href="/admin/gallery" class="btn btn-primary">View All</a>
+                                </div>
+                                <div class="card-body p-3">
+                                    <% if (!recentGallery || recentGallery.length === 0) { %>
+                                        <p class="text-muted text-center py-3 mb-0">No gallery items to display.</p>
+                                    <% } else { %>
+                                        <div class="row g-3">
+                                            <% recentGallery.slice(0, 4).forEach(item => { %>
+                                                <div class="col-6">
+                                                    <div class="card h-100 border">
+                                                        <img src="<%= item.image %>" class="card-img-top" style="height: 100px; object-fit: cover;" alt="<%= item.artistName %>">
+                                                        <div class="card-body p-2">
+                                                            <h6 class="card-title mb-0 text-truncate"><%= item.artistName %></h6>
+                                                            <p class="card-text small text-muted">Indian Cultural Art</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            <% }); %>
+                                        </div>
+                                    <% } %>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- AI Business Insights Section -->
+            <div class="card mt-4 mb-4 shadow-sm">
+                <div class="card-header py-3 bg-light">
+                    <h6 class="mb-0">AI-Generated Business Tips</h6>
+                </div>
+                <div class="card-body py-4">
+                    <div class="row g-4">
+                        <div class="col-lg-4">
+                            <div class="card h-100 border-0 bg-light">
+                                <div class="card-body p-3">
+                                    <div class="d-flex mb-3">
+                                        <div class="flex-shrink-0">
+                                            <div class="icon-circle bg-primary text-white">
+                                                <i class="fas fa-chart-line"></i>
+                                            </div>
+                                        </div>
+                                        <div class="ms-3">
+                                            <h5 class="card-title">Growth Strategy</h5>
+                                        </div>
+                                    </div>
+                                    <p class="card-text">Focus on promoting Indian cultural art pieces to international markets. Our data shows a 35% increase in interest from European buyers for authentic Indian artworks in the last quarter.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-4">
+                            <div class="card h-100 border-0 bg-light">
+                                <div class="card-body p-3">
+                                    <div class="d-flex mb-3">
+                                        <div class="flex-shrink-0">
+                                            <div class="icon-circle bg-success text-white">
+                                                <i class="fas fa-users"></i>
+                                            </div>
+                                        </div>
+                                        <div class="ms-3">
+                                            <h5 class="card-title">Customer Engagement</h5>
+                                        </div>
+                                    </div>
+                                    <p class="card-text">Consider hosting virtual workshops showcasing traditional Indian art techniques. Customers who participate in interactive events are 3x more likely to make a purchase within 30 days.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-4">
+                            <div class="card h-100 border-0 bg-light">
+                                <div class="card-body p-3">
+                                    <div class="d-flex mb-3">
+                                        <div class="flex-shrink-0">
+                                            <div class="icon-circle bg-warning text-white">
+                                                <i class="fas fa-lightbulb"></i>
+                                            </div>
+                                        </div>
+                                        <div class="ms-3">
+                                            <h5 class="card-title">Product Strategy</h5>
+                                        </div>
+                                    </div>
+                                    <p class="card-text">Expand your catalog with more contemporary fusion pieces that blend traditional Indian motifs with modern styles. This hybrid category has shown a 42% higher conversion rate than pure traditional or modern pieces.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Footer -->
+            <footer class="mt-4 mb-3 text-center">
+                <div class="d-flex align-items-center justify-content-center mb-2">
+                    <div class="indian-pattern-sm me-2"></div>
+                    <p class="text-muted mb-0">© 2023 Sparklume Art | Where Indian Culture Meets Modern Innovation</p>
+                    <div class="indian-pattern-sm ms-2"></div>
+                </div>
+            </footer>
+        </main>
+    </div>
+</div>
+
+<style>
+.fs-7 {
+    font-size: 0.75rem;
+}
+
+.x-small {
+    font-size: 0.7rem;
+}
+
+.bg-gradient-culture {
+    background: linear-gradient(90deg, #FF9933 0%, #138808 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.indian-pattern {
+    width: 40px;
+    height: 40px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cpath fill='%23ffffff' fill-opacity='0.2' d='M20 0c11.046 0 20 8.954 20 20s-8.954 20-20 20S0 31.046 0 20 8.954 0 20 0zm0 5c-8.284 0-15 6.716-15 15 0 8.284 6.716 15 15 15 8.284 0 15-6.716 15-15 0-8.284-6.716-15-15-15zm0 5c5.523 0 10 4.477 10 10s-4.477 10-10 10-10-4.477-10-10 4.477-10 10-10zm0 5a5 5 0 100 10 5 5 0 000-10z'/%3E%3C/svg%3E");
+}
+
+.indian-pattern-sm {
+    width: 24px;
+    height: 24px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 40 40'%3E%3Cpath fill='%23cccccc' fill-opacity='0.5' d='M20 0c11.046 0 20 8.954 20 20s-8.954 20-20 20S0 31.046 0 20 8.954 0 20 0zm0 5c-8.284 0-15 6.716-15 15 0 8.284 6.716 15 15 15 8.284 0 15-6.716 15-15 0-8.284-6.716-15-15-15zm0 5c5.523 0 10 4.477 10 10s-4.477 10-10 10-10-4.477-10-10 4.477-10 10-10zm0 5a5 5 0 100 10 5 5 0 000-10z'/%3E%3C/svg%3E");
+}
+
+.icon-circle {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sidebar .nav-link {
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.75);
+    padding: 0.7rem 1rem;
+    border-left: 3px solid transparent;
+}
+
+.sidebar .nav-link:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar .nav-link.active {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.1);
+    border-left-color: #FF9933;
+}
+
+@media (max-width: 767.98px) {
+    .card-title {
+        font-size: 0.95rem;
+    }
+    .table {
+        font-size: 0.85rem;
+    }
+}
+</style> 

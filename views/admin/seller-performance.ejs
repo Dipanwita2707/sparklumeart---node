@@ -1,0 +1,718 @@
+<%- include('../partials/header') %>
+<%- include('../partials/admin-navbar') %>
+
+<style>
+  .card {
+    transition: transform 0.2s, box-shadow 0.2s;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    border: none;
+  }
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  }
+  .metric-card {
+    position: relative;
+    overflow: hidden;
+    border-left: 5px solid;
+  }
+  .metric-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    opacity: 0.1;
+    z-index: 0;
+  }
+  .metric-card-sales {
+    border-left-color: #4e73df;
+  }
+  .metric-card-sales::before {
+    background-color: #4e73df;
+  }
+  .metric-card-conversion {
+    border-left-color: #1cc88a;
+  }
+  .metric-card-conversion::before {
+    background-color: #1cc88a;
+  }
+  .metric-card-order {
+    border-left-color: #36b9cc;
+  }
+  .metric-card-order::before {
+    background-color: #36b9cc;
+  }
+  .metric-card-sellers {
+    border-left-color: #f6c23e;
+  }
+  .metric-card-sellers::before {
+    background-color: #f6c23e;
+  }
+  .card-icon {
+    opacity: 0.7;
+  }
+  .table-container {
+    border-radius: 0.5rem;
+    overflow: hidden;
+  }
+  .badge-pill {
+    border-radius: 20px;
+    padding: 5px 10px;
+  }
+  .progress {
+    overflow: hidden;
+    border-radius: 10px;
+    height: 10px !important;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+  }
+  .progress-bar {
+    transition: width 1s ease;
+  }
+  .seller-search {
+    border-radius: 20px;
+    padding-left: 30px;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: 10px center;
+    background-size: 14px;
+  }
+  .insight-card {
+    transition: all 0.3s ease;
+    border-radius: 0.5rem;
+  }
+  .insight-card:hover {
+    transform: scale(1.02);
+  }
+  .insight-card .badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+  }
+  .improvement-card {
+    border-left: 4px solid #f6c23e;
+  }
+  .nav-pills .nav-link {
+    border-radius: 0.5rem;
+    margin-bottom: 5px;
+    transition: all 0.2s;
+  }
+  .nav-pills .nav-link:hover {
+    background-color: rgba(78, 115, 223, 0.1);
+  }
+  .nav-pills .nav-link.active {
+    background-color: #4e73df;
+  }
+  .btn-primary {
+    background-color: #4e73df;
+    border-color: #4e73df;
+  }
+  .btn-primary:hover {
+    background-color: #3a5bc7;
+    border-color: #3a5bc7;
+  }
+  /* Add custom progress bar styles */
+  .performance-progress-excellent {
+    background-color: #1cc88a;
+    width: 100%;
+  }
+  .performance-progress-good {
+    background-color: #36b9cc;
+    width: 100%;
+  }
+  .performance-progress-average {
+    background-color: #f6c23e;
+    width: 100%;
+  }
+</style>
+
+<% 
+  // Helper function for progress bar classes 
+  function getProgressBarClass(score) {
+    if (score >= 80) return 'bg-success';
+    if (score >= 60) return 'bg-info';
+    return 'bg-warning';
+  }
+%>
+
+<div id="performanceScoresData" style="display:none;" 
+     data-scores="<%= sellerPerformance && sellerPerformance.length > 0 ? 
+                    sellerPerformance.map(p => p.performanceScore).join(',') : 
+                    '' %>">
+</div>
+
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar -->
+    <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse">
+      <div class="position-sticky pt-2">
+        <ul class="nav flex-column nav-pills">
+          <li class="nav-item">
+            <div class="px-3 py-2 text-white">
+              <small><i class="fas fa-map"></i> NAVIGATION</small>
+            </div>
+          </li>
+          <li class="nav-item">
+            <a href="/admin/dashboard" class="nav-link text-white">
+              <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="/admin/users" class="nav-link text-white">
+              <i class="fas fa-users me-2"></i> Users
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="/admin/gallery" class="nav-link text-white">
+              <i class="fas fa-images me-2"></i> Gallery
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="/admin/requests" class="nav-link text-white">
+              <i class="fas fa-paint-brush me-2"></i> Painting Requests
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="/admin/products" class="nav-link text-white">
+              <i class="fas fa-shopping-cart me-2"></i> Products
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="/admin/orders" class="nav-link text-white">
+              <i class="fas fa-shopping-bag me-2"></i> Orders
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="/admin/psychometric-tests" class="nav-link text-white">
+              <i class="fas fa-brain me-2"></i> Psychometric Tests
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="/admin/leads" class="nav-link text-white">
+              <i class="fas fa-funnel-dollar me-2"></i> AI Lead Management
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="/admin/seller-performance" class="nav-link active">
+              <i class="fas fa-chart-line me-2"></i> Seller Performance
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="/admin/sellers" class="nav-link text-white">
+              <i class="fas fa-store me-2"></i> Sellers
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    
+    <!-- Main content -->
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-3">
+      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <div>
+          <h1 class="h3"><i class="fas fa-chart-line text-primary me-2"></i>Seller Performance</h1>
+          <p class="text-muted mb-0">Track and analyze seller metrics across your platform</p>
+        </div>
+        <div class="btn-toolbar mb-2 mb-md-0">
+          <div class="btn-group me-2">
+            <a href="/admin/seller-performance/reports" class="btn btn-sm btn-outline-primary">
+              <i class="fas fa-file-export me-1"></i> Export
+            </a>
+          </div>
+          <div class="dropdown">
+            <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fas fa-calendar me-1"></i>
+              <%= periodText %>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end shadow">
+              <li><a class="dropdown-item <%= period === 'weekly' ? 'active' : '' %>" href="/admin/seller-performance?period=weekly"><i class="fas fa-calendar-week me-2"></i>Weekly</a></li>
+              <li><a class="dropdown-item <%= period === 'monthly' ? 'active' : '' %>" href="/admin/seller-performance?period=monthly"><i class="fas fa-calendar-alt me-2"></i>Monthly</a></li>
+              <li><a class="dropdown-item <%= period === 'quarterly' ? 'active' : '' %>" href="/admin/seller-performance?period=quarterly"><i class="fas fa-calendar-alt me-2"></i>Quarterly</a></li>
+              <li><a class="dropdown-item <%= period === 'yearly' ? 'active' : '' %>" href="/admin/seller-performance?period=yearly"><i class="fas fa-calendar-alt me-2"></i>Yearly</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <% if (locals.success_msg && success_msg !== '') { %>
+        <div class="alert alert-success alert-dismissible fade show py-2" role="alert">
+          <i class="fas fa-check-circle me-2"></i> <%= success_msg %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      <% } %>
+
+      <% if (locals.error_msg && error_msg !== '') { %>
+        <div class="alert alert-danger alert-dismissible fade show py-2" role="alert">
+          <i class="fas fa-exclamation-circle me-2"></i> <%= error_msg %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      <% } %>
+
+      <!-- Overall Performance Metrics -->
+      <div class="row mb-3 g-3">
+        <div class="col-xl-3 col-md-6">
+          <div class="card shadow-sm h-100 metric-card metric-card-sales">
+            <div class="card-body py-3">
+              <div class="row no-gutters align-items-center">
+                <div class="col mr-2">
+                  <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Sales</div>
+                  <div class="h3 mb-0 font-weight-bold text-gray-800">$<%= overallMetrics.totalRevenue.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}) %></div>
+                  <div class="text-muted small mt-2">
+                    <i class="fas fa-coins"></i> Average per seller: $<%= Math.round(overallMetrics.totalRevenue / (overallMetrics.activeSellers || 1)) %>
+                  </div>
+                </div>
+                <div class="col-auto">
+                  <i class="fas fa-dollar-sign fa-2x text-primary card-icon"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+          <div class="card shadow-sm h-100 metric-card metric-card-conversion">
+            <div class="card-body py-3">
+              <div class="row no-gutters align-items-center">
+                <div class="col mr-2">
+                  <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Conversion Rate</div>
+                  <div class="h3 mb-0 font-weight-bold text-gray-800"><%= overallMetrics.avgConversionRate.toFixed(1) %>%</div>
+                  <div class="text-muted small mt-2">
+                    <i class="fas fa-exchange-alt"></i> Lead-to-sale conversion
+                  </div>
+                </div>
+                <div class="col-auto">
+                  <i class="fas fa-percent fa-2x text-success card-icon"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+          <div class="card shadow-sm h-100 metric-card metric-card-order">
+            <div class="card-body py-3">
+              <div class="row no-gutters align-items-center">
+                <div class="col mr-2">
+                  <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Avg. Order Value</div>
+                  <div class="h3 mb-0 font-weight-bold text-gray-800">$<%= overallMetrics.avgOrderValue.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}) %></div>
+                  <div class="text-muted small mt-2">
+                    <i class="fas fa-shopping-basket"></i> Per completed order
+                  </div>
+                </div>
+                <div class="col-auto">
+                  <i class="fas fa-shopping-cart fa-2x text-info card-icon"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6">
+          <div class="card shadow-sm h-100 metric-card metric-card-sellers">
+            <div class="card-body py-3">
+              <div class="row no-gutters align-items-center">
+                <div class="col mr-2">
+                  <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Active Sellers</div>
+                  <div class="h3 mb-0 font-weight-bold text-gray-800"><%= overallMetrics.activeSellers %></div>
+                  <div class="text-muted small mt-2">
+                    <i class="fas fa-user-check"></i> Currently active on platform
+                  </div>
+                </div>
+                <div class="col-auto">
+                  <i class="fas fa-users fa-2x text-warning card-icon"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-3 mb-3">
+        <!-- Top Performers -->
+        <div class="col-lg-6">
+          <div class="card shadow-sm h-100">
+            <div class="card-header bg-white py-3 d-flex flex-row align-items-center justify-content-between">
+              <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-trophy me-2"></i>Top Performers</h6>
+              <div class="dropdown no-arrow">
+                <a class="dropdown-toggle" href="#" role="button" id="topPerformersDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="fas fa-ellipsis-v text-gray-400"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="topPerformersDropdown">
+                  <a class="dropdown-item" href="#"><i class="fas fa-file-excel me-2"></i>Export to Excel</a>
+                  <a class="dropdown-item" href="#"><i class="fas fa-chart-pie me-2"></i>View as Chart</a>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item" href="#"><i class="fas fa-medal me-2"></i>Reward Top Performer</a>
+                </div>
+              </div>
+            </div>
+            <div class="card-body py-2 px-3">
+              <% if (topPerformers && topPerformers.length > 0) { %>
+                <div class="table-responsive table-container">
+                  <table class="table table-sm table-hover align-middle mb-0">
+                    <thead class="table-light">
+                      <tr>
+                        <th class="ps-3">Seller</th>
+                        <th class="text-end">Sales</th>
+                        <th class="text-center">Conv.</th>
+                        <th class="text-end pe-3">Score</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% topPerformers.forEach((performer, index) => { %>
+                        <tr class="<%= index === 0 ? 'table-primary bg-opacity-10' : '' %>">
+                          <td class="py-2 ps-3">
+                            <div class="d-flex align-items-center">
+                              <% if (index === 0) { %>
+                                <div class="position-relative me-2">
+                                  <i class="fas fa-crown text-warning position-absolute" style="top: -10px; left: 2px; font-size: 10px;"></i>
+                                  <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                                    <%= performer.seller.name.charAt(0) %>
+                                  </div>
+                                </div>
+                              <% } else { %>
+                                <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
+                                  <%= performer.seller.name.charAt(0) %>
+                                </div>
+                              <% } %>
+                              <div>
+                                <div class="fw-bold"><%= performer.seller.name %></div>
+                                <small class="text-muted"><%= performer.seller.email %></small>
+                              </div>
+                            </div>
+                          </td>
+                          <td class="py-2 text-end">$<%= performer.metrics.totalRevenue.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}) %></td>
+                          <td class="py-2 text-center">
+                            <% if (performer.metrics.conversionRate >= 60) { %>
+                              <span class="badge bg-success"><%= performer.metrics.conversionRate.toFixed(1) %>%</span>
+                            <% } else if (performer.metrics.conversionRate >= 30) { %>
+                              <span class="badge bg-info"><%= performer.metrics.conversionRate.toFixed(1) %>%</span>
+                            <% } else { %>
+                              <span class="badge bg-warning text-dark"><%= performer.metrics.conversionRate.toFixed(1) %>%</span>
+                            <% } %>
+                          </td>
+                          <td class="py-2 text-end pe-3">
+                            <div class="progress" style="height: 10px; width: 80px; float: right;">
+                              <% const topProgressBarClass = getProgressBarClass(performer.performanceScore); %>
+                              <div class="progress-bar <%= topProgressBarClass %>" 
+                                  role="progressbar" 
+                                  data-width="<%= performer.performanceScore %>"
+                                  aria-valuenow="<%= performer.performanceScore %>"
+                                  aria-valuemin="0"
+                                  aria-valuemax="100">
+                              </div>
+                            </div>
+                            <span class="me-2"><%= performer.performanceScore %></span>
+                          </td>
+                        </tr>
+                      <% }); %>
+                    </tbody>
+                  </table>
+                </div>
+              <% } else { %>
+                <div class="alert alert-info py-2 mb-0">
+                  <i class="fas fa-info-circle me-2"></i> No performance data available.
+                </div>
+              <% } %>
+            </div>
+          </div>
+        </div>
+
+        <!-- Performance Distribution -->
+        <div class="col-lg-6">
+          <div class="card shadow-sm h-100">
+            <div class="card-header bg-white py-3">
+              <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-chart-bar me-2"></i>Performance Distribution</h6>
+            </div>
+            <div class="card-body py-2 px-3">
+              <div class="chart-container" style="position: relative; height:250px; width:100%">
+                <canvas id="performanceDistribution"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Performance Metrics by Seller -->
+      <div class="card shadow-sm mb-3">
+        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+          <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-list me-2"></i>All Seller Performance</h6>
+          <div class="d-flex">
+            <input type="text" id="sellerSearch" class="form-control form-control-sm seller-search" style="width: 200px;" placeholder="Search sellers...">
+            <div class="dropdown ms-2">
+              <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-filter"></i>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="filterDropdown">
+                <li><a class="dropdown-item" href="#"><i class="fas fa-sort-amount-down me-2"></i>Sort by Revenue</a></li>
+                <li><a class="dropdown-item" href="#"><i class="fas fa-sort-amount-down me-2"></i>Sort by Conversion</a></li>
+                <li><a class="dropdown-item" href="#"><i class="fas fa-sort-amount-down me-2"></i>Sort by Score</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="#"><i class="fas fa-check me-2"></i>High Performers</a></li>
+                <li><a class="dropdown-item" href="#"><i class="fas fa-exclamation-triangle me-2"></i>Needs Improvement</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <% if (sellerPerformance && sellerPerformance.length > 0) { %>
+            <div class="table-responsive">
+              <table class="table table-sm table-hover table-striped align-middle mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th class="ps-3">Seller</th>
+                    <th class="text-center">Leads</th>
+                    <th class="text-center">Contact</th>
+                    <th class="text-center">Qual.</th>
+                    <th class="text-center">Prop.</th>
+                    <th class="text-center">Sales</th>
+                    <th class="text-end">Revenue</th>
+                    <th class="text-end">Avg.</th>
+                    <th class="text-center">Conv.</th>
+                    <th class="text-center">Resp.</th>
+                    <th class="text-center">Score</th>
+                    <th class="text-end pe-3">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="sellerTable">
+                  <% sellerPerformance.forEach(performance => { %>
+                    <tr>
+                      <td class="py-2 ps-3">
+                        <div class="d-flex align-items-center">
+                          <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
+                            <%= performance.seller.name.charAt(0) %>
+                          </div>
+                          <div>
+                            <div class="fw-bold"><%= performance.seller.name %></div>
+                            <small class="text-muted"><%= performance.seller.email %></small>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="py-2 text-center"><%= performance.metrics.leadsAssigned %></td>
+                      <td class="py-2 text-center"><%= performance.metrics.leadsContacted %></td>
+                      <td class="py-2 text-center"><%= performance.metrics.leadsQualified %></td>
+                      <td class="py-2 text-center"><%= performance.metrics.proposalsSent %></td>
+                      <td class="py-2 text-center"><%= performance.metrics.salesClosed %></td>
+                      <td class="py-2 text-end">$<%= performance.metrics.totalRevenue.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}) %></td>
+                      <td class="py-2 text-end">$<%= performance.metrics.averageOrderValue.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0}) %></td>
+                      <td class="py-2 text-center">
+                        <% if (performance.metrics.conversionRate >= 60) { %>
+                          <span class="badge bg-success"><%= performance.metrics.conversionRate.toFixed(1) %>%</span>
+                        <% } else if (performance.metrics.conversionRate >= 30) { %>
+                          <span class="badge bg-info"><%= performance.metrics.conversionRate.toFixed(1) %>%</span>
+                        <% } else { %>
+                          <span class="badge bg-warning text-dark"><%= performance.metrics.conversionRate.toFixed(1) %>%</span>
+                        <% } %>
+                      </td>
+                      <td class="py-2 text-center"><%= performance.metrics.responseTime.toFixed(1) %> hrs</td>
+                      <td class="py-2 text-center">
+                        <div class="progress" style="height: 10px; width: 60px; margin: 0 auto;">
+                          <% const progressBarClass = getProgressBarClass(performance.performanceScore); %>
+                          <div class="progress-bar <%= progressBarClass %>" 
+                               role="progressbar" 
+                               data-width="<%= performance.performanceScore %>"
+                               aria-valuenow="<%= performance.performanceScore %>"
+                               aria-valuemin="0"
+                               aria-valuemax="100">
+                          </div>
+                        </div>
+                        <small class="mt-1 d-block"><%= performance.performanceScore %></small>
+                      </td>
+                      <td class="py-2 text-end pe-3">
+                        <a href="/admin/seller-performance/<%= performance.seller._id %>" class="btn btn-sm btn-primary">
+                          <i class="fas fa-eye"></i>
+                        </a>
+                      </td>
+                    </tr>
+                  <% }); %>
+                </tbody>
+              </table>
+            </div>
+          <% } else { %>
+            <div class="alert alert-info py-2 m-3">
+              <i class="fas fa-info-circle me-2"></i> No seller performance data available for this period.
+            </div>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- Insights Section (AI + Improvements combined) -->
+      <div class="row g-3">
+        <div class="col-lg-12">
+          <div class="card shadow-sm">
+            <div class="card-header bg-white py-3">
+              <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-lightbulb me-2"></i>Insights & Improvement Areas</h6>
+            </div>
+            <div class="card-body py-2 px-3">
+              <div class="row g-3">
+                <!-- AI Insights -->
+                <% if (aiInsights && aiInsights.length > 0) { %>
+                  <% aiInsights.forEach((insight, index) => { %>
+                    <div class="col-md-4 mb-2">
+                      <div class="card insight-card bg-light mb-0 h-100">
+                        <div class="card-body py-3 px-3 position-relative">
+                          <span class="badge bg-info">Insight</span>
+                          <h6 class="mt-2 mb-2">Key Observation #<%= index + 1 %></h6>
+                          <p class="card-text small mb-0 text-muted"><%= insight %></p>
+                        </div>
+                      </div>
+                    </div>
+                  <% }); %>
+                <% } %>
+                
+                <!-- Areas for Improvement -->
+                <% if (areasForImprovement && areasForImprovement.length > 0) { %>
+                  <% areasForImprovement.forEach((area, index) => { %>
+                    <div class="col-md-4 mb-2">
+                      <div class="card insight-card improvement-card mb-0 h-100">
+                        <div class="card-body py-3 px-3 position-relative">
+                          <span class="badge bg-warning text-dark">Improvement</span>
+                          <h6 class="mt-2 mb-2">Action Item #<%= index + 1 %></h6>
+                          <p class="card-text small mb-0 text-muted"><%= area %></p>
+                        </div>
+                      </div>
+                    </div>
+                  <% }); %>
+                <% } %>
+                
+                <% if ((!aiInsights || aiInsights.length === 0) && (!areasForImprovement || areasForImprovement.length === 0)) { %>
+                  <div class="col-12">
+                    <div class="alert alert-info py-3 mb-0">
+                      <div class="d-flex align-items-center">
+                        <i class="fas fa-info-circle fa-2x me-3"></i>
+                        <div>
+                          <h6 class="mb-1">No insights available</h6>
+                          <p class="mb-0">There are no insights or improvement areas available for this period. This may be due to insufficient data or because all sellers are performing well.</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                <% } %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Performance Distribution Chart
+    var ctx = document.getElementById('performanceDistribution').getContext('2d');
+    
+    // Get performance data from the hidden div
+    var scoresElement = document.getElementById('performanceScoresData');
+    var performanceData = [];
+    
+    if (scoresElement && scoresElement.dataset.scores) {
+      performanceData = scoresElement.dataset.scores.split(',').map(function(score) {
+        return parseInt(score, 10);
+      });
+    }
+    
+    // Count performance by range
+    var excellentCount = 0;
+    var goodCount = 0;
+    var averageCount = 0;
+    var belowAvgCount = 0;
+    var poorCount = 0;
+    
+    // Process the data
+    for (var i = 0; i < performanceData.length; i++) {
+      var score = performanceData[i];
+      if (score >= 80) {
+        excellentCount++;
+      } else if (score >= 60) {
+        goodCount++;
+      } else if (score >= 40) {
+        averageCount++;
+      } else if (score >= 20) {
+        belowAvgCount++;
+      } else {
+        poorCount++;
+      }
+    }
+    
+    // Create the chart
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Excellent (80-100)', 'Good (60-79)', 'Average (40-59)', 'Below Avg (20-39)', 'Poor (0-19)'],
+        datasets: [{
+          label: 'Number of Sellers',
+          data: [excellentCount, goodCount, averageCount, belowAvgCount, poorCount],
+          backgroundColor: [
+            'rgba(75, 192, 192, 0.7)',
+            'rgba(54, 162, 235, 0.7)',
+            'rgba(255, 206, 86, 0.7)',
+            'rgba(255, 159, 64, 0.7)',
+            'rgba(255, 99, 132, 0.7)'
+          ],
+          borderColor: [
+            'rgba(75, 192, 192, 1)',
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 206, 86, 1)',
+            'rgba(255, 159, 64, 1)',
+            'rgba(255, 99, 132, 1)'
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: {
+            beginAtZero: true,
+            ticks: {
+              precision: 0
+            }
+          }
+        },
+        plugins: {
+          legend: {
+            display: false
+          }
+        }
+      }
+    });
+    
+    // Search functionality for seller table
+    const sellerSearch = document.getElementById('sellerSearch');
+    const sellerTable = document.getElementById('sellerTable');
+    
+    if (sellerSearch && sellerTable) {
+      sellerSearch.addEventListener('keyup', function() {
+        const searchValue = this.value.toLowerCase();
+        const rows = sellerTable.getElementsByTagName('tr');
+        
+        for (let i = 0; i < rows.length; i++) {
+          const sellerNameCell = rows[i].cells[0];
+          if (sellerNameCell) {
+            const sellerText = sellerNameCell.textContent || sellerNameCell.innerText;
+            if (sellerText.toLowerCase().indexOf(searchValue) > -1) {
+              rows[i].style.display = "";
+            } else {
+              rows[i].style.display = "none";
+            }
+          }
+        }
+      });
+    }
+
+    // Set progress bar widths using JavaScript instead of inline styles
+    document.querySelectorAll('.progress-bar').forEach(function(bar) {
+      if (bar.dataset.width) {
+        bar.style.width = bar.dataset.width + '%';
+      }
+    });
+  });
+</script>
+
+<%- include('../partials/footer') %> 

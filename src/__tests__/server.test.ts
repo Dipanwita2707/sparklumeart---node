@@ -1,10 +1,12 @@
+// Increase Jest timeout for slow MongoMemoryServer startup
+jest.setTimeout(120000);
 /// <reference types="jest" />
 import request from 'supertest';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
-import { setupTestDB, teardownTestDB, resetTestDB, redisMock } from './setup';
+import { setupTestDB, teardownTestDB, resetTestDB, redisClient } from '../testUtils/setup';
 
 const app = express();
 
@@ -60,7 +62,7 @@ describe('Server Integration Tests', () => {
 
   describe('Redis Connection', () => {
     it('should connect to redis mock', async () => {
-      expect(redisMock.connected).toBe(true);
+      expect(redisClient.connected).toBe(true);
     });
   });
 }); 

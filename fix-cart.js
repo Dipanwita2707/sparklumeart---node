@@ -3,7 +3,7 @@ const Cart = require('./models/Cart');
 
 
 // Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URL || 'mongodb://localhost:27017/sparklumeart')
+mongoose.connect(process.env.MONGODB_URL )
     .then(() => {
         console.log('MongoDB Connected for cart fixing...');
         fixCarts();

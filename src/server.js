@@ -26,7 +26,7 @@ app.use(compression());
 app.use(express.json());
 
 // Connect to MongoDB
-const MONGODB_URI = process.env.MONGODB_URL || 'mongodb://localhost:27017/sparklumeart';
+const MONGODB_URI = process.env.MONGODB_URL ;
 
 logger.info(`Attempting to connect to MongoDB at: ${MONGODB_URI}`);
 

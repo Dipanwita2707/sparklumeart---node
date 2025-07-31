@@ -16,6 +16,10 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
+      - name: Install libssl1.1 or libssl-dev for mongodb-memory-server
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libssl1.1 || sudo apt-get install -y libssl-dev
           node-version: '20.x'
 
       - name: Install dependencies

@@ -1,0 +1,51 @@
+name: Node.js CI/CD
+
+on:
+  push:
+    branches: [ main, docker-implementation ]
+  pull_request:
+    branches: [ main, docker-implementation ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build Docker image
+        run: docker build -t ${{ github.repository }}:latest .
+
+      # Example: Push to Docker Hub (uncomment and set secrets if needed)
+      # - name: Log in to Docker Hub
+      #   uses: docker/login-action@v3
+      #   with:
+      #     username: ${{ secrets.DOCKERHUB_USERNAME }}
+      #     password: ${{ secrets.DOCKERHUB_TOKEN }}
+      #
+      # - name: Push Docker image
+      #   run: docker push ${{ github.repository }}:latest
+
+      # Example: Deploy to server via SSH (uncomment and set secrets if needed)
+      # - name: Deploy to server
+      #   uses: appleboy/ssh-action@v1.0.3
+      #   with:
+      #     host: ${{ secrets.SERVER_HOST }}
+      #     username: ${{ secrets.SERVER_USER }}
+      #     key: ${{ secrets.SERVER_SSH_KEY }}
+      #     script: |
+      #       cd /path/to/app
+      #       git pull
+      #       docker compose down
+      #       docker compose up -d --build

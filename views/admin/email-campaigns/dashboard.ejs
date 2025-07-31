@@ -1,0 +1,511 @@
+<%- include('../../partials/header') %>
+<%- include('../../partials/admin-navbar') %>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse">
+            <div class="position-sticky pt-3">
+                <div class="list-group mb-3">
+                    <div class="list-group-item active bg-primary">Navigation</div>
+                    <a href="/admin/dashboard" class="list-group-item list-group-item-action"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a>
+                    <a href="/admin/users" class="list-group-item list-group-item-action"><i class="fas fa-users me-2"></i> Users</a>
+                    <a href="/admin/gallery" class="list-group-item list-group-item-action"><i class="fas fa-images me-2"></i> Gallery</a>
+                    <a href="/admin/requests" class="list-group-item list-group-item-action"><i class="fas fa-paint-brush me-2"></i> Painting Requests</a>
+                    <a href="/admin/products" class="list-group-item list-group-item-action"><i class="fas fa-shopping-cart me-2"></i> Products</a>
+                    <a href="/admin/orders" class="list-group-item list-group-item-action"><i class="fas fa-shopping-bag me-2"></i> Orders</a>
+                    <a href="/admin/psychometric-tests" class="list-group-item list-group-item-action"><i class="fas fa-brain me-2"></i> Psychometric Tests</a>
+                    <a href="/admin/leads" class="list-group-item list-group-item-action"><i class="fas fa-funnel-dollar me-2"></i> AI Lead Management</a>
+                    <a href="/admin/seller-performance" class="list-group-item list-group-item-action"><i class="fas fa-chart-line me-2"></i> Seller Performance</a>
+                    <a href="/admin/user-activity" class="list-group-item list-group-item-action"><i class="fas fa-user-clock me-2"></i> User Activity</a>
+                    <a href="/admin/email-campaigns" class="list-group-item list-group-item-action active"><i class="fas fa-envelope me-2"></i> Email Campaigns</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Email Campaign Performance</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <div class="btn-group me-2">
+                        <button type="button" class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-download me-1"></i>Export
+                        </button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-print me-1"></i>Print
+                        </button>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="timeRangeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-calendar me-1"></i>
+                            Last 30 Days
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="timeRangeDropdown">
+                            <li><a class="dropdown-item" href="#" data-range="7">Last 7 Days</a></li>
+                            <li><a class="dropdown-item" href="#" data-range="30">Last 30 Days</a></li>
+                            <li><a class="dropdown-item" href="#" data-range="90">Last Quarter</a></li>
+                            <li><a class="dropdown-item" href="#" data-range="365">Last Year</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#" data-range="custom">Custom Range</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Metrics Overview -->
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-primary shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Emails Sent</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800"><%= metrics.totalSent.toLocaleString() %></div>
+                                    <div class="text-xs text-success mt-2">
+                                        <i class="fas fa-arrow-up me-1"></i><%= metrics.sentIncrease %>% since last period
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-envelope fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-success shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Average Open Rate</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800"><%= metrics.avgOpenRate.toFixed(1) %>%</div>
+                                    <div class="text-xs <%= metrics.openRateChange >= 0 ? 'text-success' : 'text-danger' %> mt-2">
+                                        <i class="fas <%= metrics.openRateChange >= 0 ? 'fa-arrow-up' : 'fa-arrow-down' %> me-1"></i><%= Math.abs(metrics.openRateChange) %>% since last period
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-envelope-open-text fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-info shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Average Click Rate</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800"><%= metrics.avgClickRate.toFixed(1) %>%</div>
+                                    <div class="text-xs <%= metrics.clickRateChange >= 0 ? 'text-success' : 'text-danger' %> mt-2">
+                                        <i class="fas <%= metrics.clickRateChange >= 0 ? 'fa-arrow-up' : 'fa-arrow-down' %> me-1"></i><%= Math.abs(metrics.clickRateChange) %>% since last period
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-mouse-pointer fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-warning shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Conversion Rate</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800"><%= metrics.conversionRate.toFixed(1) %>%</div>
+                                    <div class="text-xs <%= metrics.conversionRateChange >= 0 ? 'text-success' : 'text-danger' %> mt-2">
+                                        <i class="fas <%= metrics.conversionRateChange >= 0 ? 'fa-arrow-up' : 'fa-arrow-down' %> me-1"></i><%= Math.abs(metrics.conversionRateChange) %>% since last period
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-shopping-cart fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Row -->
+            <div class="row">
+                <!-- Performance Trend -->
+                <div class="col-xl-8 col-lg-7">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                            <h6 class="m-0 font-weight-bold text-primary">Campaign Performance Trends</h6>
+                            <div class="dropdown no-arrow">
+                                <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+                                    <div class="dropdown-header">Display Options:</div>
+                                    <a class="dropdown-item" href="#" data-metric="opens">Open Rate</a>
+                                    <a class="dropdown-item" href="#" data-metric="clicks">Click Rate</a>
+                                    <a class="dropdown-item" href="#" data-metric="conversions">Conversion Rate</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="#" data-metric="all">Show All Metrics</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-area">
+                                <canvas id="campaignPerformanceChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Campaign Success Breakdown -->
+                <div class="col-xl-4 col-lg-5">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                            <h6 class="m-0 font-weight-bold text-primary">Campaign Success Breakdown</h6>
+                            <div class="dropdown no-arrow">
+                                <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+                                    <div class="dropdown-header">View By:</div>
+                                    <a class="dropdown-item" href="#" data-view="audience">Target Audience</a>
+                                    <a class="dropdown-item" href="#" data-view="type">Campaign Type</a>
+                                    <a class="dropdown-item" href="#" data-view="time">Time of Day</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-pie">
+                                <canvas id="campaignBreakdownChart"></canvas>
+                            </div>
+                            <div class="mt-4 text-center small">
+                                <span class="me-2">
+                                    <i class="fas fa-circle text-primary"></i> High Performing
+                                </span>
+                                <span class="me-2">
+                                    <i class="fas fa-circle text-success"></i> Good
+                                </span>
+                                <span class="me-2">
+                                    <i class="fas fa-circle text-info"></i> Average
+                                </span>
+                                <span>
+                                    <i class="fas fa-circle text-warning"></i> Needs Improvement
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Campaigns and Top Performers -->
+            <div class="row">
+                <!-- Recent Campaigns -->
+                <div class="col-lg-6 mb-4">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Recent Campaigns</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Campaign</th>
+                                            <th>Date</th>
+                                            <th>Opens</th>
+                                            <th>Clicks</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% recentCampaigns.forEach(campaign => { %>
+                                        <tr>
+                                            <td><a href="/admin/email-campaigns/<%= campaign._id %>"><%= campaign.name %></a></td>
+                                            <td><%= new Date(campaign.sentDate).toLocaleDateString() %></td>
+                                            <td><%= campaign.metrics.uniqueOpens %> (<%= campaign.metrics.openRate.toFixed(1) %>%)</td>
+                                            <td><%= campaign.metrics.uniqueClicks %> (<%= campaign.metrics.clickRate.toFixed(1) %>%)</td>
+                                        </tr>
+                                        <% }); %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Top Performing Campaigns -->
+                <div class="col-lg-6 mb-4">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Top Performing Campaigns</h6>
+                        </div>
+                        <div class="card-body">
+                            <% topCampaigns.forEach((campaign, index) => { %>
+                            <h4 class="small font-weight-bold">
+                                <%= campaign.name %> 
+                                <span class="float-end"><%= campaign.metrics.openRate.toFixed(1) %>% Open Rate</span>
+                            </h4>
+                            <div class="progress mb-4">
+                                <div class="progress-bar <%= index < 2 ? 'bg-success' : (index < 4 ? 'bg-info' : 'bg-warning') %>" role="progressbar" style="width: <%= campaign.metrics.openRate %>%" 
+                                    aria-valuenow="<%= campaign.metrics.openRate %>" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <% }); %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Audience Insights -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                            <h6 class="m-0 font-weight-bold text-primary">Audience Engagement Insights</h6>
+                            <div class="dropdown no-arrow">
+                                <a class="dropdown-toggle" href="#" role="button" id="insightsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end shadow animated--fade-in" aria-labelledby="insightsDropdown">
+                                    <div class="dropdown-header">View By:</div>
+                                    <a class="dropdown-item" href="#" data-insight="behavior">Behavior Patterns</a>
+                                    <a class="dropdown-item" href="#" data-insight="time">Time of Day</a>
+                                    <a class="dropdown-item" href="#" data-insight="geo">Geographic</a>
+                                    <a class="dropdown-item" href="#" data-insight="device">Device Type</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="chart-bar">
+                                        <canvas id="engagementInsightsChart"></canvas>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card border-left-info bg-light mb-3">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Key Insights</h5>
+                                            <ul class="insights-list">
+                                                <% insights.forEach(insight => { %>
+                                                <li>
+                                                    <i class="fas fa-lightbulb text-info me-2"></i>
+                                                    <%= insight %>
+                                                </li>
+                                                <% }); %>
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                    <div class="card border-left-warning bg-light">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Recommendations</h5>
+                                            <ul class="recommendations-list">
+                                                <% recommendations.forEach(rec => { %>
+                                                <li>
+                                                    <i class="fas fa-star text-warning me-2"></i>
+                                                    <%= rec %>
+                                                </li>
+                                                <% }); %>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Performance Chart
+        const performanceCtx = document.getElementById('campaignPerformanceChart').getContext('2d');
+        new Chart(performanceCtx, {
+            type: 'line',
+            data: {
+                labels: <%- JSON.stringify(performanceData.labels) %>,
+                datasets: [
+                    {
+                        label: 'Open Rate',
+                        data: <%- JSON.stringify(performanceData.openRates) %>,
+                        borderColor: '#4e73df',
+                        backgroundColor: 'rgba(78, 115, 223, 0.05)',
+                        pointRadius: 3,
+                        pointBackgroundColor: '#4e73df',
+                        pointBorderColor: '#4e73df',
+                        pointHoverRadius: 5,
+                        pointHoverBackgroundColor: '#4e73df',
+                        pointHoverBorderColor: '#4e73df',
+                        pointHitRadius: 10,
+                        pointBorderWidth: 2,
+                        fill: true
+                    },
+                    {
+                        label: 'Click Rate',
+                        data: <%- JSON.stringify(performanceData.clickRates) %>,
+                        borderColor: '#1cc88a',
+                        backgroundColor: 'rgba(28, 200, 138, 0.05)',
+                        pointRadius: 3,
+                        pointBackgroundColor: '#1cc88a',
+                        pointBorderColor: '#1cc88a',
+                        pointHoverRadius: 5,
+                        pointHoverBackgroundColor: '#1cc88a',
+                        pointHoverBorderColor: '#1cc88a',
+                        pointHitRadius: 10,
+                        pointBorderWidth: 2,
+                        fill: true
+                    },
+                    {
+                        label: 'Conversion Rate',
+                        data: <%- JSON.stringify(performanceData.conversionRates) %>,
+                        borderColor: '#f6c23e',
+                        backgroundColor: 'rgba(246, 194, 62, 0.05)',
+                        pointRadius: 3,
+                        pointBackgroundColor: '#f6c23e',
+                        pointBorderColor: '#f6c23e',
+                        pointHoverRadius: 5,
+                        pointHoverBackgroundColor: '#f6c23e',
+                        pointHoverBorderColor: '#f6c23e',
+                        pointHitRadius: 10,
+                        pointBorderWidth: 2,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                maintainAspectRatio: false,
+                layout: {
+                    padding: {
+                        left: 10,
+                        right: 25,
+                        top: 25,
+                        bottom: 0
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false,
+                            drawBorder: false
+                        }
+                    },
+                    y: {
+                        ticks: {
+                            maxTicksLimit: 5,
+                            padding: 10,
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        },
+                        grid: {
+                            color: "rgb(234, 236, 244)",
+                            zeroLineColor: "rgb(234, 236, 244)",
+                            drawBorder: false,
+                            borderDash: [2],
+                            zeroLineBorderDash: [2]
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true
+                    },
+                    tooltip: {
+                        backgroundColor: "rgb(255,255,255)",
+                        bodyColor: "#858796",
+                        titleMarginBottom: 10,
+                        titleColor: '#6e707e',
+                        titleFontSize: 14,
+                        borderColor: '#dddfeb',
+                        borderWidth: 1,
+                        xPadding: 15,
+                        yPadding: 15,
+                        displayColors: false,
+                        intersect: false,
+                        mode: 'index',
+                        caretPadding: 10,
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.dataset.label || '';
+                                const value = context.parsed.y;
+                                return label + ': ' + value + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Breakdown Chart
+        const breakdownCtx = document.getElementById('campaignBreakdownChart').getContext('2d');
+        new Chart(breakdownCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['High Performing', 'Good', 'Average', 'Needs Improvement'],
+                datasets: [{
+                    data: <%- JSON.stringify(breakdownData) %>,
+                    backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e'],
+                    hoverBackgroundColor: ['#2e59d9', '#17a673', '#2c9faf', '#f4b619'],
+                    hoverBorderColor: "rgba(234, 236, 244, 1)",
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: "rgb(255,255,255)",
+                        bodyColor: "#858796",
+                        borderColor: '#dddfeb',
+                        borderWidth: 1,
+                        xPadding: 15,
+                        yPadding: 15,
+                        displayColors: false,
+                        caretPadding: 10,
+                    }
+                },
+                cutout: '70%',
+            }
+        });
+
+        // Engagement Insights Chart
+        const engagementCtx = document.getElementById('engagementInsightsChart').getContext('2d');
+        new Chart(engagementCtx, {
+            type: 'bar',
+            data: {
+                labels: <%- JSON.stringify(insightsData.labels) %>,
+                datasets: [{
+                    label: 'Engagement Rate',
+                    data: <%- JSON.stringify(insightsData.data) %>,
+                    backgroundColor: '#4e73df',
+                    borderColor: '#4e73df',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+
+<%- include('../../partials/footer') %> 

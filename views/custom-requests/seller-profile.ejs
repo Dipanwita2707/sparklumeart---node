@@ -1,0 +1,147 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<div class="container mt-4">
+    <div class="row">
+        <!-- Seller Info -->
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3>Seller Profile</h3>
+                </div>
+                <div class="card-body">
+                    <h4 class="mb-3"><%= seller.name %></h4>
+                    <p><strong>Email:</strong> <%= seller.email %></p>
+                    <p><strong>Member Since:</strong> <%= new Date(seller.createdAt).toLocaleDateString() %></p>
+                    <p><strong>Completed Orders:</strong> <%= completedRequests.length %></p>
+                </div>
+            </div>
+
+            <!-- Active Bids -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3>Active Bids</h3>
+                </div>
+                <div class="card-body">
+                    <% if (activeBids && activeBids.length > 0) { %>
+                        <div class="list-group">
+                            <% activeBids.forEach(bid => { %>
+                                <div class="list-group-item">
+                                    <h5 class="mb-1"><%= bid.customRequest.title %></h5>
+                                    <p class="mb-1"><strong>Amount:</strong> ₹<%= bid.amount %></p>
+                                    <p class="mb-1"><strong>Delivery Time:</strong> <%= bid.deliveryTime %> days</p>
+                                    <small class="text-muted">Bid placed: <%= new Date(bid.createdAt).toLocaleDateString() %></small>
+                                </div>
+                            <% }); %>
+                        </div>
+                    <% } else { %>
+                        <div class="alert alert-info">
+                            No active bids at the moment.
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <!-- Current Custom Requests -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3>Current Custom Orders</h3>
+                </div>
+                <div class="card-body">
+                    <% if (customRequests && customRequests.length > 0) { %>
+                        <div class="list-group">
+                            <% customRequests.forEach(request => { %>
+                                <div class="list-group-item">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <% if (request.imageUrl) { %>
+                                                <img src="<%= request.imageUrl %>" class="img-fluid rounded" alt="Request Image">
+                                            <% } %>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <h5 class="mb-1"><%= request.title %></h5>
+                                            <p class="mb-1"><strong>Status:</strong> <%= request.status.replace('_', ' ').toUpperCase() %></p>
+                                            <p class="mb-1"><strong>Budget:</strong> ₹<%= request.budget %></p>
+                                            <small class="text-muted">Assigned: <%= new Date(request.updatedAt).toLocaleDateString() %></small>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        </div>
+                    <% } else { %>
+                        <div class="alert alert-info">
+                            No current custom orders.
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+
+            <!-- Completed Orders -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h3>Completed Custom Orders</h3>
+                </div>
+                <div class="card-body">
+                    <% if (completedRequests.length > 0) { %>
+                        <div class="list-group">
+                            <% completedRequests.forEach(request => { %>
+                                <div class="list-group-item">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <% if (request.imageUrl) { %>
+                                                <img src="<%= request.imageUrl %>" class="img-fluid rounded" alt="Request Image">
+                                            <% } %>
+                                        </div>
+                                        <div class="col-md-9">
+                                            <h5 class="mb-1"><%= request.title %></h5>
+                                            <p class="mb-1"><strong>Type:</strong> <%= request.type.replace('_', ' ').toUpperCase() %></p>
+                                            <p class="mb-1"><strong>Completed:</strong> <%= new Date(request.updatedAt).toLocaleDateString() %></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        </div>
+                    <% } else { %>
+                        <div class="alert alert-info">
+                            No completed orders yet.
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+
+            <!-- Gallery Requests -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>Gallery Submissions</h3>
+                </div>
+                <div class="card-body">
+                    <% if (galleryRequests.length > 0) { %>
+                        <div class="row">
+                            <% galleryRequests.forEach(request => { %>
+                                <div class="col-md-4 mb-4">
+                                    <div class="card h-100">
+                                        <img src="<%= request.imageUrl %>" class="card-img-top" alt="Gallery Image">
+                                        <div class="card-body">
+                                            <h5 class="card-title"><%= request.title %></h5>
+                                            <p class="card-text"><small class="text-muted">
+                                                Submitted: <%= new Date(request.createdAt).toLocaleDateString() %>
+                                            </small></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        </div>
+                    <% } else { %>
+                        <div class="alert alert-info">
+                            No gallery submissions yet.
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %> 

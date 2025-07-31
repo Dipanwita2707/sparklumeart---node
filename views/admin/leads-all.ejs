@@ -1,0 +1,336 @@
+<%- include('../partials/header') %>
+<%- include('../partials/admin-navbar') %>
+
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar -->
+    <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse">
+      <div class="position-sticky pt-3">
+        <div class="list-group mb-3">
+          <div class="list-group-item active bg-primary">Navigation</div>
+          <a href="/admin/dashboard" class="list-group-item list-group-item-action"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a>
+          <a href="/admin/users" class="list-group-item list-group-item-action"><i class="fas fa-users me-2"></i> Users</a>
+          <a href="/admin/gallery" class="list-group-item list-group-item-action"><i class="fas fa-images me-2"></i> Gallery</a>
+          <a href="/admin/requests" class="list-group-item list-group-item-action"><i class="fas fa-paint-brush me-2"></i> Painting Requests</a>
+          <a href="/admin/products" class="list-group-item list-group-item-action"><i class="fas fa-shopping-cart me-2"></i> Products</a>
+          <a href="/admin/orders" class="list-group-item list-group-item-action"><i class="fas fa-shopping-bag me-2"></i> Orders</a>
+          <a href="/admin/psychometric-tests" class="list-group-item list-group-item-action"><i class="fas fa-brain me-2"></i> Psychometric Tests</a>
+          <a href="/admin/leads" class="list-group-item list-group-item-action active"><i class="fas fa-funnel-dollar me-2"></i> AI Lead Management</a>
+          <a href="/admin/seller-performance" class="list-group-item list-group-item-action"><i class="fas fa-chart-line me-2"></i> Seller Performance</a>
+          <a href="/admin/sellers" class="list-group-item list-group-item-action"><i class="fas fa-store me-2"></i> Sellers</a>
+        </div>
+      </div>
+    </nav>
+    
+    <!-- Main content -->
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">All Leads</h1>
+        <div class="btn-toolbar mb-2 mb-md-0">
+          <div class="btn-group me-2">
+            <a href="/admin/leads" class="btn btn-sm btn-outline-secondary">Back to Dashboard</a>
+          </div>
+        </div>
+      </div>
+
+      <% if (locals.success_msg && success_msg !== '') { %>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+          <%= success_msg %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      <% } %>
+
+      <% if (locals.error_msg && error_msg !== '') { %>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          <%= error_msg %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      <% } %>
+
+      <!-- Filters Card -->
+      <div class="card shadow mb-4">
+        <div class="card-header py-3">
+          <h6 class="m-0 font-weight-bold text-primary">Filters</h6>
+        </div>
+        <div class="card-body">
+          <form action="/admin/leads/all" method="GET">
+            <div class="row">
+              <div class="col-md-3 mb-3">
+                <label for="source" class="form-label">Source</label>
+                <select class="form-select" id="source" name="source">
+                  <option value="">All Sources</option>
+                  <% if (filters && filters.sources) { %>
+                    <% filters.sources.forEach(src => { %>
+                      <option value="<%= src %>" <%= query.source === src ? 'selected' : '' %>><%= src.replace('_', ' ') %></option>
+                    <% }); %>
+                  <% } %>
+                </select>
+              </div>
+              <div class="col-md-3 mb-3">
+                <label for="interestLevel" class="form-label">Interest Level</label>
+                <select class="form-select" id="interestLevel" name="interestLevel">
+                  <option value="">All Levels</option>
+                  <% if (filters && filters.interestLevels) { %>
+                    <% filters.interestLevels.forEach(level => { %>
+                      <option value="<%= level %>" <%= query.interestLevel === level ? 'selected' : '' %>><%= level.replace('_', ' ') %></option>
+                    <% }); %>
+                  <% } %>
+                </select>
+              </div>
+              <div class="col-md-3 mb-3">
+                <label for="status" class="form-label">Status</label>
+                <select class="form-select" id="status" name="status">
+                  <option value="">All Statuses</option>
+                  <% if (filters && filters.statuses) { %>
+                    <% filters.statuses.forEach(status => { %>
+                      <option value="<%= status %>" <%= query.status === status ? 'selected' : '' %>><%= status.toUpperCase() %></option>
+                    <% }); %>
+                  <% } %>
+                </select>
+              </div>
+              <div class="col-md-3 mb-3">
+                <label for="sellerId" class="form-label">Assigned Seller</label>
+                <select class="form-select" id="sellerId" name="sellerId">
+                  <option value="">All Sellers</option>
+                  <option value="unassigned" <%= query.sellerId === 'unassigned' ? 'selected' : '' %>>Unassigned</option>
+                  <% if (sellers && sellers.length > 0) { %>
+                    <% sellers.forEach(seller => { %>
+                      <option value="<%= seller._id %>" <%= query.sellerId === seller._id.toString() ? 'selected' : '' %>><%= seller.name %></option>
+                    <% }); %>
+                  <% } %>
+                </select>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-3 mb-3">
+                <label for="dateRange" class="form-label">Date Range</label>
+                <select class="form-select" id="dateRange" name="dateRange">
+                  <option value="">All Time</option>
+                  <option value="today" <%= query.dateRange === 'today' ? 'selected' : '' %>>Today</option>
+                  <option value="yesterday" <%= query.dateRange === 'yesterday' ? 'selected' : '' %>>Yesterday</option>
+                  <option value="lastWeek" <%= query.dateRange === 'lastWeek' ? 'selected' : '' %>>Last 7 Days</option>
+                  <option value="lastMonth" <%= query.dateRange === 'lastMonth' ? 'selected' : '' %>>Last 30 Days</option>
+                  <option value="lastQuarter" <%= query.dateRange === 'lastQuarter' ? 'selected' : '' %>>Last 90 Days</option>
+                </select>
+              </div>
+              <div class="col-md-3 mb-3">
+                <label for="minScore" class="form-label">Min AI Score</label>
+                <input type="number" class="form-control" id="minScore" name="minScore" min="0" max="100" value="<%= query.minScore || '' %>" placeholder="Min Score">
+              </div>
+              <div class="col-md-3 mb-3">
+                <label for="maxScore" class="form-label">Max AI Score</label>
+                <input type="number" class="form-control" id="maxScore" name="maxScore" min="0" max="100" value="<%= query.maxScore || '' %>" placeholder="Max Score">
+              </div>
+              <div class="col-md-3 mb-3">
+                <label for="search" class="form-label">Search</label>
+                <input type="text" class="form-control" id="search" name="search" value="<%= query.search || '' %>" placeholder="Name or Email">
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12">
+                <button type="submit" class="btn btn-primary">Apply Filters</button>
+                <a href="/admin/leads/all" class="btn btn-secondary">Clear Filters</a>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Leads Table -->
+      <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+          <h6 class="m-0 font-weight-bold text-primary">Leads (<%= totalLeads %> total)</h6>
+          <div>
+            <select class="form-select form-select-sm d-inline-block w-auto" id="sortBy" name="sortBy" onchange="location = this.value;">
+              <option disabled selected>Sort by...</option>
+              <option value="/admin/leads/all?<%= new URLSearchParams({...query, sortBy: 'newest'}).toString() %>">Newest First</option>
+              <option value="/admin/leads/all?<%= new URLSearchParams({...query, sortBy: 'oldest'}).toString() %>">Oldest First</option>
+              <option value="/admin/leads/all?<%= new URLSearchParams({...query, sortBy: 'scoreDesc'}).toString() %>">Highest Score</option>
+              <option value="/admin/leads/all?<%= new URLSearchParams({...query, sortBy: 'scoreAsc'}).toString() %>">Lowest Score</option>
+              <option value="/admin/leads/all?<%= new URLSearchParams({...query, sortBy: 'conversionDesc'}).toString() %>">Highest Conversion Probability</option>
+            </select>
+          </div>
+        </div>
+        <div class="card-body">
+          <% if (leads && leads.length > 0) { %>
+            <div class="table-responsive">
+              <table class="table table-bordered table-hover">
+                <thead>
+                  <tr>
+                    <th>User</th>
+                    <th>Source</th>
+                    <th>Created</th>
+                    <th>Score</th>
+                    <th>Interest</th>
+                    <th>Status</th>
+                    <th>Assigned To</th>
+                    <th>Next Follow-up</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% leads.forEach(lead => { %>
+                    <tr>
+                      <td>
+                        <% if (lead.user) { %>
+                          <div><%= lead.user.name %></div>
+                          <small class="text-muted"><%= lead.user.email %></small>
+                        <% } else { %>
+                          <span class="text-muted">Unknown User</span>
+                        <% } %>
+                      </td>
+                      <td><span class="badge bg-info"><%= lead.source.replace('_', ' ') %></span></td>
+                      <td><%= new Date(lead.createdAt).toLocaleDateString() %></td>
+                      <td>
+                        <div class="progress" style="height: 20px;">
+                          <div class="progress-bar bg-<%= lead.aiScore >= 80 ? 'success' : lead.aiScore >= 60 ? 'info' : 'warning' %>" 
+                               role="progressbar" style="width: <%= lead.aiScore %>%;" 
+                               aria-valuenow="<%= lead.aiScore %>" aria-valuemin="0" aria-valuemax="100">
+                            <%= lead.aiScore %>
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <span class="badge bg-<%= 
+                          lead.interestLevel === 'very_high' ? 'success' : 
+                          lead.interestLevel === 'high' ? 'primary' : 
+                          lead.interestLevel === 'medium' ? 'info' : 'secondary' 
+                        %>">
+                          <%= lead.interestLevel.replace('_', ' ').toUpperCase() %>
+                        </span>
+                      </td>
+                      <td>
+                        <span class="badge bg-<%= 
+                          lead.status === 'converted' ? 'success' : 
+                          lead.status === 'contacted' ? 'primary' : 
+                          lead.status === 'qualified' ? 'info' : 
+                          lead.status === 'proposal' ? 'warning' :
+                          lead.status === 'lost' ? 'danger' : 'secondary' 
+                        %>">
+                          <%= lead.status.toUpperCase() %>
+                        </span>
+                      </td>
+                      <td>
+                        <% if (lead.assignedSeller) { %>
+                          <%= lead.assignedSeller.name %>
+                        <% } else { %>
+                          <span class="text-muted">Unassigned</span>
+                        <% } %>
+                      </td>
+                      <td>
+                        <% if (lead.nextFollowUp) { %>
+                          <%= new Date(lead.nextFollowUp).toLocaleDateString() %>
+                          <% 
+                            const today = new Date();
+                            today.setHours(0, 0, 0, 0);
+                            const followUpDate = new Date(lead.nextFollowUp);
+                            followUpDate.setHours(0, 0, 0, 0);
+                            const diffTime = followUpDate - today;
+                            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                          %>
+                          <% if (diffDays < 0) { %>
+                            <span class="badge bg-danger">Overdue</span>
+                          <% } else if (diffDays === 0) { %>
+                            <span class="badge bg-warning">Today</span>
+                          <% } else if (diffDays === 1) { %>
+                            <span class="badge bg-info">Tomorrow</span>
+                          <% } %>
+                        <% } else { %>
+                          <span class="text-muted">Not Scheduled</span>
+                        <% } %>
+                      </td>
+                      <td>
+                        <a href="/admin/leads/<%= lead._id %>" class="btn btn-sm btn-primary">View</a>
+                        <div class="dropdown d-inline">
+                          <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" id="leadActionDropdown<%= lead._id %>" data-bs-toggle="dropdown" aria-expanded="false">
+                            Actions
+                          </button>
+                          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="leadActionDropdown<%= lead._id %>">
+                            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#quickUpdateModal<%= lead._id %>">Update Status</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="event.preventDefault(); document.getElementById('markContacted<%= lead._id %>').submit();">Mark Contacted</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="#" onclick="event.preventDefault(); if(confirm('Are you sure you want to delete this lead?')) document.getElementById('deleteLead<%= lead._id %>').submit();">Delete</a></li>
+                          </ul>
+                        </div>
+                        <form id="markContacted<%= lead._id %>" action="/admin/leads/<%= lead._id %>/mark-contacted" method="POST" style="display: none;"></form>
+                        <form id="deleteLead<%= lead._id %>" action="/admin/leads/<%= lead._id %>/delete" method="POST" style="display: none;"></form>
+                      </td>
+                    </tr>
+                    
+                    <!-- Quick Update Modal for each lead -->
+                    <div class="modal fade" id="quickUpdateModal<%= lead._id %>" tabindex="-1" aria-labelledby="quickUpdateModalLabel<%= lead._id %>" aria-hidden="true">
+                      <div class="modal-dialog modal-sm">
+                        <div class="modal-content">
+                          <form action="/admin/leads/<%= lead._id %>/status" method="POST">
+                            <div class="modal-header">
+                              <h5 class="modal-title" id="quickUpdateModalLabel<%= lead._id %>">Update Status</h5>
+                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                              <div class="mb-3">
+                                <label for="leadStatus<%= lead._id %>" class="form-label">Status</label>
+                                <select class="form-select" id="leadStatus<%= lead._id %>" name="status">
+                                  <option value="new" <%= lead.status === 'new' ? 'selected' : '' %>>New</option>
+                                  <option value="contacted" <%= lead.status === 'contacted' ? 'selected' : '' %>>Contacted</option>
+                                  <option value="qualified" <%= lead.status === 'qualified' ? 'selected' : '' %>>Qualified</option>
+                                  <option value="proposal" <%= lead.status === 'proposal' ? 'selected' : '' %>>Proposal</option>
+                                  <option value="converted" <%= lead.status === 'converted' ? 'selected' : '' %>>Converted</option>
+                                  <option value="lost" <%= lead.status === 'lost' ? 'selected' : '' %>>Lost</option>
+                                </select>
+                              </div>
+                              <div class="mb-3">
+                                <label for="statusNote<%= lead._id %>" class="form-label">Note (Optional)</label>
+                                <textarea class="form-control form-control-sm" id="statusNote<%= lead._id %>" name="note" rows="2"></textarea>
+                              </div>
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                              <button type="submit" class="btn btn-primary">Update</button>
+                            </div>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  <% }); %>
+                </tbody>
+              </table>
+            </div>
+            
+            <!-- Pagination -->
+            <% if (totalPages > 1) { %>
+              <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                  <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+                    <a class="page-link" href="/admin/leads/all?<%= new URLSearchParams({...query, page: currentPage - 1}).toString() %>" tabindex="-1" aria-disabled="<%= currentPage === 1 ? 'true' : 'false' %>">Previous</a>
+                  </li>
+                  
+                  <% for (let i = 1; i <= totalPages; i++) { %>
+                    <% if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) { %>
+                      <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+                        <a class="page-link" href="/admin/leads/all?<%= new URLSearchParams({...query, page: i}).toString() %>"><%= i %></a>
+                      </li>
+                    <% } else if (i === currentPage - 3 || i === currentPage + 3) { %>
+                      <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                      </li>
+                    <% } %>
+                  <% } %>
+                  
+                  <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+                    <a class="page-link" href="/admin/leads/all?<%= new URLSearchParams({...query, page: currentPage + 1}).toString() %>">Next</a>
+                  </li>
+                </ul>
+              </nav>
+            <% } %>
+          <% } else { %>
+            <div class="alert alert-info">
+              No leads found with the current filters. <a href="/admin/leads/all">Clear filters</a> to see all leads.
+            </div>
+          <% } %>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<%- include('../partials/footer') %> 

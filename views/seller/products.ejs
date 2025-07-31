@@ -1,0 +1,773 @@
+<%- include('../partials/header') %>
+
+<div class="container-fluid seller-dashboard p-0">
+    <div class="row g-0">
+        <!-- Sidebar -->
+        <%- include('../partials/seller-sidebar', { currentPage: 'products' }) %>
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+            <!-- Header Section -->
+            <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-4 position-relative">
+                <div class="mb-3 mb-md-0">
+                    <h2 class="fw-bold text-dark mb-1">My Products</h2>
+                    <p class="text-muted">Manage your product inventory and listings</p>
+                </div>
+                <div class="d-flex">
+                    <a href="/seller/products/add" class="btn btn-primary d-flex align-items-center">
+                        <i class="fas fa-plus me-2"></i>Add New Product
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Alerts -->
+            <% if(messages.success){ %>
+                <div class="alert alert-success alert-dismissible fade show shadow-sm">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <%= messages.success %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <% } %>
+            <% if(messages.error_msg){ %>
+                <div class="alert alert-danger alert-dismissible fade show shadow-sm">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    <%= messages.error_msg %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <% } %>
+            
+            <% if(products.length === 0){ %>
+                <!-- Empty State -->
+                <div class="card border-0 shadow-sm p-5 text-center">
+                    <div class="py-5">
+                        <div class="empty-state-icon mb-4">
+                            <i class="fas fa-box-open fa-4x text-muted"></i>
+                        </div>
+                        <h3 class="fw-bold mb-3">No products yet</h3>
+                        <p class="text-muted mb-4">Start selling by adding your first product to your inventory.</p>
+                        <a href="/seller/products/add" class="btn btn-primary px-4 py-2">
+                            <i class="fas fa-plus-circle me-2"></i>Add Your First Product
+                        </a>
+                    </div>
+                </div>
+            <% } else { %>
+                <!-- Product Management Section -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body p-4">
+                        <!-- Controls Row -->
+                        <div class="row mb-4 align-items-center">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border">
+                                        <i class="fas fa-search text-muted"></i>
+                                    </span>
+                                    <input type="text" class="form-control border" id="productSearch" placeholder="Search products...">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex justify-content-md-end">
+                                    <div class="d-flex align-items-center me-3">
+                                        <select class="form-select" id="productStatusFilter">
+                                            <option value="all">All Status</option>
+                                            <option value="approved">Approved</option>
+                                            <option value="pending">Pending</option>
+                                            <option value="rejected">Rejected</option>
+                                        </select>
+                                    </div>
+                                    <div class="btn-group" role="group">
+                                        <button type="button" class="btn btn-outline-secondary view-mode active" data-view="grid">
+                                            <i class="fas fa-th-large"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-outline-secondary view-mode" data-view="list">
+                                            <i class="fas fa-list"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Product Stats Summary -->
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-3 col-6">
+                                <div class="stat-card bg-light p-3 rounded h-100">
+                                    <div class="d-flex align-items-center">
+                                        <div class="stat-icon me-3 bg-primary-light rounded-circle p-2">
+                                            <i class="fas fa-cubes text-primary"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0 text-muted">Total Products</h6>
+                                            <h3 class="mb-0 fw-bold"><%= products.length %></h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6">
+                                <div class="stat-card bg-light p-3 rounded h-100">
+                                    <div class="d-flex align-items-center">
+                                        <div class="stat-icon me-3 bg-success-light rounded-circle p-2">
+                                            <i class="fas fa-check-circle text-success"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0 text-muted">Approved</h6>
+                                            <h3 class="mb-0 fw-bold"><%= products.filter(p => p.status === 'approved').length %></h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6">
+                                <div class="stat-card bg-light p-3 rounded h-100">
+                                    <div class="d-flex align-items-center">
+                                        <div class="stat-icon me-3 bg-warning-light rounded-circle p-2">
+                                            <i class="fas fa-hourglass-half text-warning"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0 text-muted">Pending</h6>
+                                            <h3 class="mb-0 fw-bold"><%= products.filter(p => p.status === 'pending').length %></h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6">
+                                <div class="stat-card bg-light p-3 rounded h-100">
+                                    <div class="d-flex align-items-center">
+                                        <div class="stat-icon me-3 bg-danger-light rounded-circle p-2">
+                                            <i class="fas fa-times-circle text-danger"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0 text-muted">Out of Stock</h6>
+                                            <h3 class="mb-0 fw-bold"><%= products.filter(p => p.stock === 0).length %></h3>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- List View (Hidden by default) -->
+                        <div id="listView" class="view-container d-none">
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle" id="productsTable">
+                                    <thead>
+                                        <tr>
+                                            <th width="80">Image</th>
+                                            <th>Product</th>
+                                            <th>Price</th>
+                                            <th>Stock</th>
+                                            <th>Status</th>
+                                            <th>Date</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% products.forEach(product => { %>
+                                            <tr class="product-item" data-status="<%= product.status %>">
+                                                <td>
+                                                    <img src="<%= product.image %>" alt="<%= product.title %>" class="product-thumb">
+                                                </td>
+                                                <td>
+                                                    <h6 class="mb-0 fw-semibold"><%= product.title %></h6>
+                                                    <small class="text-muted product-artist"><%= product.artistName %></small>
+                                                </td>
+                                                <td>
+                                                    <span class="fw-semibold">₹<%= product.price.toFixed(2) %></span>
+                                                </td>
+                                                <td>
+                                                    <span class="stock-pill <%= product.stock > 10 ? 'bg-success' : product.stock > 0 ? 'bg-warning' : 'bg-danger' %>">
+                                                        <%= product.stock %>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span class="status-pill <%= product.status === 'pending' ? 'status-pending' : 
+                                                                     product.status === 'approved' ? 'status-approved' : 
+                                                                     'status-rejected' %>">
+                                                        <%= product.status.charAt(0).toUpperCase() + product.status.slice(1) %>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span class="text-muted"><%= new Date(product.createdAt).toLocaleDateString() %></span>
+                                                </td>
+                                                <td>
+                                                    <div class="d-flex">
+                                                        <button type="button" class="btn btn-sm btn-outline-primary me-2 view-product" 
+                                                                data-bs-toggle="modal" 
+                                                                data-bs-target="#productModal"
+                                                                data-id="<%= product._id %>"
+                                                                data-title="<%= product.title %>"
+                                                                data-artist="<%= product.artistName %>"
+                                                                data-description="<%= product.description %>"
+                                                                data-price="<%= product.price %>"
+                                                                data-stock="<%= product.stock %>"
+                                                                data-status="<%= product.status %>"
+                                                                data-image="<%= product.image %>"
+                                                                data-comment="<%= product.adminComment || '' %>">
+                                                            <i class="fas fa-eye"></i>
+                                                        </button>
+                                                        <button class="btn btn-sm btn-outline-secondary">
+                                                            <i class="fas fa-edit"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        <% }); %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <!-- Grid View (Default) -->
+                        <div id="gridView" class="view-container">
+                            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-5 g-3">
+                                <% products.forEach(product => { %>
+                                    <div class="col product-item" data-status="<%= product.status %>">
+                                        <div class="product-card h-100">
+                                            <div class="card-header p-0">
+                                                <div class="product-img-wrapper">
+                                                    <img src="<%= product.image %>" alt="<%= product.title %>" style="height: 100px; width: 100px;">
+                                                    <div class="product-overlay">
+                                                        <div class="product-actions">
+                                                            <button class="btn btn-sm btn-light rounded-circle me-2 view-product"
+                                                                    data-bs-toggle="modal" 
+                                                                    data-bs-target="#productModal"
+                                                                    data-id="<%= product._id %>"
+                                                                    data-title="<%= product.title %>"
+                                                                    data-artist="<%= product.artistName %>"
+                                                                    data-description="<%= product.description %>"
+                                                                    data-price="<%= product.price %>"
+                                                                    data-stock="<%= product.stock %>"
+                                                                    data-status="<%= product.status %>"
+                                                                    data-image="<%= product.image %>"
+                                                                    data-comment="<%= product.adminComment || '' %>">
+                                                                <i class="fas fa-eye"></i>
+                                                            </button>
+                                                            <button class="btn btn-sm btn-light rounded-circle">
+                                                                <i class="fas fa-edit"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    <div class="product-badges">
+                                                        <span class="status-badge <%= product.status === 'pending' ? 'status-pending' : 
+                                                                           product.status === 'approved' ? 'status-approved' : 
+                                                                           'status-rejected' %>">
+                                                            <%= product.status.charAt(0).toUpperCase() + product.status.slice(1) %>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="product-info p-3">
+                                                <h5 class="product-title mb-2"><%= product.title %></h5>
+                                                <div class="product-meta">
+                                                    <span class="product-artist text-muted">By: <%= product.artistName %></span>
+                                                    <span class="product-price">₹<%= product.price.toFixed(2) %></span>
+                                                </div>
+                                                <div class="product-description mb-3"><%= product.description.length > 100 ? product.description.substring(0, 100) + '...' : product.description %></div>
+                                                <div class="d-flex justify-content-between align-items-center mt-auto">
+                                                    <div class="stock-indicator">
+                                                        <% if (product.stock <= 0) { %>
+                                                            <span class="stock-badge stock-empty">Out of Stock</span>
+                                                        <% } else if (product.stock <= 5) { %>
+                                                            <span class="stock-badge stock-low">Low Stock: <%= product.stock %></span>
+                                                        <% } else { %>
+                                                            <span class="text-success"><i class="fas fa-cubes me-1"></i><%= product.stock %> in stock</span>
+                                                        <% } %>
+                                                    </div>
+                                                    <div>
+                                                        <small class="text-muted"><%= new Date(product.createdAt).toLocaleDateString() %></small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <% }); %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <% } %>
+        </main>
+    </div>
+</div>
+
+<!-- Product Details Modal -->
+<div class="modal fade" id="productModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="productTitle"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0">
+                <div class="row g-0">
+                    <div class="col-4">
+                        <div class="modal-image-container">
+                            <img id="productImage" src="" alt="" class="modal-product-image">
+                            <div class="modal-product-status">
+                                <span id="productStatus" class="status-badge"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-8 p-4">
+                        <div class="product-details">
+                            <div class="card mb-3 border-0 shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <h3 id="modalProductTitle" class="h4 mb-0"></h3>
+                                        <span class="product-price-badge" id="productPriceBadge"></span>
+                                    </div>
+                                    <div class="text-muted mb-2" id="productArtist"></div>
+                                    
+                                    <div class="row g-3 mb-3">
+                                        <div class="col-6">
+                                            <div class="stat-box rounded bg-light p-3">
+                                                <div class="small text-muted mb-1">Price</div>
+                                                <div class="h4 mb-0 text-primary">₹<span id="productPrice"></span></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="stat-box rounded bg-light p-3">
+                                                <div class="small text-muted mb-1">Inventory</div>
+                                                <div class="h4 mb-0" id="stockDisplay"><span id="productStock"></span> units</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card mb-3 border-0 shadow-sm">
+                                <div class="card-body">
+                                    <h6 class="fw-bold text-uppercase text-muted small mb-2">Description</h6>
+                                    <p id="productDescription" class="mb-0"></p>
+                                </div>
+                            </div>
+                            
+                            <div id="adminCommentSection" class="card mb-3 border-0 shadow-sm" style="display: none;">
+                                <div class="card-body bg-light">
+                                    <h6 class="fw-bold text-uppercase text-muted small mb-2">Admin Feedback</h6>
+                                    <p id="adminComment" class="mb-0 fst-italic"></p>
+                                </div>
+                            </div>
+                            
+                            <div class="product-actions d-flex mt-4">
+                                <button class="btn btn-outline-primary me-2">
+                                    <i class="fas fa-edit me-2"></i>Edit
+                                </button>
+                                <button class="btn btn-outline-success me-2">
+                                    <i class="fas fa-sync-alt me-2"></i>Stock
+                                </button>
+                                <button class="btn btn-outline-danger">
+                                    <i class="fas fa-trash-alt me-2"></i>Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* General Styling */
+main {
+    background-color: #f8f9fa;
+}
+
+/* Stats Cards */
+.stat-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bg-primary-light { background-color: rgba(13, 110, 253, 0.1); }
+.bg-success-light { background-color: rgba(25, 135, 84, 0.1); }
+.bg-warning-light { background-color: rgba(255, 193, 7, 0.1); }
+.bg-danger-light { background-color: rgba(220, 53, 69, 0.1); }
+
+/* Product Cards - Grid View */
+.product-card {
+    border-radius: 8px;
+    border: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    overflow: hidden;
+    transition: all 0.3s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+}
+
+.product-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+}
+
+.product-img-wrapper {
+    position: relative;
+    height: 0;
+    padding-bottom: 20%; /* Reduced from 33% to 20% to make images shorter */
+    overflow: hidden;
+    background-color: #f5f5f5;
+}
+
+.product-img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Changed from cover to contain to prevent image distortion */
+    transition: transform 0.5s ease;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.product-card:hover .product-img-wrapper img {
+    transform: scale(1.05);
+}
+
+.product-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.product-card:hover .product-overlay {
+    opacity: 1;
+}
+
+.product-badges {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    align-items: flex-end;
+}
+
+.status-badge, .stock-badge {
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+.status-approved {
+    background-color: rgba(25, 135, 84, 0.15);
+    color: #198754;
+}
+
+.status-pending {
+    background-color: rgba(255, 193, 7, 0.15);
+    color: #ffc107;
+}
+
+.status-rejected {
+    background-color: rgba(220, 53, 69, 0.15);
+    color: #dc3545;
+}
+
+.stock-empty {
+    background-color: rgba(220, 53, 69, 0.15);
+    color: #dc3545;
+}
+
+.stock-low {
+    background-color: rgba(255, 193, 7, 0.15);
+    color: #ffc107;
+}
+
+.product-info {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    background-color: white;
+    border-top: 1px solid rgba(0,0,0,0.05);
+    padding: 0.75rem !important; /* Reduced padding */
+}
+
+.card-header {
+    padding: 0;
+    background-color: transparent;
+    border-bottom: none;
+}
+
+.stat-box {
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.product-title {
+    font-weight: 600;
+    font-size: 0.9rem; /* Reduced font size */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.product-description {
+    font-size: 0.8rem; /* Reduced font size */
+    color: #6c757d;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Reduced from 3 to 2 lines */
+    line-clamp: 2; /* Adding standard property for compatibility */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    min-height: 40px; /* Reduced min height */
+}
+
+.product-price {
+    font-weight: 700;
+    font-size: 1rem; /* Reduced from 1.1rem */
+    color: #0d6efd;
+}
+
+.product-artist {
+    font-size: 0.75rem;
+}
+
+.product-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+/* Product Table - List View */
+.product-thumb {
+    width: 40px;
+    height: 40px; /* Reduced from 45px to 40px */
+    object-fit: cover;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border: 1px solid white;
+}
+
+.table > tbody > tr {
+    vertical-align: middle;
+}
+
+.table > tbody > tr:hover {
+    background-color: rgba(0,0,0,0.02);
+}
+
+.stock-pill, .status-pill {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.status-pill {
+    background-color: #f8f9fa;
+}
+
+/* Modal */
+.modal-dialog {
+    max-width: 800px;
+}
+
+.modal-body .row {
+    align-items: stretch;
+}
+
+.modal-image-container {
+    background-color: #f8f9fa;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 1rem;
+}
+
+.col-4 {
+    max-width: 30%;
+    flex: 0 0 30%;
+}
+
+.col-8 {
+    max-width: 70%;
+    flex: 0 0 70%;
+}
+
+.modal-product-image {
+    max-width: 100%;
+    height: auto;
+    max-height: 300px; /* Added max-height to limit the size in the modal */
+    object-fit: contain;
+    padding: 10px;
+}
+
+.modal-product-status {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.product-price-badge {
+    background-color: #0d6efd;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-weight: 600;
+}
+
+#stockDisplay.text-danger {
+    color: #dc3545;
+}
+
+#stockDisplay.text-warning {
+    color: #ffc107;
+}
+
+#stockDisplay.text-success {
+    color: #198754;
+}
+
+/* Empty State */
+.empty-state-icon {
+    color: #dee2e6;
+}
+
+/* Modal specific styles */
+.modal .card {
+    transition: all 0.2s ease;
+}
+
+.modal .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08) !important;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // View Mode Switching
+    const viewModeButtons = document.querySelectorAll('.view-mode');
+    const gridView = document.getElementById('gridView');
+    const listView = document.getElementById('listView');
+    
+    viewModeButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // Remove active class from all buttons
+            viewModeButtons.forEach(btn => btn.classList.remove('active'));
+            // Add active class to clicked button
+            this.classList.add('active');
+            
+            const viewMode = this.getAttribute('data-view');
+            
+            if (viewMode === 'grid') {
+                gridView.classList.remove('d-none');
+                listView.classList.add('d-none');
+            } else {
+                gridView.classList.add('d-none');
+                listView.classList.remove('d-none');
+            }
+        });
+    });
+    
+    // Product Search Functionality
+    const productSearch = document.getElementById('productSearch');
+    
+    if (productSearch) {
+        productSearch.addEventListener('keyup', function() {
+            const searchValue = this.value.toLowerCase();
+            const productItems = document.querySelectorAll('.product-item');
+            
+            productItems.forEach(item => {
+                const title = item.querySelector('.product-title, h6').textContent.toLowerCase();
+                const artist = item.querySelector('.product-artist').textContent.toLowerCase();
+                
+                if (title.includes(searchValue) || artist.includes(searchValue)) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    }
+    
+    // Status Filter
+    const statusFilter = document.getElementById('productStatusFilter');
+    
+    if (statusFilter) {
+        statusFilter.addEventListener('change', function() {
+            const filterValue = this.value;
+            const productItems = document.querySelectorAll('.product-item');
+            
+            productItems.forEach(item => {
+                if (filterValue === 'all' || item.dataset.status === filterValue) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    }
+    
+    // Setup product modal
+    const viewButtons = document.querySelectorAll('.view-product');
+    
+    viewButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // Set modal content
+            document.getElementById('productTitle').textContent = this.dataset.title;
+            document.getElementById('modalProductTitle').textContent = this.dataset.title;
+            document.getElementById('productArtist').textContent = this.dataset.artist;
+            document.getElementById('productDescription').textContent = this.dataset.description;
+            document.getElementById('productPrice').textContent = parseFloat(this.dataset.price).toFixed(2);
+            document.getElementById('productPriceBadge').textContent = '₹' + parseFloat(this.dataset.price).toFixed(2);
+            document.getElementById('productStock').textContent = this.dataset.stock;
+            document.getElementById('productImage').src = this.dataset.image;
+            
+            // Set stock display color
+            const stockDisplay = document.getElementById('stockDisplay');
+            const stockValue = parseInt(this.dataset.stock);
+            if (stockValue <= 0) {
+                stockDisplay.className = 'h4 mb-0 text-danger';
+            } else if (stockValue <= 5) {
+                stockDisplay.className = 'h4 mb-0 text-warning';
+            } else {
+                stockDisplay.className = 'h4 mb-0 text-success';
+            }
+            
+            // Set status badge
+            const statusBadge = document.getElementById('productStatus');
+            statusBadge.textContent = this.dataset.status.charAt(0).toUpperCase() + this.dataset.status.slice(1);
+            statusBadge.className = 'status-badge';
+            
+            if (this.dataset.status === 'pending') {
+                statusBadge.classList.add('status-pending');
+            } else if (this.dataset.status === 'approved') {
+                statusBadge.classList.add('status-approved');
+            } else {
+                statusBadge.classList.add('status-rejected');
+            }
+            
+            // Show admin comment if exists
+            const adminCommentSection = document.getElementById('adminCommentSection');
+            const adminComment = document.getElementById('adminComment');
+            
+            if (this.dataset.comment && this.dataset.comment.trim() !== '') {
+                adminComment.textContent = this.dataset.comment;
+                adminCommentSection.style.display = 'block';
+            } else {
+                adminCommentSection.style.display = 'none';
+            }
+        });
+    });
+});
+</script>
+
+<%- include('../partials/footer') %> 

@@ -1,0 +1,93 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h2>Custom Artwork Requests</h2>
+            <p class="text-muted">Browse and bid on custom artwork requests from customers</p>
+        </div>
+    </div>
+
+    <% if (messages.success) { %>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <%= messages.success %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    <% } %>
+
+    <% if (messages.error) { %>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <%= messages.error %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    <% } %>
+
+    <div class="row">
+        <div class="col-md-3">
+            <!-- Filters -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Filters</h5>
+                </div>
+                <div class="card-body">
+                    <form action="/seller/custom-requests" method="GET">
+                        <div class="mb-3">
+                            <label class="form-label">Status</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="status" value="open" id="statusOpen" <%= query.status === 'open' ? 'checked' : '' %>>
+                                <label class="form-check-label" for="statusOpen">Open for Bids</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="status" value="in_progress" id="statusInProgress" <%= query.status === 'in_progress' ? 'checked' : '' %>>
+                                <label class="form-check-label" for="statusInProgress">In Progress</label>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-9">
+            <% if (requests.length === 0) { %>
+                <div class="alert alert-info">
+                    No custom requests found. Check back later for new requests!
+                </div>
+            <% } else { %>
+                <div class="row row-cols-1 row-cols-md-2 g-4">
+                    <% requests.forEach(request => { %>
+                        <div class="col">
+                            <div class="card h-100">
+                                <% if (request.imageUrl) { %>
+                                    <img src="<%= request.imageUrl %>" class="card-img-top" alt="Reference Image" style="height: 200px; object-fit: cover;">
+                                <% } %>
+                                <div class="card-body">
+                                    <h5 class="card-title"><%= request.title %></h5>
+                                    <p class="card-text text-muted mb-2">
+                                        <small>Posted by <%= request.user.name %> • <%= new Date(request.createdAt).toLocaleDateString() %></small>
+                                    </p>
+                                    <p class="card-text"><%= request.description.substring(0, 150) %>...</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="badge bg-primary">Budget: ₹<%= request.budget %></span>
+                                        <span class="badge bg-<%= request.status === 'open' ? 'success' : 'warning' %>">
+                                            <%= request.status.charAt(0).toUpperCase() + request.status.slice(1) %>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="card-footer bg-transparent">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="text-muted"><%= request.bids ? request.bids.length : 0 %> bids</span>
+                                        <a href="/seller/custom-requests/<%= request._id %>" class="btn btn-outline-primary">View Details</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %> 

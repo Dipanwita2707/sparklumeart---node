@@ -1,0 +1,155 @@
+<%- include('partials/header') %>
+
+<!-- Hero Section -->
+<div class="hero-section text-center">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8 mx-auto hero-content" data-aos="fade-up">
+                <h1 class="hero-title">Sparklume Art Gallery</h1>
+                <p class="hero-subtitle">Discover the Fusion of Traditional Indian Art and Modern Innovation</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Gallery Section -->
+<section class="py-5">
+    <div class="container" data-aos="fade-up">
+        <h2 class="section-title centered mb-5">Our Curated Collection</h2>
+        <p class="text-center mb-5">Each artwork represents a unique blend of cultural heritage and technological innovation, carefully curated to showcase the best of Indian-inspired art.</p>
+        
+        <!-- Gallery Grid -->
+        <% if (galleryItems && galleryItems.length > 0) { %>
+            <div class="gallery-grid" data-aos="fade-up">
+                <% galleryItems.forEach(item => { %>
+                    <div class="gallery-item" data-aos="zoom-in">
+                        <img src="<%= item.image %>" alt="<%= item.artistName %>"
+                            data-bs-toggle="modal" 
+                            data-bs-target="#imageLightbox"
+                            data-image="<%= item.image %>"
+                            data-artist="<%= item.artistName %>"
+                            data-description="<%= item.description %>"
+                            data-date="<%= new Date(item.createdDate).toLocaleDateString() %>"
+                            onclick="openLightbox(this)">
+                        <div class="gallery-overlay">
+                            <div>
+                                <h4><%= item.artistName %></h4>
+                                <p><%= item.description.length > 60 ? item.description.substring(0, 60) + '...' : item.description %></p>
+                                <span class="date-badge">
+                                    <i class="fas fa-calendar-alt me-1"></i>
+                                    <%= new Date(item.createdDate).toLocaleDateString() %>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+        <% } else { %>
+            <div class="alert alert-warning text-center">
+                <p class="mb-0">No gallery items to display yet. Check back soon!</p>
+            </div>
+        <% } %>
+    </div>
+</section>
+
+<!-- Featured Categories Section -->
+<section class="py-5 bg-light">
+    <div class="container" data-aos="fade-up">
+        <h2 class="section-title centered mb-5">Explore by Category</h2>
+        <div class="row text-center">
+            <div class="col-lg-3 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="card h-100">
+                    <img src="https://source.unsplash.com/random/600x400/?mandala" class="card-img-top" alt="Mandala Art">
+                    <div class="card-body">
+                        <h5 class="card-title">Mandala Art</h5>
+                        <p class="card-text">Sacred geometric patterns representing cosmic harmony</p>
+                        <a href="#" class="btn btn-outline-accent">View Collection</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="card h-100">
+                    <img src="https://source.unsplash.com/random/600x400/?indian,painting" class="card-img-top" alt="Traditional Paintings">
+                    <div class="card-body">
+                        <h5 class="card-title">Traditional Paintings</h5>
+                        <p class="card-text">Classic Indian art forms with contemporary expressions</p>
+                        <a href="#" class="btn btn-outline-accent">View Collection</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="card h-100">
+                    <img src="https://source.unsplash.com/random/600x400/?digital,art" class="card-img-top" alt="Digital Fusion">
+                    <div class="card-body">
+                        <h5 class="card-title">Digital Fusion</h5>
+                        <p class="card-text">Technology-enhanced artwork pushing creative boundaries</p>
+                        <a href="#" class="btn btn-outline-accent">View Collection</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="400">
+                <div class="card h-100">
+                    <img src="https://source.unsplash.com/random/600x400/?sculpture" class="card-img-top" alt="Sculptures">
+                    <div class="card-body">
+                        <h5 class="card-title">Sculptures</h5>
+                        <p class="card-text">Three-dimensional masterpieces blending tradition and innovation</p>
+                        <a href="#" class="btn btn-outline-accent">View Collection</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Image Lightbox Modal -->
+<div class="modal fade" id="imageLightbox" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h5 class="modal-title" id="lightboxTitle"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img src="" class="img-fluid rounded shadow-lg" id="lightboxImage" alt="">
+            </div>
+            <div class="modal-footer border-0 text-center">
+                <p class="mb-0" id="lightboxDescription"></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Call to Action -->
+<section class="py-5" data-aos="fade-up">
+    <div class="container text-center">
+        <h2 class="mb-4">Ready to Add to Your Collection?</h2>
+        <p class="lead mb-4">Explore our shop for original artwork that celebrates Indian heritage through a modern lens.</p>
+        <div class="d-sm-flex justify-content-sm-center">
+            <a href="/shop" class="btn btn-accent btn-lg me-2">
+                <i class="fas fa-shopping-cart me-2"></i>Shop Now
+            </a>
+            <a href="/custom-requests/new" class="btn btn-outline-primary btn-lg">
+                <i class="fas fa-paint-brush me-2"></i>Request Custom Art
+            </a>
+        </div>
+    </div>
+</section>
+
+<script>
+function openLightbox(imageElement) {
+    const lightboxImage = document.getElementById('lightboxImage');
+    const lightboxTitle = document.getElementById('lightboxTitle');
+    const lightboxDescription = document.getElementById('lightboxDescription');
+
+    lightboxImage.src = imageElement.dataset.image;
+    lightboxTitle.textContent = imageElement.dataset.artist;
+    lightboxDescription.textContent = `${imageElement.dataset.description} (Created: ${imageElement.dataset.date})`;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // AOS animations will be handled by the main JS file
+    
+    // Add any gallery-specific JS here if needed
+});
+</script>
+

@@ -1,0 +1,194 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<div class="container mt-4">
+    <div class="row">
+        <!-- Request Details -->
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3 class="mb-0"><%= request.title %></h3>
+                    <span class="badge bg-<%= request.status === 'open' ? 'primary' : 
+                                            request.status === 'assigned' ? 'info' :
+                                            request.status === 'in_progress' ? 'warning' :
+                                            request.status === 'completed' ? 'success' : 'danger' %>">
+                        <%= request.status.replace('_', ' ').toUpperCase() %>
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <img src="<%= request.imageUrl %>" class="img-fluid rounded" alt="Reference Image">
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Type:</strong> <%= request.type.replace('_', ' ').toUpperCase() %></p>
+                            <p><strong>Budget:</strong> ₹<%= request.budget %></p>
+                            <p><strong>Created by:</strong> <%= request.user.name %></p>
+                            <p><strong>Created on:</strong> <%= new Date(request.createdAt).toLocaleDateString() %></p>
+                            <% if (request.assignedSeller) { %>
+                                <p><strong>Assigned to:</strong> <%= request.assignedSeller.name %></p>
+                            <% } %>
+                            <% if (request.expectedDeliveryDate) { %>
+                                <p><strong>Expected Delivery:</strong> <%= new Date(request.expectedDeliveryDate).toLocaleDateString() %></p>
+                            <% } %>
+                            <% if (user.role === 'seller') { %>
+                                <div class="mt-3">
+                                    <h5>Delivery Information</h5>
+                                    <p><strong>Phone:</strong> <%= request.phoneNumber %></p>
+                                    <p><strong>Delivery Address:</strong><br>
+                                        <%= request.address.street %><br>
+                                        <%= request.address.city %>, <%= request.address.state %><br>
+                                        <%= request.address.pincode %>
+                                    </p>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
+                    <div class="description-section">
+                        <h4>Description</h4>
+                        <p><%= request.description %></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bids Section -->
+            <% if (user.role === 'seller' && request.status === 'open' && !bids.some(bid => bid.seller._id.toString() === user._id.toString())) { %>
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h4>Submit Your Bid</h4>
+                    </div>
+                    <div class="card-body">
+                        <form action="/customRequests/<%= request._id %>/bid" method="POST">
+                            <div class="mb-3">
+                                <label for="amount" class="form-label">Bid Amount (INR)</label>
+                                <input type="number" class="form-control" id="amount" name="amount" required
+                                    min="<%= request.budget %>" step="1">
+                            </div>
+                            <div class="mb-3">
+                                <label for="deliveryTime" class="form-label">Delivery Time (days)</label>
+                                <input type="number" class="form-control" id="deliveryTime" name="deliveryTime" required min="1">
+                            </div>
+                            <div class="mb-3">
+                                <label for="proposal" class="form-label">Your Proposal</label>
+                                <textarea class="form-control" id="proposal" name="proposal" rows="3" required></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="street" class="form-label">Street Address</label>
+                                <textarea class="form-control" id="street" name="shippingAddress[street]" rows="3" required placeholder="Enter complete shipping address"></textarea>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label for="city" class="form-label">City</label>
+                                    <input type="text" class="form-control" id="city" name="shippingAddress[city]" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="state" class="form-label">State</label>
+                                    <input type="text" class="form-control" id="state" name="shippingAddress[state]" required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="pincode" class="form-label">Pincode</label>
+                                <input type="text" class="form-control" id="pincode" name="shippingAddress[pincode]" required pattern="[0-9]{6}" title="Please enter a valid 6-digit pincode">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit Bid</button>
+                        </form>
+                    </div>
+                </div>
+            <% } %>
+
+            <% if (bids.length > 0) { %>
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Bids (<%= bids.length %>)</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="list-group">
+                            <% bids.forEach(bid => { %>
+                                <div class="list-group-item">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h5 class="mb-1">₹<%= bid.amount %></h5>
+                                            <p class="mb-1">by <a href="/customRequests/seller/<%= bid.seller._id %>"><%= bid.seller.name %></a></p>
+                                            <small>Delivery Time: <%= bid.deliveryTime %> days</small>
+                                        </div>
+                                        <div class="text-end">
+                                            <% if (request.user._id.toString() === user._id.toString() && request.status === 'open' && bid.status === 'pending') { %>
+                                                <form action="/customRequests/<%= request._id %>/accept-bid/<%= bid._id %>" method="POST" style="display: inline;">
+                                                    <button type="submit" class="btn btn-success btn-sm">Accept Bid</button>
+                                                </form>
+                                            <% } %>
+                                            <span class="badge bg-<%= bid.status === 'pending' ? 'secondary' :
+                                                                    bid.status === 'accepted' ? 'success' : 'danger' %>">
+                                                <%= bid.status.toUpperCase() %>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <p class="mt-2 mb-0"><%= bid.proposal %></p>
+                                    <% if (request.status === 'in_progress' && bid.status === 'accepted' && bid.shippingDetails && bid.shippingDetails.trackingId) { %>
+                                        <div class="alert alert-info">
+                                            <h5>Shipping Information</h5>
+                                            <p><strong>Bill Number:</strong> <%= bid.shippingDetails.billNumber %></p>
+                                            <p><strong>Tracking ID:</strong> <%= bid.shippingDetails.trackingId %></p>
+                                            <% if (bid.shippingDetails.billPdfPath) { %>
+                                                <p><strong>Bill:</strong> <a href="<%= bid.shippingDetails.billPdfPath %>" target="_blank" class="btn btn-sm btn-outline-primary">View Bill</a></p>
+                                            <% } %>
+                                            <% if (bid.shippingDetails.certificateOfAuthenticityPath) { %>
+                                                <p><strong>Certificate of Authenticity:</strong> <a href="<%= bid.shippingDetails.certificateOfAuthenticityPath %>" target="_blank" class="btn btn-sm btn-outline-primary">View Certificate</a></p>
+                                            <% } %>
+                                            <% if (bid.delivered) { %>
+                                                <div class="alert alert-success mt-2">
+                                                    <p class="mb-0"><strong><i class="fas fa-check-circle"></i> Delivered:</strong> <%= new Date(bid.deliveredAt).toLocaleDateString() %></p>
+                                                </div>
+                                            <% } %>
+                                        </div>
+                                    <% } %>
+                                </div>
+                            <% }); %>
+                        </div>
+                    </div>
+                </div>
+            <% } else if (request.status === 'open') { %>
+                <div class="alert alert-info">
+                    No bids have been placed yet.
+                </div>
+            <% } %>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-md-4">
+            <% if (request.status === 'in_progress' && request.assignedSeller && request.assignedSeller._id.toString() === user._id.toString()) { %>
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h4>Order Management</h4>
+                    </div>
+                    <div class="card-body">
+                        <form action="/customRequests/<%= request._id %>/complete" method="POST">
+                            <button type="submit" class="btn btn-success btn-block w-100">Mark as Completed</button>
+                        </form>
+                    </div>
+                </div>
+            <% } %>
+
+            <% if (request.status === 'assigned' && request.assignedSeller && request.assignedSeller._id.toString() === user._id.toString()) { %>
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h4>Order Management</h4>
+                    </div>
+                    <div class="card-body">
+                        <form action="/customRequests/<%= request._id %>/cancel" method="POST">
+                            <button type="submit" class="btn btn-danger btn-block w-100 mb-3">Cancel Order</button>
+                        </form>
+                    </div>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<!-- Razorpay Integration -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+// Remove the old handleAcceptBid function since we're using form submission now
+</script>
+
+<%- include('../partials/footer') %> 

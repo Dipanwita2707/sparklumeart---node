@@ -1,0 +1,242 @@
+<%- include('../../partials/header') %>
+<%- include('../../partials/admin-navbar') %>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse">
+            <div class="position-sticky pt-3">
+                <div class="list-group mb-3">
+                    <div class="list-group-item active bg-primary">Navigation</div>
+                    <a href="/admin/dashboard" class="list-group-item list-group-item-action"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a>
+                    <a href="/admin/users" class="list-group-item list-group-item-action"><i class="fas fa-users me-2"></i> Users</a>
+                    <a href="/admin/gallery" class="list-group-item list-group-item-action"><i class="fas fa-images me-2"></i> Gallery</a>
+                    <a href="/admin/requests" class="list-group-item list-group-item-action"><i class="fas fa-paint-brush me-2"></i> Painting Requests</a>
+                    <a href="/admin/products" class="list-group-item list-group-item-action"><i class="fas fa-shopping-cart me-2"></i> Products</a>
+                    <a href="/admin/orders" class="list-group-item list-group-item-action"><i class="fas fa-shopping-bag me-2"></i> Orders</a>
+                    <a href="/admin/psychometric-tests" class="list-group-item list-group-item-action"><i class="fas fa-brain me-2"></i> Psychometric Tests</a>
+                    <a href="/admin/leads" class="list-group-item list-group-item-action"><i class="fas fa-funnel-dollar me-2"></i> AI Lead Management</a>
+                    <a href="/admin/seller-performance" class="list-group-item list-group-item-action"><i class="fas fa-chart-line me-2"></i> Seller Performance</a>
+                    <a href="/admin/user-activity" class="list-group-item list-group-item-action"><i class="fas fa-user-clock me-2"></i> User Activity</a>
+                    <a href="/admin/email-campaigns" class="list-group-item list-group-item-action active"><i class="fas fa-envelope me-2"></i> Email Campaigns</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Email Campaigns</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <a href="/admin/email-campaigns/new" class="btn btn-sm btn-primary">
+                        <i class="fas fa-plus me-1"></i>New Campaign
+                    </a>
+                </div>
+            </div>
+
+            <% if (locals.success_msg && success_msg !== '') { %>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <%= success_msg %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <% } %>
+
+            <% if (locals.error_msg && error_msg !== '') { %>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <%= error_msg %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <% } %>
+
+            <!-- Campaign Stats Summary -->
+            <div class="row mb-4">
+                <div class="col-md-3 mb-4">
+                    <div class="card border-left-primary shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                        Total Campaigns
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                        <%= campaigns.length %>
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-envelope fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3 mb-4">
+                    <div class="card border-left-success shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                        Active Campaigns
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                        <%= campaigns.filter(c => c.status === 'sending' || c.status === 'scheduled').length %>
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-paper-plane fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3 mb-4">
+                    <div class="card border-left-info shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                        Scheduled
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                        <%= campaigns.filter(c => c.status === 'scheduled').length %>
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3 mb-4">
+                    <div class="card border-left-warning shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                        Conversions
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                        <%= campaigns.reduce((sum, campaign) => sum + (campaign.metrics ? campaign.metrics.conversionCount : 0), 0) %>
+                                    </div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Campaign List -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Email Campaigns</h6>
+                </div>
+                <div class="card-body">
+                    <% if (campaigns.length > 0) { %>
+                        <div class="table-responsive">
+                            <table class="table table-bordered" id="campaignsTable" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Status</th>
+                                        <th>Recipients</th>
+                                        <th>Open Rate</th>
+                                        <th>Click Rate</th>
+                                        <th>Created</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% campaigns.forEach(campaign => { %>
+                                        <tr>
+                                            <td>
+                                                <a href="/admin/email-campaigns/<%= campaign._id %>" class="text-primary font-weight-bold">
+                                                    <%= campaign.name %>
+                                                </a>
+                                            </td>
+                                            <td>
+                                                <span class="badge 
+                                                    <%= campaign.status === 'draft' ? 'bg-secondary' : 
+                                                        campaign.status === 'scheduled' ? 'bg-info' : 
+                                                        campaign.status === 'sending' ? 'bg-warning' : 
+                                                        campaign.status === 'sent' ? 'bg-success' : 
+                                                        campaign.status === 'cancelled' ? 'bg-danger' : 'bg-secondary' %>">
+                                                    <%= campaign.status.toUpperCase() %>
+                                                </span>
+                                            </td>
+                                            <td><%= campaign.totalLeads %></td>
+                                            <td>
+                                                <% if (campaign.status === 'sent' || campaign.status === 'sending') { %>
+                                                    <% const sentCount = campaign.recipients.filter(r => r.sent).length || 1; %>
+                                                    <% const openRate = (campaign.metrics.uniqueOpens / sentCount * 100).toFixed(1); %>
+                                                    <%= openRate %>%
+                                                <% } else { %>
+                                                    -
+                                                <% } %>
+                                            </td>
+                                            <td>
+                                                <% if (campaign.status === 'sent' || campaign.status === 'sending') { %>
+                                                    <% const openCount = campaign.metrics.uniqueOpens || 1; %>
+                                                    <% const clickRate = (campaign.metrics.uniqueClicks / openCount * 100).toFixed(1); %>
+                                                    <%= clickRate %>%
+                                                <% } else { %>
+                                                    -
+                                                <% } %>
+                                            </td>
+                                            <td><%= new Date(campaign.createdAt).toLocaleDateString() %></td>
+                                            <td>
+                                                <a href="/admin/email-campaigns/<%= campaign._id %>" class="btn btn-sm btn-info">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                
+                                                <% if (campaign.status === 'draft') { %>
+                                                    <form method="POST" action="/admin/email-campaigns/<%= campaign._id %>/send" class="d-inline">
+                                                        <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Are you sure you want to send this campaign now?')">
+                                                            <i class="fas fa-paper-plane"></i>
+                                                        </button>
+                                                    </form>
+                                                <% } %>
+                                                
+                                                <% if (campaign.status === 'scheduled') { %>
+                                                    <form method="POST" action="/admin/email-campaigns/<%= campaign._id %>/cancel" class="d-inline">
+                                                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to cancel this scheduled campaign?')">
+                                                            <i class="fas fa-times"></i>
+                                                        </button>
+                                                    </form>
+                                                <% } %>
+                                            </td>
+                                        </tr>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
+                    <% } else { %>
+                        <div class="text-center py-5">
+                            <i class="fas fa-envelope fa-4x text-gray-300 mb-3"></i>
+                            <h4 class="text-muted">No email campaigns yet</h4>
+                            <p>Get started by creating your first campaign.</p>
+                            <a href="/admin/email-campaigns/new" class="btn btn-primary">
+                                <i class="fas fa-plus me-1"></i>Create Campaign
+                            </a>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        $('#campaignsTable').DataTable({
+            order: [[5, 'desc']]
+        });
+    });
+</script>
+
+<%- include('../../partials/footer') %> 

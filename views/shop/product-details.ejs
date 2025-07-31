@@ -1,0 +1,160 @@
+<%- include('../partials/header') %>
+
+<div class="container py-4">
+    <div class="row">
+        <!-- Breadcrumb -->
+        <div class="col-12 mb-3">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item"><a href="/shop">Shop</a></li>
+                    <li class="breadcrumb-item active" aria-current="page"><%= product.title %></li>
+                </ol>
+            </nav>
+        </div>
+
+        <!-- Flash Messages -->
+        <div class="col-12">
+            <% if(messages.success){ %>
+                <div class="alert alert-success alert-dismissible fade show">
+                    <%= messages.success %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <% } %>
+            
+            <% if(messages.error){ %>
+                <div class="alert alert-danger alert-dismissible fade show">
+                    <%= messages.error %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <% } %>
+        </div>
+
+        <!-- Product Details -->
+        <div class="col-md-6 mb-4">
+            <div class="product-image-container">
+                <img src="<%= product.image %>" class="product-image" alt="<%= product.title %>" onerror="this.src='/images/placeholder.jpg'">
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="product-details">
+                <h1 class="product-title"><%= product.title %></h1>
+                <p class="product-artist">By <%= product.artistName %></p>
+                
+                <div class="product-price-container">
+                    <h3 class="product-price">$<%= product.price.toFixed(2) %></h3>
+                    <% if (product.stock > 0) { %>
+                        <span class="badge bg-success">In Stock (<%= product.stock %> available)</span>
+                    <% } else { %>
+                        <span class="badge bg-danger">Out of Stock</span>
+                    <% } %>
+                </div>
+                
+                <div class="product-description">
+                    <h5>Description</h5>
+                    <p><%= product.description %></p>
+                </div>
+                
+                <% if (typeof user !== 'undefined' && user && user.role === 'user') { %>
+                    <% if (product.stock > 0) { %>
+                        <form action="/shop/cart/add/<%= product._id %>" method="POST" class="product-form">
+                            <div class="quantity-selector">
+                                <label for="quantity">Quantity:</label>
+                                <select name="quantity" id="quantity" class="form-select">
+                                    <% for(let i = 1; i <= Math.min(product.stock, 10); i++) { %>
+                                        <option value="<%= i %>"><%= i %></option>
+                                    <% } %>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-cart-plus me-2"></i>Add to Cart
+                            </button>
+                        </form>
+                    <% } else { %>
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>This product is currently out of stock.
+                        </div>
+                    <% } %>
+                <% } else if (!user) { %>
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>Please <a href="/auth/login" class="alert-link">login</a> to purchase this item.
+                    </div>
+                <% } %>
+                
+                <div class="mt-4">
+                    <a href="/shop" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Shop
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CSS Styles -->
+<style>
+    .product-image-container {
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+    }
+    
+    .product-image {
+        width: 100%;
+        height: 500px;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+    
+    .product-title {
+        font-size: 2.2rem;
+        margin-bottom: 5px;
+    }
+    
+    .product-artist {
+        color: #666;
+        font-size: 1.1rem;
+        margin-bottom: 20px;
+    }
+    
+    .product-price-container {
+        display: flex;
+        align-items: center;
+        margin-bottom: 25px;
+    }
+    
+    .product-price {
+        color: #007bff;
+        font-weight: bold;
+        margin-right: 15px;
+        margin-bottom: 0;
+    }
+    
+    .product-description {
+        margin-bottom: 30px;
+        padding-top: 15px;
+        border-top: 1px solid #eee;
+    }
+    
+    .product-form {
+        margin-bottom: 30px;
+    }
+    
+    .quantity-selector {
+        display: flex;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    
+    .quantity-selector label {
+        margin-right: 15px;
+        font-weight: 500;
+    }
+    
+    .quantity-selector .form-select {
+        width: 100px;
+    }
+</style>
+
+<%- include('../partials/footer') %> 

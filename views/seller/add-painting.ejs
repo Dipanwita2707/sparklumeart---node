@@ -1,0 +1,127 @@
+<%- include('../partials/header') %>
+
+<div class="container-fluid seller-dashboard p-0">
+    <div class="row g-0">
+        <!-- Include the shared sidebar partial with the current page parameter -->
+        <% const currentPage = 'paintings-add'; %>
+        <%- include('../partials/seller-sidebar', { currentPage }) %>
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+            <!-- Topbar -->
+            <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow-sm rounded">
+                <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle me-3">
+                    <i class="fa fa-bars"></i>
+                </button>
+                <h1 class="h3 mb-0 text-gray-800 d-none d-sm-inline-block">Submit New Painting</h1>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item dropdown no-arrow">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="me-2 d-none d-lg-inline text-gray-600 small"><%= user ? user.name : 'User' %></span>
+                            <i class="fas fa-user-circle fa-lg"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <div class="card shadow-sm border-0 mb-4">
+                        <div class="card-header py-3">
+                            <h5 class="card-title text-primary mb-0 fw-bold">
+                                <i class="fas fa-paint-brush me-2"></i>Submit Painting Request
+                            </h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <form action="/seller/paintings/request" method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                                <div class="mb-4">
+                                    <label for="image" class="form-label">Artwork Image <span class="text-danger">*</span></label>
+                                    <div class="input-group mb-3">
+                                        <input type="file" class="form-control" id="image" name="image" accept="image/*" required>
+                                        <label class="input-group-text" for="image"><i class="fas fa-upload"></i></label>
+                                    </div>
+                                    <div class="form-text text-muted">Upload a high-resolution image of your artwork (max 5MB)</div>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label for="artistName" class="form-label">Artist Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="artistName" name="artistName" required>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label for="title" class="form-label">Artwork Title <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="title" name="title" required>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label for="createdDate" class="form-label">Creation Date <span class="text-danger">*</span></label>
+                                    <input type="date" class="form-control" id="createdDate" name="createdDate" required>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label for="description" class="form-label">Description <span class="text-danger">*</span></label>
+                                    <textarea class="form-control" id="description" name="description" rows="4" required></textarea>
+                                    <div class="form-text text-muted">Provide details about the artwork, techniques used, and its significance</div>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label for="price" class="form-label">Price (₹) <span class="text-danger">*</span></label>
+                                    <div class="input-group">
+                                        <span class="input-group-text">₹</span>
+                                        <input type="number" class="form-control" id="price" name="price" min="1" step="1" required>
+                                    </div>
+                                </div>
+                                
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Your painting request will be reviewed by our team before being displayed in the gallery.
+                                </div>
+                                
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                    <a href="/seller/dashboard" class="btn btn-light me-md-2">
+                                        <i class="fas fa-arrow-left me-1"></i> Cancel
+                                    </a>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-paper-plane me-1"></i> Submit Request
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script>
+    // Toggle sidebar on small screens
+    document.addEventListener('DOMContentLoaded', function() {
+        const sidebarToggleTop = document.getElementById('sidebarToggleTop');
+        const sidebar = document.getElementById('sidebar');
+        
+        if (sidebarToggleTop) {
+            sidebarToggleTop.addEventListener('click', function() {
+                sidebar.classList.toggle('show');
+            });
+        }
+        
+        // Initialize form validation
+        const forms = document.querySelectorAll('.needs-validation');
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    });
+</script>
+
+<!-- Link to custom CSS -->
+<link rel="stylesheet" href="/css/seller-dashboard.css">
+
+<%- include('../partials/footer') %> 

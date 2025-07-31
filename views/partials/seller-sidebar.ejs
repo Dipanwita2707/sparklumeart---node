@@ -1,0 +1,110 @@
+<!-- Seller Sidebar Component -->
+<nav id="sidebar" class="col-md-3 col-lg-2 d-md-block sidebar collapse" style="background-color: #000000;">
+    <div class="position-sticky">
+        <div class="sidebar-brand py-4 text-center">
+            <div class="brand-icon mb-2">
+                <i class="fas fa-palette fa-2x text-white-50"></i>
+            </div>
+            <h4 class="brand-text text-white mb-0">Sparklume Art</h4>
+            <small class="text-white-50">Seller Portal</small>
+        </div>
+
+        <div class="user-profile text-center py-3">
+            <div class="user-avatar mb-2">
+                <i class="fas fa-user-circle fa-3x text-white-50"></i>
+            </div>
+            <h6 class="text-white mb-0"><%= user ? user.name : 'Seller' %></h6>
+            <small class="text-white-50"><%= user ? user.email : '' %></small>
+        </div>
+        
+        <hr class="sidebar-divider my-2">
+        
+        <div class="nav-section px-3 mb-2">
+            <h6 class="sidebar-heading text-uppercase text-white-50 px-2 py-2 mb-1">
+                <span>Main</span>
+            </h6>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link <%= currentPage === 'dashboard' ? 'active' : '' %>" href="/seller/dashboard">
+                        <div class="icon-circle <%= currentPage === 'dashboard' ? 'active' : '' %>">
+                            <i class="fas fa-tachometer-alt"></i>
+                        </div>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link <%= currentPage === 'orders' ? 'active' : '' %>" href="/seller/orders">
+                        <div class="icon-circle <%= currentPage === 'orders' ? 'active' : '' %>">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <span>Orders</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link <%= currentPage === 'profile' ? 'active' : '' %>" href="/seller/profile">
+                        <div class="icon-circle <%= currentPage === 'profile' ? 'active' : '' %>">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <span>Profile</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="nav-section px-3 mb-2">
+            <h6 class="sidebar-heading text-uppercase text-white-50 px-2 py-2 mb-1">
+                <span>Paintings</span>
+            </h6>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link <%= currentPage === 'paintings-add' ? 'active' : '' %>" href="/seller/paintings/add">
+                        <div class="icon-circle <%= currentPage === 'paintings-add' ? 'active' : '' %>">
+                            <i class="fas fa-plus-circle"></i>
+                        </div>
+                        <span>Submit Painting</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link <%= currentPage === 'paintings-requests' ? 'active' : '' %>" href="/seller/paintings/requests">
+                        <div class="icon-circle <%= currentPage === 'paintings-requests' ? 'active' : '' %>">
+                            <i class="fas fa-paint-brush"></i>
+                        </div>
+                        <span>My Requests</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="nav-section px-3 mb-2">
+            <h6 class="sidebar-heading text-uppercase text-white-50 px-2 py-2 mb-1">
+                <span>Products</span>
+            </h6>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link <%= currentPage === 'products' ? 'active' : '' %>" href="/seller/products">
+                        <div class="icon-circle <%= currentPage === 'products' ? 'active' : '' %>">
+                            <i class="fas fa-shopping-bag"></i>
+                        </div>
+                        <span>My Products</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link <%= currentPage === 'products-add' ? 'active' : '' %>" href="/seller/products/add">
+                        <div class="icon-circle <%= currentPage === 'products-add' ? 'active' : '' %>">
+                            <i class="fas fa-plus-circle"></i>
+                        </div>
+                        <span>Add Product</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        
+        <hr class="sidebar-divider my-3">
+        
+        <div class="px-3 mt-2 mb-4">
+            <a href="/logout" class="btn btn-danger btn-sm w-100 d-flex align-items-center justify-content-center">
+                <i class="fas fa-sign-out-alt me-2"></i>Logout
+            </a>
+        </div>
+    </div>
+</nav> 

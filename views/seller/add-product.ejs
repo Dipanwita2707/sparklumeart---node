@@ -1,0 +1,194 @@
+<%- include('../partials/header') %>
+
+<div class="container-fluid seller-dashboard p-0">
+    <div class="row g-0">
+        <!-- Sidebar -->
+        <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+            <div class="position-sticky">
+                <div class="sidebar-brand py-4 mb-2">
+                    <h4 class="brand-text text-white mb-0">Sparklume Art</h4>
+                    <small class="text-white-50">Seller Portal</small>
+                </div>
+                <hr class="sidebar-divider">
+                <ul class="nav flex-column">
+                    <% const navItems = [
+                        { href: '/seller/dashboard', icon: 'tachometer-alt', text: 'Dashboard' },
+                        { href: '/seller/paintings/add', icon: 'plus-circle', text: 'Submit New Painting' },
+                        { href: '/seller/paintings/requests', icon: 'paint-brush', text: 'My Painting Requests' },
+                        { href: '/seller/orders', icon: 'shopping-cart', text: 'Orders' },
+                        { href: '/seller/profile', icon: 'user', text: 'Profile' },
+                        { href: '/seller/products', icon: 'shopping-bag', text: 'My Products' },
+                        { href: '/seller/products/add', icon: 'plus-circle', text: 'Add New Product', active: true }
+                    ] %>
+                    <% navItems.forEach(item => { %>
+                        <li class="nav-item">
+                            <a class="nav-link <%= item.active ? 'active' : '' %>" href="<%= item.href %>">
+                                <i class="fas fa-<%= item.icon %> me-2"></i>
+                                <%= item.text %>
+                            </a>
+                        </li>
+                    <% }) %>
+                </ul>
+                <hr class="sidebar-divider">
+                <div class="px-3 mt-4 mb-3">
+                    <a href="/logout" class="btn btn-light btn-sm w-100">
+                        <i class="fas fa-sign-out-alt me-2"></i>Logout
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+            <!-- Topbar -->
+            <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow-sm rounded">
+                <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle me-3">
+                    <i class="fa fa-bars"></i>
+                </button>
+                <h1 class="h3 mb-0 text-gray-800 d-none d-sm-inline-block">Add New Product</h1>
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item dropdown no-arrow">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <span class="me-2 d-none d-lg-inline text-gray-600 small"><%= user ? user.name : 'User' %></span>
+                            <i class="fas fa-user-circle fa-lg"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <div class="card shadow-sm border-0 mb-4">
+                        <div class="card-header py-3">
+                            <h5 class="card-title text-primary mb-0 fw-bold">
+                                <i class="fas fa-shopping-bag me-2"></i>Submit Product Request
+                            </h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <% if(messages.success){ %>
+                                <div class="alert alert-success alert-dismissible fade show">
+                                    <i class="fas fa-check-circle me-2"></i>
+                                    <%= messages.success %>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            <% } %>
+                            <% if(messages.error_msg){ %>
+                                <div class="alert alert-danger alert-dismissible fade show">
+                                    <i class="fas fa-exclamation-circle me-2"></i>
+                                    <%= messages.error_msg %>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            <% } %>
+                            
+                            <form action="/seller/products/request" method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                                <div class="mb-4">
+                                    <label for="title" class="form-label">Product Title <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="title" name="title" required>
+                                    <div class="invalid-feedback">Please enter a product title</div>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label for="artistName" class="form-label">Artist Name <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="artistName" name="artistName" required>
+                                    <div class="invalid-feedback">Please enter the artist name</div>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label for="description" class="form-label">Description <span class="text-danger">*</span></label>
+                                    <textarea class="form-control" id="description" name="description" rows="4" required></textarea>
+                                    <div class="form-text text-muted">Provide a detailed description of your product, including materials, dimensions, and any unique features</div>
+                                    <div class="invalid-feedback">Please enter a product description</div>
+                                </div>
+                                
+                                <div class="row mb-4">
+                                    <div class="col-md-6">
+                                        <label for="price" class="form-label">Price (₹) <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">₹</span>
+                                            <input type="number" class="form-control" id="price" name="price" min="0.01" step="0.01" required>
+                                            <div class="invalid-feedback">Please enter a valid price</div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <label for="stock" class="form-label">Available Stock <span class="text-danger">*</span></label>
+                                        <input type="number" class="form-control" id="stock" name="stock" min="1" value="1" required>
+                                        <div class="invalid-feedback">Please enter a valid stock quantity</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label for="image" class="form-label">Product Image <span class="text-danger">*</span></label>
+                                    <div class="input-group mb-3">
+                                        <input type="file" class="form-control" id="image" name="image" accept="image/*" required>
+                                        <label class="input-group-text" for="image"><i class="fas fa-upload"></i></label>
+                                    </div>
+                                    <div class="form-text text-muted">Max file size: 5MB. Supported formats: JPG, JPEG, PNG, GIF</div>
+                                    <div class="invalid-feedback">Please upload a product image</div>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label for="category" class="form-label">Category</label>
+                                    <select class="form-select" id="category" name="category">
+                                        <option value="painting">Painting</option>
+                                        <option value="sculpture">Sculpture</option>
+                                        <option value="photography">Photography</option>
+                                        <option value="digital">Digital Art</option>
+                                        <option value="craft">Handicraft</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Your product submission will be reviewed by an administrator before being listed in the shop.
+                                </div>
+                                
+                                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                    <a href="/seller/products" class="btn btn-light me-md-2">
+                                        <i class="fas fa-arrow-left me-1"></i> Cancel
+                                    </a>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-paper-plane me-1"></i> Submit Product
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script>
+    // Toggle sidebar on small screens
+    document.addEventListener('DOMContentLoaded', function() {
+        const sidebarToggleTop = document.getElementById('sidebarToggleTop');
+        const sidebar = document.getElementById('sidebar');
+        
+        if (sidebarToggleTop) {
+            sidebarToggleTop.addEventListener('click', function() {
+                sidebar.classList.toggle('show');
+            });
+        }
+        
+        // Initialize form validation
+        const forms = document.querySelectorAll('.needs-validation');
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    });
+</script>
+
+<!-- Link to custom CSS -->
+<link rel="stylesheet" href="/css/seller-dashboard.css">
+
+<%- include('../partials/footer') %> 

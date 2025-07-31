@@ -1,0 +1,351 @@
+<%- include('../partials/header') %>
+<%- include('../partials/admin-navbar') %>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse">
+            <div class="position-sticky pt-3">
+                <div class="list-group mb-3">
+                    <div class="list-group-item active bg-primary">Navigation</div>
+                    <a href="/admin/dashboard" class="list-group-item list-group-item-action"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a>
+                    <a href="/admin/users" class="list-group-item list-group-item-action"><i class="fas fa-users me-2"></i> Users</a>
+                    <a href="/admin/gallery" class="list-group-item list-group-item-action"><i class="fas fa-images me-2"></i> Gallery</a>
+                    <a href="/admin/requests" class="list-group-item list-group-item-action"><i class="fas fa-paint-brush me-2"></i> Painting Requests</a>
+                    <a href="/admin/products" class="list-group-item list-group-item-action"><i class="fas fa-shopping-cart me-2"></i> Products</a>
+                    <a href="/admin/orders" class="list-group-item list-group-item-action"><i class="fas fa-shopping-bag me-2"></i> Orders</a>
+                    <a href="/admin/psychometric-tests" class="list-group-item list-group-item-action"><i class="fas fa-brain me-2"></i> Psychometric Tests</a>
+                    <a href="/admin/leads" class="list-group-item list-group-item-action"><i class="fas fa-funnel-dollar me-2"></i> AI Lead Management</a>
+                    <a href="/admin/seller-performance" class="list-group-item list-group-item-action"><i class="fas fa-chart-line me-2"></i> Seller Performance</a>
+                    <a href="/admin/user-activity" class="list-group-item list-group-item-action active"><i class="fas fa-user-clock me-2"></i> User Activity</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">User Activity Analysis</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <div class="btn-group me-2">
+                        <a href="/admin/leads" class="btn btn-sm btn-outline-secondary">AI Lead Management</a>
+                        <a href="/admin/dashboard" class="btn btn-sm btn-outline-secondary">Dashboard</a>
+                    </div>
+                </div>
+            </div>
+
+            <% if (locals.success_msg && success_msg !== '') { %>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <%= success_msg %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <% } %>
+
+            <% if (locals.error_msg && error_msg !== '') { %>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <%= error_msg %>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            <% } %>
+
+            <!-- Activity Statistics -->
+            <div class="row">
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-primary shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Activities</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800"><%= stats.totalActivities.toLocaleString() %></div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-chart-line fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-success shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Today's Activities</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800"><%= stats.todayActivities.toLocaleString() %></div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-calendar-day fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-info shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Most Common Activity</div>
+                                    <% 
+                                        let mostCommonActivity = stats.activityTypeDistribution.length > 0 
+                                            ? stats.activityTypeDistribution[0]._id 
+                                            : 'None';
+                                            
+                                        // Format activity type for display
+                                        mostCommonActivity = mostCommonActivity.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                                    %>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800"><%= mostCommonActivity %></div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-warning shadow h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Active Users</div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800"><%= userActivityCounts.length %></div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-users fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- High Potential Users -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Top Potential Users</h6>
+                </div>
+                <div class="card-body">
+                    <% if (topPotentialUsers && topPotentialUsers.length > 0) { %>
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>User</th>
+                                        <th>Score</th>
+                                        <th>Interaction</th>
+                                        <th>Insights</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% topPotentialUsers.forEach(item => { %>
+                                        <% if (item.lead && item.lead.user) { %>
+                                            <tr>
+                                                <td>
+                                                    <div><%= item.lead.user.name %></div>
+                                                    <small class="text-muted"><%= item.lead.user.email %></small>
+                                                </td>
+                                                <td>
+                                                    <div class="progress" style="height: 20px;">
+                                                        <div class="progress-bar bg-<%= item.analysis.potentialScore >= 80 ? 'success' : item.analysis.potentialScore >= 60 ? 'info' : 'warning' %>" 
+                                                            role="progressbar" style="width: <%= item.analysis.potentialScore %>%;" 
+                                                            aria-valuenow="<%= item.analysis.potentialScore %>" aria-valuemin="0" aria-valuemax="100">
+                                                            <%= item.analysis.potentialScore %>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <span class="badge bg-<%= 
+                                                        item.analysis.interactionLevel === 'very_high' ? 'success' : 
+                                                        item.analysis.interactionLevel === 'high' ? 'primary' : 
+                                                        item.analysis.interactionLevel === 'medium' ? 'info' : 'secondary' 
+                                                    %>">
+                                                        <%= item.analysis.interactionLevel.replace('_', ' ').toUpperCase() %>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <% if (item.analysis.insights && item.analysis.insights.length > 0) { %>
+                                                        <div class="small text-truncate" style="max-width: 250px;" title="<%= item.analysis.insights[0] %>">
+                                                            <%= item.analysis.insights[0] %>
+                                                        </div>
+                                                    <% } else { %>
+                                                        <span class="text-muted">No insights available</span>
+                                                    <% } %>
+                                                </td>
+                                                <td>
+                                                    <a href="/admin/user-activity/<%= item.lead.user._id %>" class="btn btn-sm btn-primary">Details</a>
+                                                </td>
+                                            </tr>
+                                        <% } %>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
+                    <% } else { %>
+                        <div class="alert alert-info">No high potential users found.</div>
+                    <% } %>
+                </div>
+            </div>
+
+            <!-- Most Active Users -->
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Most Active Users</h6>
+                        </div>
+                        <div class="card-body">
+                            <% if (userActivityCounts && userActivityCounts.length > 0) { %>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>User</th>
+                                                <th>Activities</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% userActivityCounts.slice(0, 10).forEach(item => { %>
+                                                <tr>
+                                                    <td>
+                                                        <div><%= item.user.name %></div>
+                                                        <small class="text-muted"><%= item.user.email %></small>
+                                                    </td>
+                                                    <td><%= item.count.toLocaleString() %></td>
+                                                    <td>
+                                                        <a href="/admin/user-activity/<%= item.user._id %>" class="btn btn-sm btn-primary">Details</a>
+                                                    </td>
+                                                </tr>
+                                            <% }); %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            <% } else { %>
+                                <div class="alert alert-info">No user activity data available.</div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Activity Type Distribution</h6>
+                        </div>
+                        <div class="card-body">
+                            <% if (stats.activityTypeDistribution && stats.activityTypeDistribution.length > 0) { %>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>Activity Type</th>
+                                                <th>Count</th>
+                                                <th>Percentage</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% 
+                                                const totalActivitiesCount = stats.activityTypeDistribution.reduce((total, item) => total + item.count, 0);
+                                                stats.activityTypeDistribution.forEach(item => { 
+                                                    const percentage = ((item.count / totalActivitiesCount) * 100).toFixed(1);
+                                                    const formattedType = item._id.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                                            %>
+                                                <tr>
+                                                    <td><%= formattedType %></td>
+                                                    <td><%= item.count.toLocaleString() %></td>
+                                                    <td>
+                                                        <div class="progress" style="height: 20px;">
+                                                            <div class="progress-bar" role="progressbar" 
+                                                                style="width: <%= percentage %>%;" 
+                                                                aria-valuenow="<%= percentage %>" 
+                                                                aria-valuemin="0" 
+                                                                aria-valuemax="100">
+                                                                <%= percentage %>%
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            <% }); %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            <% } else { %>
+                                <div class="alert alert-info">No activity type data available.</div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activities -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Recent User Activities</h6>
+                </div>
+                <div class="card-body">
+                    <% if (recentActivities && recentActivities.length > 0) { %>
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>User</th>
+                                        <th>Activity</th>
+                                        <th>Route</th>
+                                        <th>Time</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% recentActivities.forEach(activity => { %>
+                                        <tr>
+                                            <td>
+                                                <% if (activity.user) { %>
+                                                    <div><%= activity.user.name %></div>
+                                                    <small class="text-muted"><%= activity.user.email %></small>
+                                                <% } else { %>
+                                                    <span class="text-muted">Unknown User</span>
+                                                <% } %>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-<%= 
+                                                    activity.activityType === 'page_view' ? 'secondary' : 
+                                                    activity.activityType === 'product_view' ? 'primary' : 
+                                                    activity.activityType === 'search' ? 'info' : 
+                                                    activity.activityType === 'add_to_cart' ? 'success' : 
+                                                    activity.activityType === 'checkout' ? 'warning' : 'dark' 
+                                                %>">
+                                                    <%= activity.activityType.replace(/_/g, ' ').toUpperCase() %>
+                                                </span>
+                                                <% if (activity.targetId && activity.targetModel === 'Product') { %>
+                                                    <small class="text-muted d-block">
+                                                        <%= activity.targetId.title ? activity.targetId.title : 'Product #' + activity.targetId %>
+                                                    </small>
+                                                <% } %>
+                                            </td>
+                                            <td><code><%= activity.route %></code></td>
+                                            <td><%= new Date(activity.createdAt).toLocaleString() %></td>
+                                            <td>
+                                                <% if (activity.user) { %>
+                                                    <a href="/admin/user-activity/<%= activity.user._id %>" class="btn btn-sm btn-primary">User Details</a>
+                                                <% } %>
+                                            </td>
+                                        </tr>
+                                    <% }); %>
+                                </tbody>
+                            </table>
+                        </div>
+                    <% } else { %>
+                        <div class="alert alert-info">No recent activities recorded.</div>
+                    <% } %>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<%- include('../partials/footer') %> 

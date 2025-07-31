@@ -1,0 +1,442 @@
+<%- include('../partials/header') %>
+<%- include('../partials/admin-navbar') %>
+
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar -->
+    <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse">
+      <div class="position-sticky pt-3">
+        <div class="list-group mb-3">
+          <div class="list-group-item active bg-primary">Navigation</div>
+          <a href="/admin/dashboard" class="list-group-item list-group-item-action"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a>
+          <a href="/admin/users" class="list-group-item list-group-item-action"><i class="fas fa-users me-2"></i> Users</a>
+          <a href="/admin/gallery" class="list-group-item list-group-item-action"><i class="fas fa-images me-2"></i> Gallery</a>
+          <a href="/admin/requests" class="list-group-item list-group-item-action"><i class="fas fa-paint-brush me-2"></i> Painting Requests</a>
+          <a href="/admin/products" class="list-group-item list-group-item-action"><i class="fas fa-shopping-cart me-2"></i> Products</a>
+          <a href="/admin/orders" class="list-group-item list-group-item-action"><i class="fas fa-shopping-bag me-2"></i> Orders</a>
+          <a href="/admin/psychometric-tests" class="list-group-item list-group-item-action"><i class="fas fa-brain me-2"></i> Psychometric Tests</a>
+          <a href="/admin/leads" class="list-group-item list-group-item-action"><i class="fas fa-funnel-dollar me-2"></i> AI Lead Management</a>
+          <a href="/admin/seller-performance" class="list-group-item list-group-item-action active"><i class="fas fa-chart-line me-2"></i> Seller Performance</a>
+          <a href="/admin/sellers" class="list-group-item list-group-item-action"><i class="fas fa-store me-2"></i> Sellers</a>
+        </div>
+      </div>
+    </nav>
+    
+    <!-- Main content -->
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+      <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h2">Seller Performance: <%= seller.name %></h1>
+        <div class="btn-toolbar mb-2 mb-md-0">
+          <div class="btn-group me-2">
+            <a href="/admin/seller-performance" class="btn btn-sm btn-outline-secondary">Back to Dashboard</a>
+          </div>
+          <div class="btn-group">
+            <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fas fa-calendar me-1"></i>
+              <%= periodText %>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item <%= period === 'weekly' ? 'active' : '' %>" href="/admin/seller-performance/<%= seller._id %>?period=weekly">Weekly</a></li>
+              <li><a class="dropdown-item <%= period === 'monthly' ? 'active' : '' %>" href="/admin/seller-performance/<%= seller._id %>?period=monthly">Monthly</a></li>
+              <li><a class="dropdown-item <%= period === 'quarterly' ? 'active' : '' %>" href="/admin/seller-performance/<%= seller._id %>?period=quarterly">Quarterly</a></li>
+              <li><a class="dropdown-item <%= period === 'yearly' ? 'active' : '' %>" href="/admin/seller-performance/<%= seller._id %>?period=yearly">Yearly</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <% if (locals.success_msg && success_msg !== '') { %>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+          <%= success_msg %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      <% } %>
+
+      <% if (locals.error_msg && error_msg !== '') { %>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          <%= error_msg %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      <% } %>
+
+      <!-- Seller Information -->
+      <div class="row mb-4">
+        <div class="col-lg-4">
+          <div class="card shadow">
+            <div class="card-header py-3">
+              <h6 class="m-0 font-weight-bold text-primary">Seller Information</h6>
+            </div>
+            <div class="card-body">
+              <div class="text-center mb-4">
+                <i class="fas fa-user-circle fa-5x text-gray-300 mb-3"></i>
+                <h4><%= seller.name %></h4>
+                <p class="text-muted"><%= seller.email %></p>
+                <% if (seller.mobileNumber) { %>
+                  <p class="text-muted"><i class="fas fa-phone me-2"></i><%= seller.mobileNumber %></p>
+                <% } %>
+                <div class="mt-3">
+                  <span class="badge <%= seller.isActive ? 'bg-success' : 'bg-danger' %>">
+                    <%= seller.isActive ? 'Active' : 'Inactive' %>
+                  </span>
+                  <span class="badge bg-primary">Seller</span>
+                </div>
+              </div>
+              <hr>
+              <div class="row text-center">
+                <div class="col-6">
+                  <div class="h5 mb-0 font-weight-bold text-gray-800">
+                    <%= new Date(seller.createdAt).toLocaleDateString() %>
+                  </div>
+                  <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Joined Date</div>
+                </div>
+                <div class="col-6">
+                  <div class="h5 mb-0 font-weight-bold text-gray-800">
+                    <%= performance ? performance.performanceScore : 'N/A' %>
+                  </div>
+                  <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Performance Score</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-8">
+          <div class="card shadow">
+            <div class="card-header py-3">
+              <h6 class="m-0 font-weight-bold text-primary">Performance Overview</h6>
+            </div>
+            <div class="card-body">
+              <% if (performance) { %>
+                <div class="row">
+                  <div class="col-md-6">
+                    <h4>Lead Metrics</h4>
+                    <ul class="list-group list-group-flush mb-4">
+                      <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Leads Assigned
+                        <span class="badge bg-primary rounded-pill"><%= performance.metrics.leadsAssigned %></span>
+                      </li>
+                      <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Leads Contacted
+                        <span class="badge bg-primary rounded-pill"><%= performance.metrics.leadsContacted %></span>
+                      </li>
+                      <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Leads Qualified
+                        <span class="badge bg-primary rounded-pill"><%= performance.metrics.leadsQualified %></span>
+                      </li>
+                      <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Proposals Sent
+                        <span class="badge bg-primary rounded-pill"><%= performance.metrics.proposalsSent %></span>
+                      </li>
+                      <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Sales Closed
+                        <span class="badge bg-success rounded-pill"><%= performance.metrics.salesClosed %></span>
+                      </li>
+                    </ul>
+                  </div>
+                  <div class="col-md-6">
+                    <h4>Sales Metrics</h4>
+                    <ul class="list-group list-group-flush mb-4">
+                      <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Total Revenue
+                        <span class="badge bg-success rounded-pill">$<%= performance.metrics.totalRevenue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) %></span>
+                      </li>
+                      <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Average Order Value
+                        <span class="badge bg-success rounded-pill">$<%= performance.metrics.averageOrderValue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) %></span>
+                      </li>
+                      <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Conversion Rate
+                        <span class="badge bg-info rounded-pill"><%= performance.metrics.conversionRate.toFixed(1) %>%</span>
+                      </li>
+                      <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Average Response Time
+                        <span class="badge bg-info rounded-pill"><%= performance.metrics.responseTime.toFixed(1) %> hrs</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="progress" style="height: 25px;">
+                  <div class="progress-bar bg-<%= performance.performanceScore >= 80 ? 'success' : performance.performanceScore >= 60 ? 'info' : 'warning' %>" 
+                       role="progressbar" style="width: <%= performance.performanceScore %>%;" 
+                       aria-valuenow="<%= performance.performanceScore %>" aria-valuemin="0" aria-valuemax="100">
+                    <%= performance.performanceScore %>% Performance Score
+                  </div>
+                </div>
+              <% } else { %>
+                <div class="alert alert-info">
+                  No performance data available for this seller during the selected period.
+                </div>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Active Leads -->
+      <div class="card shadow mb-4">
+        <div class="card-header py-3">
+          <h6 class="m-0 font-weight-bold text-primary">Active Leads (<%= activeLeads.length %>)</h6>
+        </div>
+        <div class="card-body">
+          <% if (activeLeads && activeLeads.length > 0) { %>
+            <div class="table-responsive">
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>User</th>
+                    <th>Source</th>
+                    <th>Created</th>
+                    <th>AI Score</th>
+                    <th>Status</th>
+                    <th>Last Contact</th>
+                    <th>Next Follow-up</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% activeLeads.forEach(lead => { %>
+                    <tr>
+                      <td>
+                        <div><%= lead.user ? lead.user.name : 'Unknown' %></div>
+                        <small class="text-muted"><%= lead.user ? lead.user.email : 'Unknown' %></small>
+                      </td>
+                      <td><span class="badge bg-info"><%= lead.source.replace('_', ' ') %></span></td>
+                      <td><%= new Date(lead.createdAt).toLocaleDateString() %></td>
+                      <td>
+                        <div class="progress" style="height: 20px;">
+                          <div class="progress-bar bg-<%= lead.aiScore >= 80 ? 'success' : lead.aiScore >= 60 ? 'info' : 'warning' %>" 
+                               role="progressbar" style="width: <%= lead.aiScore %>%;" 
+                               aria-valuenow="<%= lead.aiScore %>" aria-valuemin="0" aria-valuemax="100">
+                            <%= lead.aiScore %>
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <span class="badge bg-<%= 
+                          lead.status === 'contacted' ? 'primary' : 
+                          lead.status === 'qualified' ? 'info' : 
+                          lead.status === 'proposal' ? 'warning' : 'secondary' 
+                        %>">
+                          <%= lead.status.toUpperCase() %>
+                        </span>
+                      </td>
+                      <td>
+                        <%= lead.lastContact ? new Date(lead.lastContact).toLocaleDateString() : 'Not yet' %>
+                      </td>
+                      <td>
+                        <% if (lead.nextFollowUp) { %>
+                          <%= new Date(lead.nextFollowUp).toLocaleDateString() %>
+                          <% 
+                            const today = new Date();
+                            today.setHours(0, 0, 0, 0);
+                            const followUpDate = new Date(lead.nextFollowUp);
+                            followUpDate.setHours(0, 0, 0, 0);
+                            const diffTime = followUpDate - today;
+                            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                          %>
+                          <% if (diffDays < 0) { %>
+                            <span class="badge bg-danger">Overdue</span>
+                          <% } else if (diffDays === 0) { %>
+                            <span class="badge bg-warning">Today</span>
+                          <% } else if (diffDays === 1) { %>
+                            <span class="badge bg-info">Tomorrow</span>
+                          <% } %>
+                        <% } else { %>
+                          <span class="text-muted">Not Scheduled</span>
+                        <% } %>
+                      </td>
+                      <td>
+                        <a href="/admin/leads/<%= lead._id %>" class="btn btn-sm btn-primary">View</a>
+                      </td>
+                    </tr>
+                  <% }); %>
+                </tbody>
+              </table>
+            </div>
+          <% } else { %>
+            <div class="alert alert-info">No active leads assigned to this seller.</div>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- Converted Leads -->
+      <div class="card shadow mb-4">
+        <div class="card-header py-3">
+          <h6 class="m-0 font-weight-bold text-primary">Converted Leads (<%= convertedLeads.length %>)</h6>
+        </div>
+        <div class="card-body">
+          <% if (convertedLeads && convertedLeads.length > 0) { %>
+            <div class="table-responsive">
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>User</th>
+                    <th>Source</th>
+                    <th>Created</th>
+                    <th>Converted</th>
+                    <th>Days to Convert</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% convertedLeads.forEach(lead => { %>
+                    <tr>
+                      <td>
+                        <div><%= lead.user ? lead.user.name : 'Unknown' %></div>
+                        <small class="text-muted"><%= lead.user ? lead.user.email : 'Unknown' %></small>
+                      </td>
+                      <td><span class="badge bg-info"><%= lead.source.replace('_', ' ') %></span></td>
+                      <td><%= new Date(lead.createdAt).toLocaleDateString() %></td>
+                      <td><%= new Date(lead.updatedAt).toLocaleDateString() %></td>
+                      <td>
+                        <% 
+                          const createdDate = new Date(lead.createdAt);
+                          const updatedDate = new Date(lead.updatedAt);
+                          const diffTime = Math.abs(updatedDate - createdDate);
+                          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                        %>
+                        <%= diffDays %> days
+                      </td>
+                      <td>
+                        <a href="/admin/leads/<%= lead._id %>" class="btn btn-sm btn-primary">View</a>
+                      </td>
+                    </tr>
+                  <% }); %>
+                </tbody>
+              </table>
+            </div>
+          <% } else { %>
+            <div class="alert alert-info">No converted leads for this seller.</div>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- AI Insights and Areas for Improvement -->
+      <div class="row">
+        <!-- AI Insights -->
+        <div class="col-lg-6">
+          <div class="card shadow mb-4">
+            <div class="card-header py-3">
+              <h6 class="m-0 font-weight-bold text-primary">AI Insights</h6>
+            </div>
+            <div class="card-body">
+              <% if (performance && performance.aiInsights && performance.aiInsights.length > 0) { %>
+                <ul class="list-group list-group-flush">
+                  <% performance.aiInsights.forEach(insight => { %>
+                    <li class="list-group-item">
+                      <i class="fas fa-lightbulb text-warning me-2"></i> <%= insight %>
+                    </li>
+                  <% }); %>
+                </ul>
+              <% } else { %>
+                <div class="alert alert-info">No AI insights available for this seller.</div>
+              <% } %>
+            </div>
+          </div>
+        </div>
+
+        <!-- Areas for Improvement -->
+        <div class="col-lg-6">
+          <div class="card shadow mb-4">
+            <div class="card-header py-3">
+              <h6 class="m-0 font-weight-bold text-primary">Areas for Improvement</h6>
+            </div>
+            <div class="card-body">
+              <% if (performance && performance.improvementAreas && performance.improvementAreas.length > 0) { %>
+                <ul class="list-group list-group-flush">
+                  <% performance.improvementAreas.forEach(area => { %>
+                    <li class="list-group-item">
+                      <i class="fas fa-exclamation-triangle text-danger me-2"></i> <%= area %>
+                    </li>
+                  <% }); %>
+                </ul>
+              <% } else { %>
+                <div class="alert alert-info">No improvement areas identified for this seller.</div>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Orders Handled -->
+      <div class="card shadow mb-4">
+        <div class="card-header py-3">
+          <h6 class="m-0 font-weight-bold text-primary">Orders Handled (<%= orders.length %>)</h6>
+        </div>
+        <div class="card-body">
+          <% if (orders && orders.length > 0) { %>
+            <div class="table-responsive">
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% orders.forEach(order => { %>
+                    <tr>
+                      <td><%= order._id %></td>
+                      <td>
+                        <div><%= order.user ? order.user.name : 'Unknown' %></div>
+                        <small class="text-muted"><%= order.user ? order.user.email : 'Unknown' %></small>
+                      </td>
+                      <td><%= new Date(order.createdAt).toLocaleDateString() %></td>
+                      <td>$<%= order.totalAmount.toFixed(2) %></td>
+                      <td>
+                        <span class="badge bg-<%= 
+                          order.orderStatus === 'delivered' ? 'success' : 
+                          order.orderStatus === 'shipped' || order.orderStatus === 'in_transit' ? 'info' : 
+                          order.orderStatus === 'cancelled' ? 'danger' : 'warning' 
+                        %>">
+                          <%= order.orderStatus.toUpperCase() %>
+                        </span>
+                      </td>
+                      <td>
+                        <a href="/admin/orders/<%= order._id %>" class="btn btn-sm btn-primary">View</a>
+                      </td>
+                    </tr>
+                  <% }); %>
+                </tbody>
+              </table>
+            </div>
+          <% } else { %>
+            <div class="alert alert-info">No orders handled by this seller.</div>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- Strengths -->
+      <div class="card shadow mb-4">
+        <div class="card-header py-3">
+          <h6 class="m-0 font-weight-bold text-primary">Seller Strengths</h6>
+        </div>
+        <div class="card-body">
+          <% if (performance && performance.strengths && performance.strengths.length > 0) { %>
+            <div class="row">
+              <% performance.strengths.forEach(strength => { %>
+                <div class="col-lg-4 mb-4">
+                  <div class="card bg-success text-white shadow">
+                    <div class="card-body">
+                      <div class="card-text">
+                        <i class="fas fa-check-circle me-2"></i> <%= strength %>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              <% }); %>
+            </div>
+          <% } else { %>
+            <div class="alert alert-info">No strengths identified for this seller.</div>
+          <% } %>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<%- include('../partials/footer') %> 

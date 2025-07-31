@@ -1,0 +1,92 @@
+<%- include('../partials/header') %>
+<%- include('../partials/navbar') %>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Psychometric Test Payment</h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Your test has been submitted successfully. Please complete the payment to have your test reviewed by our professional psychologist.
+                    </div>
+                    
+                    <h5>Payment Summary</h5>
+                    <hr>
+                    
+                    <div class="mb-3 row">
+                        <div class="col-6">
+                            <p><strong>Test ID:</strong></p>
+                        </div>
+                        <div class="col-6 text-end">
+                            <p><%= test._id %></p>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3 row">
+                        <div class="col-6">
+                            <p><strong>Psychologist Review Fee:</strong></p>
+                        </div>
+                        <div class="col-6 text-end">
+                            <p>₹<%= testFee %>.00</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3 row">
+                        <div class="col-6">
+                            <p><strong>GST (18%):</strong></p>
+                        </div>
+                        <div class="col-6 text-end">
+                            <p>₹<%= Math.round(testFee * 0.18) %>.00</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3 row bg-light py-2">
+                        <div class="col-6">
+                            <p><strong>Total Amount:</strong></p>
+                        </div>
+                        <div class="col-6 text-end">
+                            <p><strong>₹<%= testFee + Math.round(testFee * 0.18) %>.00</strong></p>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="alert alert-success">
+                        <i class="fas fa-lightbulb me-2"></i>
+                        <strong>What happens next?</strong>
+                        <p class="mb-0 mt-2">After payment, your test will be reviewed by our professional psychologist who will provide personalized feedback on your home decor preferences. You'll receive recommendations tailored to your style and personality!</p>
+                    </div>
+                    
+                    <div class="alert alert-warning">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Demo Mode:</strong> This is a demo payment page. No actual payment will be processed.
+                    </div>
+                    
+                    <form action="/user/psychometric-test/<%= test._id %>/payment" method="POST">
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="agreement" required>
+                            <label class="form-check-label" for="agreement">I understand this is a demo and no actual payment will be processed.</label>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-credit-card me-2"></i>Demo Payment - ₹<%= testFee + Math.round(testFee * 0.18) %>.00
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer">
+                    <a href="/user/dashboard" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('../partials/footer') %> 

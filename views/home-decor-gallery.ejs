@@ -1,0 +1,241 @@
+<%- include('./partials/header') %>
+
+<!-- Hero Section -->
+<div class="hero-section text-center">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8 mx-auto hero-content" data-aos="fade-up">
+                <h1 class="hero-title">Home Decor Gallery</h1>
+                <p class="hero-subtitle">Where Indian Heritage Transforms Living Spaces</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Introduction Section -->
+<section class="py-5">
+    <div class="container" data-aos="fade-up">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="alert alert-accent text-center p-4 rounded-lg shadow-sm">
+                    <h4 class="mb-3"><i class="fas fa-palette me-2"></i>Personalized Design Journeys</h4>
+                    <p class="mb-0">Browse our collection of completed home decor projects. Each space is uniquely transformed based on the client's personality through our innovative psychometric assessment technology.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Gallery Section -->
+<section class="py-4">
+    <div class="container">
+        <% if (locals.success_msg && success_msg !== '') { %>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <%= success_msg %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <% } %>
+
+        <% if (locals.error_msg && error_msg !== '') { %>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <%= error_msg %>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <% } %>
+        
+        <% if (projects && projects.length > 0) { %>
+            <div class="row g-4" data-aos="fade-up">
+                <% projects.forEach(project => { %>
+                    <div class="col-md-6 col-lg-4" data-aos="fade-up">
+                        <div class="card h-100 shadow-lg border-0">
+                            <div id="carousel<%= project._id %>" class="carousel slide" data-bs-ride="carousel">
+                                <div class="carousel-inner">
+                                    <% if (project.order && project.order.photos && project.order.photos.length > 0) { %>
+                                        <% project.order.photos.forEach((photo, index) => { %>
+                                            <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
+                                                <div class="position-relative" style="height: 280px;">
+                                                    <img src="<%= photo %>" class="d-block w-100 h-100" 
+                                                        style="object-fit: cover; border-top-left-radius: var(--border-radius); border-top-right-radius: var(--border-radius);" 
+                                                        alt="Home Decor Project"
+                                                        onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                                    
+                                                    <div class="placeholder-img d-none position-absolute top-0 start-0 w-100 h-100 bg-light d-flex align-items-center justify-content-center" style="border-top-left-radius: var(--border-radius); border-top-right-radius: var(--border-radius);">
+                                                        <div class="text-center p-4">
+                                                            <i class="fas fa-home fa-3x text-secondary mb-3"></i>
+                                                            <p class="mb-0 text-muted">Image not available</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        <% }); %>
+                                    <% } else { %>
+                                        <div class="carousel-item active">
+                                            <div class="position-relative" style="height: 280px;">
+                                                <div class="w-100 h-100 bg-light d-flex align-items-center justify-content-center" style="border-top-left-radius: var(--border-radius); border-top-right-radius: var(--border-radius);">
+                                                    <div class="text-center p-4">
+                                                        <i class="fas fa-image fa-3x text-secondary mb-3"></i>
+                                                        <p class="mb-0 text-muted">No images available</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <% } %>
+                                </div>
+                                <% if (project.order && project.order.photos && project.order.photos.length > 1) { %>
+                                    <button class="carousel-control-prev" type="button" data-bs-target="#carousel<%= project._id %>" data-bs-slide="prev">
+                                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                        <span class="visually-hidden">Previous</span>
+                                    </button>
+                                    <button class="carousel-control-next" type="button" data-bs-target="#carousel<%= project._id %>" data-bs-slide="next">
+                                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                        <span class="visually-hidden">Next</span>
+                                    </button>
+                                <% } %>
+                            </div>
+                            
+                            <div class="card-body p-4">
+                                <% if (project.user && project.user.name) { %>
+                                    <h5 class="card-title mb-3"><i class="fas fa-home text-accent me-2"></i><%= project.user.name %>'s Space</h5>
+                                <% } else { %>
+                                    <h5 class="card-title mb-3"><i class="fas fa-home text-accent me-2"></i>Personalized Space</h5>
+                                <% } %>
+                                
+                                <p class="card-text">
+                                    <% if (project.order && project.order.publicDescription) { %>
+                                        <%= project.order.publicDescription %>
+                                    <% } else { %>
+                                        A beautifully customized space crafted to reflect the client's personality and preferences.
+                                    <% } %>
+                                </p>
+                                
+                                <div class="d-flex align-items-center mt-3 mb-3">
+                                    <div class="project-date me-auto">
+                                        <span class="text-muted"><i class="far fa-calendar-alt me-2"></i>
+                                            <%= project.order && project.order.formattedCompletedAt ? project.order.formattedCompletedAt : 'Recently' %>
+                                        </span>
+                                    </div>
+                                    
+                                    <% if (project.userFeedback && project.userFeedback.rating) { %>
+                                        <div class="badge bg-accent rounded-pill px-3 py-2">
+                                            <% for(let i = 1; i <= 5; i++) { %>
+                                                <i class="fas fa-star <%= i <= project.userFeedback.rating ? 'text-warning' : 'text-light' %> me-1"></i>
+                                            <% } %>
+                                        </div>
+                                    <% } %>
+                                </div>
+                                
+                                <% if (project.userFeedback && project.userFeedback.comment) { %>
+                                    <div class="testimonial-card p-3 rounded mt-3">
+                                        <p class="card-text fst-italic mb-0">
+                                            <i class="fas fa-quote-left text-primary opacity-50 me-2"></i>
+                                            <%= project.userFeedback.comment %>
+                                            <i class="fas fa-quote-right text-primary opacity-50 ms-2"></i>
+                                        </p>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+        <% } else { %>
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="alert alert-info text-center p-5 rounded-lg">
+                        <i class="fas fa-info-circle fa-3x mb-3 text-accent"></i>
+                        <h4 class="mb-3">No Projects Yet</h4>
+                        <p>We're currently working on amazing home transformations. Check back soon to see our beautiful designs!</p>
+                    </div>
+                </div>
+            </div>
+        <% } %>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="py-5 bg-light" data-aos="fade-up">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-4 mb-lg-0" data-aos="fade-right">
+                <h2 class="section-title">Transform Your Living Space</h2>
+                <p class="lead mb-4">Discover how our innovative psychometric assessment can create a personalized home decor plan that reflects your unique personality.</p>
+                <p class="mb-4">Our team of expert psychologists and designers will analyze your preferences to recommend colors, styles, and arrangements that transform your house into a true home.</p>
+                <div class="d-grid gap-2 d-md-flex">
+                    <% if (typeof user !== 'undefined' && user) { %>
+                        <% if (user.role === 'user') { %>
+                            <a href="/user/psychometric-test" class="btn btn-accent">
+                                <i class="fas fa-brain me-2"></i>Take the Test
+                            </a>
+                        <% } else if (user.role === 'admin') { %>
+                            <a href="/admin/dashboard" class="btn btn-accent">
+                                <i class="fas fa-brain me-2"></i>Admin Dashboard
+                            </a>
+                        <% } else if (user.role === 'seller') { %>
+                            <a href="/seller/dashboard" class="btn btn-accent">
+                                <i class="fas fa-brain me-2"></i>Seller Dashboard
+                            </a>
+                        <% } else if (user.role === 'psychologist') { %>
+                            <a href="/psychologist/dashboard" class="btn btn-accent">
+                                <i class="fas fa-brain me-2"></i>Psychologist Dashboard
+                            </a>
+                        <% } %>
+                    <% } else { %>
+                        <a href="/auth/login?redirect=/user/psychometric-test" class="btn btn-accent">
+                            <i class="fas fa-brain me-2"></i>Login to Take the Test
+                        </a>
+                    <% } %>
+                    <a href="/about" class="btn btn-outline-primary">
+                        <i class="fas fa-info-circle me-2"></i>Learn More
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6" data-aos="fade-left">
+                <div class="position-relative">
+                    <img src="https://source.unsplash.com/random/600x400/?indian,interior" alt="Home Decor" class="img-fluid rounded shadow-lg">
+                    <div class="position-absolute top-0 start-100 translate-middle" style="width: 150px; height: 150px; margin-top: 50px; margin-left: -75px;">
+                        <img src="https://source.unsplash.com/random/300x300/?mandala" alt="Mandala Decor" class="img-fluid rounded-circle shadow-lg border border-5 border-white">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Design Process Section -->
+<section class="py-5" data-aos="fade-up">
+    <div class="container">
+        <h2 class="section-title centered mb-5">Our Design Process</h2>
+        <div class="row text-center">
+            <div class="col-md-3 mb-4" data-aos="zoom-in" data-aos-delay="100">
+                <div class="feature-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h4 class="mb-3">Assessment</h4>
+                <p>Take our psychometric test to analyze your personality and preferences</p>
+            </div>
+            <div class="col-md-3 mb-4" data-aos="zoom-in" data-aos-delay="200">
+                <div class="feature-icon">
+                    <i class="fas fa-lightbulb"></i>
+                </div>
+                <h4 class="mb-3">Consultation</h4>
+                <p>Our experts review your results and create a personalized design plan</p>
+            </div>
+            <div class="col-md-3 mb-4" data-aos="zoom-in" data-aos-delay="300">
+                <div class="feature-icon">
+                    <i class="fas fa-paint-roller"></i>
+                </div>
+                <h4 class="mb-3">Transformation</h4>
+                <p>We implement your custom design with quality craftsmanship</p>
+            </div>
+            <div class="col-md-3 mb-4" data-aos="zoom-in" data-aos-delay="400">
+                <div class="feature-icon">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <h4 class="mb-3">Enjoyment</h4>
+                <p>Experience a space that truly resonates with your personality</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<%- include('./partials/footer') %> 

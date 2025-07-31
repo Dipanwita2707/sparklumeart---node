@@ -1,0 +1,300 @@
+:root {
+  --primary-color: #4e73df;
+  --secondary-color: #6f42c1;
+  --accent-color: #f6c23e;
+  --success-color: #1cc88a;
+  --info-color: #36b9cc;
+  --warning-color: #f6c23e;
+  --danger-color: #e74a3b;
+  --light-color: #f8f9fc;
+  --dark-color: #5a5c69;
+  --body-bg: #f8f9fc;
+  --card-border-radius: 0.35rem;
+  --sidebar-width: 14rem;
+  --font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* General Styles */
+body {
+  font-family: var(--font-family);
+  background-color: var(--body-bg);
+}
+
+.text-primary { color: var(--primary-color) !important; }
+.text-secondary { color: var(--secondary-color) !important; }
+.text-accent { color: var(--accent-color) !important; }
+.text-success { color: var(--success-color) !important; }
+
+.bg-primary { background-color: var(--primary-color) !important; }
+.bg-secondary { background-color: var(--secondary-color) !important; }
+.bg-accent { background-color: var(--accent-color) !important; }
+.bg-success { background-color: var(--success-color) !important; }
+.bg-gradient-primary {
+  background: linear-gradient(180deg, var(--primary-color) 10%, #224abe 100%);
+}
+
+/* Buttons */
+.btn-primary {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+.btn-primary:hover {
+  background-color: #4262c3;
+  border-color: #3d5cb8;
+}
+.btn-accent {
+  background-color: var(--accent-color);
+  border-color: var(--accent-color);
+  color: #fff;
+}
+.btn-accent:hover {
+  background-color: #e5b435;
+  border-color: #e5b435;
+  color: #fff;
+}
+.btn-outline-accent {
+  color: var(--accent-color);
+  border-color: var(--accent-color);
+}
+.btn-outline-accent:hover {
+  background-color: var(--accent-color);
+  color: #fff;
+}
+
+/* Sidebar */
+#sidebar {
+  min-height: 100vh;
+  background-color: #000000;
+  background-image: none;
+  transition: margin .15s ease-in-out;
+  z-index: 1000;
+  box-shadow: 4px 0 8px rgba(0, 0, 0, 0.3);
+}
+
+#sidebar .sidebar-brand {
+  padding: 1.5rem 1rem;
+}
+
+#sidebar .brand-text {
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: 0.05rem;
+  text-transform: uppercase;
+}
+
+#sidebar .brand-icon i {
+  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.3));
+}
+
+#sidebar .user-profile {
+  background-color: rgba(255, 255, 255, 0.05);
+  margin: 0 1rem;
+  border-radius: 0.5rem;
+}
+
+#sidebar .sidebar-divider {
+  margin: 0 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#sidebar .sidebar-heading {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.13rem;
+}
+
+#sidebar .nav-section {
+  margin-bottom: 1rem;
+}
+
+#sidebar .nav-item {
+  position: relative;
+  margin-bottom: 0.25rem;
+}
+
+#sidebar .nav-link {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  color: rgba(255, 255, 255, 0.7);
+  transition: all 0.2s ease-in-out;
+  font-weight: 600;
+  font-size: 0.85rem;
+  border-radius: 0.5rem;
+}
+
+#sidebar .nav-link .icon-circle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.1);
+  margin-right: 0.75rem;
+  transition: all 0.2s ease-in-out;
+}
+
+#sidebar .nav-link:hover {
+  color: #fff;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+#sidebar .nav-link:hover .icon-circle {
+  background-color: rgba(78, 115, 223, 0.3);
+}
+
+#sidebar .nav-link.active {
+  color: #fff;
+  background-color: var(--primary-color);
+  box-shadow: 0 0.125rem 0.25rem rgba(78, 115, 223, 0.5);
+}
+
+#sidebar .nav-link.active .icon-circle {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+#sidebar .nav-link span {
+  font-weight: 500;
+}
+
+/* Dashboard Cards */
+.dashboard-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  height: 100%;
+  padding: 1.5rem;
+  border-radius: var(--card-border-radius);
+  transition: transform 0.2s;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-5px);
+}
+
+.primary-card {
+  background-color: var(--primary-color);
+  background-image: linear-gradient(180deg, var(--primary-color) 10%, #224abe 100%);
+}
+
+.secondary-card {
+  background-color: var(--secondary-color);
+  background-image: linear-gradient(180deg, var(--secondary-color) 10%, #5f3dad 100%);
+}
+
+.accent-card {
+  background-color: var(--accent-color);
+  background-image: linear-gradient(180deg, var(--accent-color) 10%, #e5b435 100%);
+}
+
+.success-card {
+  background-color: var(--success-color);
+  background-image: linear-gradient(180deg, var(--success-color) 10%, #13a673 100%);
+}
+
+.card-icon {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+/* Card Styles */
+.card {
+  border: none;
+  border-radius: var(--card-border-radius);
+  box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+  margin-bottom: 1.5rem;
+}
+
+.card-header {
+  background-color: #f8f9fc;
+  border-bottom: 1px solid #e3e6f0;
+  padding: 0.75rem 1.25rem;
+}
+
+.card-header h5 {
+  margin-bottom: 0;
+  color: var(--primary-color);
+}
+
+/* Table Styles */
+.table-responsive {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  margin-bottom: 0;
+}
+
+.table th {
+  padding: 0.75rem;
+  vertical-align: middle;
+  font-weight: 600;
+  color: var(--dark-color);
+  border-bottom: 1px solid #e3e6f0;
+}
+
+.table td {
+  padding: 0.75rem;
+  vertical-align: middle;
+}
+
+.table-hover tbody tr:hover {
+  background-color: rgba(78, 115, 223, 0.05);
+}
+
+/* Custom Request Cards */
+.custom-request-card {
+  background-color: #fff;
+  border-radius: var(--card-border-radius);
+  overflow: hidden;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  transition: all 0.2s;
+}
+
+.custom-request-card:hover {
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.request-image {
+  width: 80px;
+  height: 80px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* Form Styles */
+.form-control:focus {
+  border-color: #bac8f3;
+  box-shadow: 0 0 0 0.25rem rgba(78, 115, 223, 0.25);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  #sidebar {
+    margin-left: -14rem;
+  }
+  #sidebar.show {
+    margin-left: 0;
+  }
+  .dashboard-card {
+    padding: 1rem;
+  }
+  .card-icon {
+    font-size: 1.5rem;
+  }
+  
+  /* Additional mobile styles for sidebar */
+  #sidebar .nav-link {
+    padding: 0.6rem 0.8rem;
+  }
+  
+  #sidebar .nav-link .icon-circle {
+    width: 1.8rem;
+    height: 1.8rem;
+    margin-right: 0.5rem;
+  }
+} 

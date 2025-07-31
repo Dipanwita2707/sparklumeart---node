@@ -1,0 +1,263 @@
+<!-- Hero Section -->
+<div class="hero-section text-center">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8 mx-auto hero-content" data-aos="fade-up">
+                <h1 class="hero-title">Sparklume Art</h1>
+                <p class="hero-subtitle">Where Indian Culture Meets Modern Innovation</p>
+                <div class="d-grid gap-2 d-sm-flex justify-content-sm-center mt-4">
+                    <a href="/gallery" class="btn btn-secondary btn-lg px-4 gap-3">
+                        <i class="fas fa-images me-2"></i>Explore Gallery
+                    </a>
+                    <a href="/home-decor-gallery" class="btn btn-accent btn-lg px-4 gap-3">
+                        <i class="fas fa-home me-2"></i>Home Decor
+                    </a>
+                    <a href="/shop" class="btn btn-primary btn-lg px-4 gap-3">
+                        <i class="fas fa-shopping-cart me-2"></i>Shop Artwork
+                    </a>
+                    <% if (!user) { %>
+                        <a href="/auth/register" class="btn btn-outline-light btn-lg px-4">Join Us</a>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- About Section -->
+<section class="container py-5" data-aos="fade-up">
+    <div class="row align-items-center">
+        <div class="col-lg-6 mb-4 mb-lg-0" data-aos="fade-right" data-aos-delay="100">
+            <img src="https://source.unsplash.com/random/600x400/?indian,art" alt="Indian Art" class="img-fluid rounded shadow-lg">
+        </div>
+        <div class="col-lg-6" data-aos="fade-left" data-aos-delay="200">
+            <h2 class="section-title">The Essence of Sparklume Art</h2>
+            <p class="lead mb-4">Blending traditional Indian artistry with cutting-edge technology.</p>
+            <p class="mb-4">At Sparklume Art, we celebrate the rich cultural heritage of India while embracing modern technological innovations. Our unique approach creates mesmerizing artworks that honor tradition while pushing creative boundaries.</p>
+            <div class="d-flex gap-3">
+                <a href="/gallery" class="btn btn-outline-accent">
+                    <i class="fas fa-palette me-2"></i>Our Art Collection
+                </a>
+                <a href="/about" class="btn btn-outline-primary">
+                    <i class="fas fa-info-circle me-2"></i>Learn More
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Artists Section -->
+<section class="py-5 bg-light">
+    <div class="container" data-aos="fade-up">
+        <h2 class="section-title centered mb-5">Featured Artists</h2>
+        <div class="row">
+            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="card h-100">
+                    <img src="https://source.unsplash.com/random/600x400/?indian,artist" class="card-img-top" alt="Artist 1">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Priya Sharma</h5>
+                        <p class="card-text">Contemporary artist fusing traditional Madhubani painting techniques with digital elements.</p>
+                        <a href="#" class="btn btn-outline-accent">View Profile</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="card h-100">
+                    <img src="https://source.unsplash.com/random/600x400/?artist,painting" class="card-img-top" alt="Artist 2">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Arjun Mehta</h5>
+                        <p class="card-text">Digital artist creating stunning AI-enhanced landscapes inspired by ancient Indian mythology.</p>
+                        <a href="#" class="btn btn-outline-accent">View Profile</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="card h-100">
+                    <img src="https://source.unsplash.com/random/600x400/?indian,sculpture" class="card-img-top" alt="Artist 3">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Kavita Patel</h5>
+                        <p class="card-text">Sculptor blending traditional bronze casting with 3D printing for innovative contemporary pieces.</p>
+                        <a href="#" class="btn btn-outline-accent">View Profile</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5">
+    <div class="container" data-aos="fade-up">
+        <h2 class="section-title centered mb-5">Why Choose Sparklume Art</h2>
+        <div class="row text-center">
+            <div class="col-md-4 mb-5 mb-md-0" data-aos="zoom-in" data-aos-delay="100">
+                <div class="feature-icon">
+                    <i class="fas fa-paint-brush"></i>
+                </div>
+                <h4 class="mb-3">Authentic Indian Heritage</h4>
+                <p>Each artwork preserves authentic techniques handed down through generations, now reimagined with technology.</p>
+            </div>
+            <div class="col-md-4 mb-5 mb-md-0" data-aos="zoom-in" data-aos-delay="200">
+                <div class="feature-icon">
+                    <i class="fas fa-microchip"></i>
+                </div>
+                <h4 class="mb-3">Technological Innovation</h4>
+                <p>We blend traditional art forms with cutting-edge technology to create unique, immersive artistic experiences.</p>
+            </div>
+            <div class="col-md-4" data-aos="zoom-in" data-aos-delay="300">
+                <div class="feature-icon">
+                    <i class="fas fa-certificate"></i>
+                </div>
+                <h4 class="mb-3">Artisan Craftsmanship</h4>
+                <p>Supporting skilled artisans while embracing modern production techniques for exceptional quality.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Home Decor Section -->
+<section class="py-5 bg-light">
+    <div class="container" data-aos="fade-up">
+        <div class="row align-items-center">
+            <div class="col-lg-6 order-lg-2 mb-4 mb-lg-0" data-aos="fade-left">
+                <div class="position-relative">
+                    <img src="https://source.unsplash.com/random/600x400/?indian,decor" alt="Home Decor" class="img-fluid rounded shadow-lg">
+                    <div class="position-absolute top-0 start-100 translate-middle" style="width: 150px; height: 150px; margin-top: 50px; margin-left: -75px;">
+                        <img src="https://source.unsplash.com/random/300x300/?mandala" alt="Mandala Decor" class="img-fluid rounded-circle shadow-lg border border-5 border-white">
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 order-lg-1" data-aos="fade-right">
+                <h2 class="section-title">Transform Your Space</h2>
+                <p class="lead mb-4">Our AI-enhanced psychometric test matches your personality with the perfect home decor style.</p>
+                <p class="mb-4">Discover personalized recommendations from our expert psychologists about colors, styles, and arrangements that best suit your personality and preferences, all inspired by the rich artistic heritage of India.</p>
+                <div class="d-grid gap-2 d-md-flex">
+                    <a href="/home-decor-gallery" class="btn btn-accent">
+                        <i class="fas fa-home me-2"></i>View Home Decor 
+                    </a>
+                    <% if (user) { %>
+                        <a href="/user/psychometric-test" class="btn btn-outline-accent">
+                            <i class="fas fa-brain me-2"></i>Take the Test
+                        </a>
+                    <% } else { %>
+                        <a href="/auth/login" class="btn btn-outline-accent">
+                            <i class="fas fa-sign-in-alt me-2"></i>Login to Take the Test
+                        </a>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Gallery Preview Section -->
+<section class="py-5">
+    <div class="container" data-aos="fade-up">
+        <h2 class="section-title centered mb-5">Explore Our Gallery</h2>
+        <div class="gallery-grid" data-aos="fade-up">
+            <div class="gallery-item" data-aos="zoom-in" data-aos-delay="100">
+                <img src="https://source.unsplash.com/random/600x400/?indian,painting" alt="Indian Painting">
+                <div class="gallery-overlay">
+                    <div>
+                        <h4>Mystic Traditions</h4>
+                        <p>Traditional paintings with contemporary twists</p>
+                    </div>
+                </div>
+            </div>
+            <div class="gallery-item" data-aos="zoom-in" data-aos-delay="200">
+                <img src="https://source.unsplash.com/random/600x400/?mandala,art" alt="Mandala Art">
+                <div class="gallery-overlay">
+                    <div>
+                        <h4>Mandala Designs</h4>
+                        <p>Sacred geometry brought to life</p>
+                    </div>
+                </div>
+            </div>
+            <div class="gallery-item" data-aos="zoom-in" data-aos-delay="300">
+                <img src="https://source.unsplash.com/random/600x400/?indian,sculpture" alt="Sculpture">
+                <div class="gallery-overlay">
+                    <div>
+                        <h4>Contemporary Sculptures</h4>
+                        <p>Blending traditional craft with modern aesthetics</p>
+                    </div>
+                </div>
+            </div>
+            <div class="gallery-item" data-aos="zoom-in" data-aos-delay="400">
+                <img src="https://source.unsplash.com/random/600x400/?digital,art" alt="Digital Art">
+                <div class="gallery-overlay">
+                    <div>
+                        <h4>Digital Expressions</h4>
+                        <p>Technology-driven artistic innovations</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="text-center mt-5">
+            <a href="/gallery" class="btn btn-primary">View Full Gallery</a>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials -->
+<section class="py-5 bg-light">
+    <div class="container" data-aos="fade-up">
+        <h2 class="section-title centered mb-5">Client Testimonials</h2>
+        <div class="row">
+            <div class="col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="testimonial-card h-100">
+                    <p class="mb-4">"Sparklume Art transformed my living space with a stunning mandala wall piece that perfectly blends traditional Indian designs with modern aesthetics. Their psychometric test was spot on!"</p>
+                    <div class="client-info">
+                        <img src="https://source.unsplash.com/random/100x100/?woman" alt="Client" class="client-avatar">
+                        <div>
+                            <h5 class="client-name">Neha Gupta</h5>
+                            <p class="client-role">Interior Designer</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="testimonial-card h-100">
+                    <p class="mb-4">"As a collector of contemporary art, I'm impressed by how Sparklume Art manages to honor traditional techniques while creating pieces that feel incredibly modern and tech-forward."</p>
+                    <div class="client-info">
+                        <img src="https://source.unsplash.com/random/100x100/?man" alt="Client" class="client-avatar">
+                        <div>
+                            <h5 class="client-name">Vikram Mehta</h5>
+                            <p class="client-role">Art Collector</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="testimonial-card h-100">
+                    <p class="mb-4">"The digital art pieces I purchased from Sparklume Art are conversation starters in my tech office. They perfectly capture the fusion of our cultural heritage with our technological future."</p>
+                    <div class="client-info">
+                        <img src="https://source.unsplash.com/random/100x100/?indian,woman" alt="Client" class="client-avatar">
+                        <div>
+                            <h5 class="client-name">Anjali Singh</h5>
+                            <p class="client-role">Tech Entrepreneur</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="py-5" data-aos="fade-up">
+    <div class="container text-center">
+        <h2 class="mb-4">Ready to Begin Your Artistic Journey?</h2>
+        <p class="lead mb-4">Join our community of art enthusiasts exploring the beautiful fusion of Indian culture and technology.</p>
+        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+            <a href="/gallery" class="btn btn-primary btn-lg me-2">
+                <i class="fas fa-images me-2"></i>Browse Gallery
+            </a>
+            <a href="/shop" class="btn btn-accent btn-lg me-2">
+                <i class="fas fa-shopping-cart me-2"></i>Shop Artworks
+            </a>
+            <% if (!user) { %>
+                <a href="/auth/register" class="btn btn-secondary btn-lg">Create Account</a>
+            <% } %>
+        </div>
+    </div>
+</section> 

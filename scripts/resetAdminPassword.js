@@ -6,7 +6,7 @@ const bcrypt = require('bcryptjs');
 const resetAdminPassword = async () => {
     try {
         // Connect to MongoDB
-        await mongoose.connect(process.env.MONGODB_URL || 'mongodb+srv://sourav11092002:0qt05N7AG6CeNH5P@cluster0.q7gfpq4.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
+        await mongoose.connect('mongodb+srv://sourav11092002:0qt05N7AG6CeNH5P@cluster0.q7gfpq4.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
             useNewUrlParser: true,
             useUnifiedTopology: true
         });

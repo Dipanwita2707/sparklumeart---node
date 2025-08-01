@@ -17,7 +17,7 @@ const createAdmin = async () => {
         // Create new admin user
         const adminUser = new User({
             name: 'Admin User',
-            email: 'sourav11092202@gmail.com',
+            email: 'sourav11092002@gmail.com',
             password: 'Admin@123',
             role: 'admin',
             isVerified: true

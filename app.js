@@ -8,7 +8,7 @@ const path = require('path');
 const expressLayouts = require('express-ejs-layouts');
 
 const app = express();
-
+app.use(express.static(path.join(__dirname, 'public')));
 // Passport config
 require('./config/passport')(passport);
 

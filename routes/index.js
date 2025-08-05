@@ -1,8 +1,13 @@
 const express = require('express');
 const router = express.Router();
+
 const { ensureAuthenticated } = require('../middleware/auth');
 const Gallery = require('../models/Gallery');
 const PsychometricTest = require('../models/PsychometricTest');
+const path = require('path');
+
+
+
 
 // Home page
 router.get('/', (req, res) => {

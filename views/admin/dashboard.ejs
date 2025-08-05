@@ -6,7 +6,7 @@
             <div class="card border-0 bg-gradient-culture">
                 <div class="card-body py-3">
                     <div class="d-flex align-items-center">
-                        <img src="/img/logo.png" alt="Sparklume Art" class="me-3" style="height: 60px;">
+                        <img src="/img/Logo.png" alt="Sparklume Art" class="me-3" style="height: 60px;">
                         <div>
                             <h4 class="text-white mb-0">Sparklume Art</h4>
                             <p class="text-white-50 mb-0">Where Indian Culture Meets Modern Innovation</p>
@@ -333,9 +333,10 @@
                                                             <td>
                                                                 <div class="d-flex align-items-center">
                                                                     <div class="progress flex-grow-1 me-1" style="height: 6px; width: 40px;">
-                                                                        <div class="progress-bar bg-<%= lead.aiScore >= 80 ? 'success' : lead.aiScore >= 60 ? 'info' : 'warning' %>"
-                                                                            style="width: <%= lead.aiScore %>%">
-                                                                        </div>
+                                                                       <div class="progress-bar bg-<%= lead.aiScore >= 80 ? 'success' : lead.aiScore >= 60 ? 'info' : 'warning' %>" 
+     style="width: <%= (lead.aiScore || 0) %>%">
+</div>
+
                                                                     </div>
                                                                     <span class="small"><%= lead.aiScore %>%</span>
                                                                 </div>
@@ -381,7 +382,7 @@
                                                     <div class="d-flex align-items-center">
                                                         <div class="progress flex-grow-1 me-1" style="height: 5px;">
                                                             <div class="progress-bar bg-<%= source.avgScore >= 80 ? 'success' : 'info' %>"
-                                                                style="width: <%= source.avgScore %>%">
+                                                                style="width: <%= source.avgScore || 0 %>%">
                                                             </div>
                                                         </div>
                                                         <span class="text-muted x-small"><%= source.avgScore.toFixed(1) %>%</span>
